@@ -1,0 +1,283 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-solar: var(--solar);
+  --color-solar-foreground: var(--solar-foreground);
+  --color-tech: var(--tech);
+  --color-tech-foreground: var(--tech-foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-hairline: var(--hairline);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --font-display: "Inter Tight", "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  --shadow-glow-red: 0 8px 32px -6px color-mix(in oklab, var(--primary) 30%, transparent);
+  --shadow-glow-gold: 0 8px 32px -6px color-mix(in oklab, var(--solar) 35%, transparent);
+  --shadow-elevated: 0 20px 60px -20px rgb(0 0 0 / 0.12);
+
+  --gradient-hero: radial-gradient(
+      1200px 600px at 80% -10%,
+      color-mix(in oklab, var(--solar) 12%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 0% 20%,
+      color-mix(in oklab, var(--primary) 8%, transparent),
+      transparent 55%
+    ),
+    linear-gradient(180deg, oklch(0.99 0.003 260), oklch(0.97 0.005 250));
+  --gradient-card: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--foreground) 2%, transparent),
+    transparent
+  );
+  --gradient-red: linear-gradient(135deg, oklch(0.6 0.245 27), oklch(0.5 0.22 24));
+  --gradient-gold: linear-gradient(135deg, oklch(0.78 0.16 86), oklch(0.72 0.14 82));
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* Clean bright foundation */
+  --background: oklch(0.99 0.002 260);
+  --foreground: oklch(0.15 0.015 260);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.015 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.015 260);
+
+  /* Itel Red — signature brand */
+  --primary: oklch(0.55 0.22 27);
+  --primary-foreground: oklch(0.99 0 0);
+
+  --secondary: oklch(0.94 0.01 260);
+  --secondary-foreground: oklch(0.25 0.015 260);
+
+  --muted: oklch(0.95 0.008 260);
+  --muted-foreground: oklch(0.55 0.015 260);
+
+  --accent: oklch(0.92 0.02 260);
+  --accent-foreground: oklch(0.25 0.015 260);
+
+  --destructive: oklch(0.55 0.22 27);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --border: oklch(0.88 0.01 260);
+  --input: oklch(0.88 0.01 260);
+  --ring: oklch(0.55 0.22 27);
+
+  /* Solar Gold — power, savings, sunlight */
+  --solar: oklch(0.65 0.16 82);
+  --solar-foreground: oklch(0.99 0 0);
+
+  /* Intelligent Blue — analytics accent */
+  --tech: oklch(0.55 0.18 244);
+  --tech-foreground: oklch(0.99 0 0);
+
+  --surface: oklch(0.985 0.003 260);
+  --surface-2: oklch(0.97 0.005 260);
+  --hairline: oklch(0 0 0 / 8%);
+
+  --chart-1: oklch(0.65 0.16 82);
+  --chart-2: oklch(0.55 0.18 244);
+  --chart-3: oklch(0.55 0.22 27);
+  --chart-4: oklch(0.6 0.14 160);
+  --chart-5: oklch(0.65 0.1 310);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html,
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 25%, transparent);
+    color: var(--foreground);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0 0 0 / 0.1);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0 0 0 / 0.18);
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  max-width: 80rem;
+  @media (min-width: 768px) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility hairline {
+  border-color: var(--hairline);
+}
+
+@utility surface {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+}
+
+@utility surface-2 {
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@utility energy-grid {
+  background-image:
+    linear-gradient(to right, oklch(0 0 0 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0 0 0 / 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+@utility animate-pulse-glow {
+  animation: pulse-glow 3.2s ease-in-out infinite;
+}
+
+@utility animate-flow {
+  stroke-dasharray: 6 6;
+  animation: flow-dash 1.4s linear infinite;
+}
+
+/* ── Performance ─────────────────────────────────────── */
+@layer base {
+  /* Defer offscreen section rendering — polyfill-friendly */
+  .lazy-section {
+    content-visibility: auto;
+    contain-intrinsic-size: 600px;
+  }
+}
+
+/* Load font-display swap in a performant way */
+@layer base {
+  html {
+    font-display: swap;
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+@layer components {
+  .range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 999px;
+    outline: none;
+    cursor: pointer;
+  }
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--primary);
+    border: 3px solid var(--card);
+    box-shadow: 0 2px 8px color-mix(in oklab, var(--primary) 30%, transparent);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .range-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+  .range-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--primary);
+    border: 3px solid var(--card);
+    box-shadow: 0 2px 8px color-mix(in oklab, var(--primary) 30%, transparent);
+    cursor: pointer;
+  }
+}
