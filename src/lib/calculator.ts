@@ -3,6 +3,15 @@
  * Conservative, transparent assumptions tuned for Nigeria.
  */
 
+/** Generate a unique ID with a polyfill-safe fallback */
+export function uid(): string {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    return Math.random().toString(36).slice(2, 11) + Date.now().toString(36);
+  }
+}
+
 export type Appliance = {
   id: string;
   name: string;

@@ -14,7 +14,13 @@ import {
   Zap,
 } from "lucide-react";
 import { lazy, Suspense, useMemo, useState } from "react";
-import { APPLIANCE_PRESETS, calculate, type Appliance, type CalcInput } from "@/lib/calculator";
+import {
+  APPLIANCE_PRESETS,
+  calculate,
+  uid,
+  type Appliance,
+  type CalcInput,
+} from "@/lib/calculator";
 import { formatNGN, formatNumber } from "@/lib/format";
 
 const BarChart = lazy(() =>
@@ -93,7 +99,7 @@ function CalculatorPage() {
     const p = preset ?? APPLIANCE_PRESETS[0];
     setAppliances((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), name: p.name, watts: p.watts, qty: 1, hours: 4 },
+      { id: uid(), name: p.name, watts: p.watts, qty: 1, hours: 4 },
     ]);
   };
 
@@ -193,13 +199,7 @@ function CalculatorPage() {
                   ))}
                   <button
                     type="button"
-                    onClick={() => {
-                      const id = crypto.randomUUID();
-                      setAppliances((prev) => [
-                        ...prev,
-                        { id, name: "Custom appliance", watts: 100, qty: 1, hours: 4 },
-                      ]);
-                    }}
+                    onClick={() => addAppliance({ name: "Custom appliance", watts: 100 })}
                     className="inline-flex items-center gap-1 rounded-full border-2 border-dashed border-primary/40 bg-primary/[0.04] px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
                   >
                     <Wrench className="h-3 w-3" />
