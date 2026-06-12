@@ -10,6 +10,7 @@ import {
   Sun,
   Trash2,
   TrendingDown,
+  Wrench,
   Zap,
 } from "lucide-react";
 import { lazy, Suspense, useMemo, useState } from "react";
@@ -190,6 +191,20 @@ function CalculatorPage() {
                       {p.name}
                     </button>
                   ))}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id = crypto.randomUUID();
+                      setAppliances((prev) => [
+                        ...prev,
+                        { id, name: "Custom appliance", watts: 100, qty: 1, hours: 4 },
+                      ]);
+                    }}
+                    className="inline-flex items-center gap-1 rounded-full border-2 border-dashed border-primary/40 bg-primary/[0.04] px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+                  >
+                    <Wrench className="h-3 w-3" />
+                    Custom
+                  </button>
                 </div>
               </div>
             </div>
@@ -253,6 +268,7 @@ function CalculatorPage() {
 
           {/* Results */}
           <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            {/* ── System Design ── */}
             <div className="rounded-2xl border bg-card p-6 shadow-sm md:p-8">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold uppercase tracking-wider text-primary">
@@ -263,64 +279,93 @@ function CalculatorPage() {
                   Live
                 </span>
               </div>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Based on your {appliances.length} appliance{appliances.length !== 1 ? "s" : ""}{" "}
+                &middot; {sunHours} sun hrs &middot; {autonomyDays}-day autonomy
+              </p>
 
-              <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="mt-5 grid grid-cols-2 gap-3">
                 <ResultCard
                   icon={Zap}
-                  label="Daily energy"
+                  label="Daily energy need"
                   value={`${result.dailyEnergyKWh.toFixed(1)} kWh`}
+                  hint={`${appliances.filter((a) => a.qty > 0).length} active appliances`}
                 />
                 <ResultCard
                   icon={Sun}
                   label="Solar array"
                   value={`${result.panelCountW550} \u00d7 550W`}
+                  hint={`${result.panelArrayKW.toFixed(2)} kW total`}
                 />
-                <ResultCard icon={Cpu} label="Inverter" value={`${result.inverterKVA} kVA`} />
+                <ResultCard
+                  icon={Cpu}
+                  label="Inverter"
+                  value={`${result.inverterKVA} kVA`}
+                  hint="Pure sine wave hybrid"
+                />
                 <ResultCard
                   icon={BatteryCharging}
                   label="Battery bank"
                   value={`${result.batteryCapacityKWh.toFixed(1)} kWh`}
+                  hint={battery === "lithium" ? "LiFePO4" : "Tubular"}
+                />
+              </div>
+            </div>
+
+            {/* ── Cost & ROI ── */}
+            <div className="rounded-2xl border bg-card p-6 shadow-sm md:p-8">
+              <div className="flex items-center gap-2">
+                <TrendingDown className="h-4 w-4 text-primary" />
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Cost &amp; savings
+                </p>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                <div className="col-span-2 rounded-xl border bg-surface p-5">
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Estimated total cost
+                  </p>
+                  <p className="mt-1 text-3xl font-bold tracking-tight text-primary">
+                    {formatNGN(result.estimatedCostNGN)}
+                  </p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Hardware + balance of system + installation
+                  </p>
+                </div>
+                <ImpactBadge
+                  icon={TrendingDown}
+                  label="Payback period"
+                  value={
+                    result.paybackMonths > 0
+                      ? `${result.paybackMonths.toFixed(1)} months`
+                      : "\u2014"
+                  }
+                  hint="vs generator fuel costs"
+                />
+                <ImpactBadge
+                  icon={Leaf}
+                  label="CO\u2082 avoided / yr"
+                  value={`${formatNumber(result.co2SavedKgPerYear)} kg`}
+                  hint="~21 kg per tree"
+                />
+                <ImpactBadge
+                  icon={Zap}
+                  label="Monthly gen savings"
+                  value={formatNGN(result.monthlyGenSavingsNGN)}
+                  hint="Diesel cost avoided"
+                  className="col-span-2 sm:col-span-1"
+                />
+                <ImpactBadge
+                  icon={Sun}
+                  label="Trees equivalent"
+                  value={`${result.treesEquivalent} trees`}
+                  hint="CO\u2082 offset per year"
+                  className="col-span-2 sm:col-span-1"
                 />
               </div>
 
-              <div className="mt-6 rounded-xl border bg-surface p-6">
-                <p className="text-xs font-medium text-muted-foreground">Estimated total cost</p>
-                <p className="mt-1 text-3xl font-bold tracking-tight text-primary">
-                  {formatNGN(result.estimatedCostNGN)}
-                </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  Hardware + balance of system + installation
-                </p>
-
-                <div className="mt-5 grid grid-cols-2 gap-3">
-                  <ImpactBadge
-                    icon={TrendingDown}
-                    label="Payback period"
-                    value={
-                      result.paybackMonths > 0
-                        ? `${result.paybackMonths.toFixed(1)} months`
-                        : "\u2014"
-                    }
-                  />
-                  <ImpactBadge
-                    icon={Leaf}
-                    label="CO\u2082 avoided / yr"
-                    value={`${formatNumber(result.co2SavedKgPerYear)} kg`}
-                  />
-                </div>
-
-                <div className="mt-4 rounded-lg border bg-primary/[0.04] px-4 py-3 text-xs text-foreground/80">
-                  Replaces{" "}
-                  <span className="font-semibold text-primary">
-                    {formatNGN(result.monthlyGenSavingsNGN)}
-                  </span>{" "}
-                  in monthly generator costs &mdash; equivalent to planting{" "}
-                  <span className="font-semibold text-primary">{result.treesEquivalent}</span> trees
-                  a year.
-                </div>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-5 flex flex-wrap gap-3">
                 <Link
                   to="/shop"
                   className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:brightness-110"
@@ -337,7 +382,7 @@ function CalculatorPage() {
               </div>
             </div>
 
-            {/* Spec breakdown */}
+            {/* ── Spec breakdown ── */}
             <div className="rounded-2xl border bg-card p-6 shadow-sm md:p-8">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Specification breakdown
@@ -364,11 +409,18 @@ function CalculatorPage() {
               </dl>
             </div>
 
-            {/* Chart */}
+            {/* ── Chart ── */}
             {chartData.length > 0 && (
               <div className="rounded-2xl border bg-card p-6 shadow-sm md:p-8">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Energy by appliance &middot; kWh / day
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" />
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Energy by appliance &middot; kWh / day
+                  </p>
+                </div>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  Top appliances by daily consumption. Total: {result.dailyEnergyKWh.toFixed(1)}{" "}
+                  kWh/day
                 </p>
                 <div className="mt-4 h-56">
                   <Suspense
@@ -617,10 +669,12 @@ function ResultCard({
   icon: Icon,
   label,
   value,
+  hint,
 }: {
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   label: string;
   value: string;
+  hint?: string;
 }) {
   return (
     <div className="rounded-xl border bg-surface p-4">
@@ -629,6 +683,7 @@ function ResultCard({
         {label}
       </div>
       <p className="mt-1.5 font-mono text-base font-semibold">{value}</p>
+      {hint && <p className="mt-0.5 text-[10px] text-muted-foreground/70">{hint}</p>}
     </div>
   );
 }
@@ -637,19 +692,26 @@ function ImpactBadge({
   icon: Icon,
   label,
   value,
+  hint,
+  className = "",
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
+  hint?: string;
+  className?: string;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border bg-background px-3 py-2">
+    <div
+      className={`flex items-center gap-2.5 rounded-lg border bg-background px-3 py-2.5 ${className}`}
+    >
       <Icon className="h-4 w-4 shrink-0 text-primary" />
       <div className="min-w-0">
         <p className="truncate text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
           {label}
         </p>
         <p className="truncate font-mono text-xs font-semibold">{value}</p>
+        {hint && <p className="truncate text-[9px] text-muted-foreground/70">{hint}</p>}
       </div>
     </div>
   );

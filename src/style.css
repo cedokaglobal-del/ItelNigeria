@@ -232,19 +232,54 @@
 }
 
 /* ── Performance ─────────────────────────────────────── */
+
+/* GPU-accelerated sticky/fixed elements */
+@utility gpu {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
 @layer base {
-  /* Defer offscreen section rendering — polyfill-friendly */
   .lazy-section {
     content-visibility: auto;
     contain-intrinsic-size: 600px;
   }
+  .card-cmp {
+    contain: layout style paint;
+  }
+  .sticky,
+  .fixed {
+    transform: translateZ(0);
+  }
 }
 
-/* Load font-display swap in a performant way */
 @layer base {
   html {
     font-display: swap;
     -webkit-text-size-adjust: 100%;
+  }
+  img {
+    content-visibility: auto;
+  }
+}
+
+/* Hide scrollbar but keep scroll */
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

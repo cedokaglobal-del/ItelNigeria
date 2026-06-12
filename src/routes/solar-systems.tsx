@@ -88,7 +88,7 @@ function SolarSystemsPage() {
               key={sys.slug}
               to="/solar-systems/$slug"
               params={{ slug: sys.slug }}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[var(--shadow-elevated)]"
+              className="card-cmp group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[var(--shadow-elevated)]"
             >
               <div className="relative overflow-hidden">
                 <ImageCarousel

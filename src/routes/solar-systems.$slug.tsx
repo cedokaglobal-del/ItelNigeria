@@ -83,7 +83,7 @@ function SolarSystemDetail() {
   return (
     <div className="pb-20 md:pb-0">
       {/* ── Mobile sticky CTA bar ── */}
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 backdrop-blur-xl md:hidden">
+      <div className="gpu fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 backdrop-blur-xl md:hidden">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
           <div className="min-w-0 flex-1">
             <p className="text-lg font-bold tracking-tight text-primary">

@@ -56,7 +56,7 @@ function Home() {
         <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
         <div className="absolute inset-0 -z-10 energy-grid opacity-60" />
 
-        <div className="container-page grid gap-12 pb-20 pt-16 md:grid-cols-[1.1fr_1fr] md:gap-8 md:pb-28 md:pt-24">
+        <div className="container-page grid gap-12 pb-16 pt-16 md:grid-cols-[1.1fr_1fr] md:gap-8 md:pb-20 md:pt-24">
           <div className="flex flex-col justify-center">
             <span className="mb-5 inline-flex w-fit items-center gap-2 rounded-full border border-hairline bg-background/40 px-3 py-1.5 text-xs text-muted-foreground backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--solar)] animate-pulse-glow" />
@@ -117,32 +117,14 @@ function Home() {
         </div>
       </section>
 
-      {/* TRUST STRIP */}
-      <section className="lazy-section border-y border-hairline bg-surface/40">
-        <div className="container-page grid gap-6 py-8 md:grid-cols-4">
-          <Trust
-            icon={ShieldCheck}
-            title="Tier-1 components only"
-            sub="Every product Itel-certified"
-          />
-          <Trust icon={Truck} title="Nationwide delivery" sub="Free in Lagos · 3–7 days others" />
-          <Trust
-            icon={BatteryCharging}
-            title="10-year battery warranty"
-            sub="LiFePO4 with smart BMS"
-          />
-          <Trust icon={Sun} title="25-year panel warranty" sub="Linear power guarantee" />
-        </div>
-      </section>
+      {/* CATEGORIES — swipeable on mobile, grid on desktop */}
+      <section className="container-page pt-4 pb-6 md:py-10">
+        <p className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--solar)]">
+          Shop by category
+        </p>
 
-      {/* CATEGORIES */}
-      <section className="lazy-section container-page py-20">
-        <SectionHeader
-          eyebrow="Shop by category"
-          title="Everything to engineer your system."
-          subtitle="From single panels to turnkey kits, every component is tested for African conditions."
-        />
-        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {/* Mobile: horizontal swipe */}
+        <div className="mt-3 flex snap-x snap-mandatory overflow-x-auto scrollbar-hide gap-2 pb-2 sm:hidden">
           {CATEGORIES.map((c) => {
             const meta = CATEGORY_META[c.id];
             const Icon = meta.icon;
@@ -150,17 +132,46 @@ function Home() {
               <Link
                 key={c.id}
                 to="/shop"
-                className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+                className="card-cmp group relative w-[95px] shrink-0 snap-start overflow-hidden rounded-xl transition-all active:scale-[0.97]"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${meta.gradient} opacity-90`} />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
-                <div className="relative flex flex-col items-start p-5 min-h-[140px]">
-                  <div className="mb-3 grid h-10 w-10 place-items-center rounded-xl bg-white/20 text-white">
-                    <Icon className="h-5 w-5" />
+                <div className="relative flex flex-col items-center gap-1 px-1.5 py-2.5">
+                  <div className="grid h-6 w-6 place-items-center rounded-lg bg-white/20 text-white">
+                    <Icon className="h-3 w-3" />
                   </div>
-                  <p className="text-sm font-semibold text-white">{c.label}</p>
-                  <p className="mt-0.5 text-xs text-white/70">{c.blurb}</p>
-                  <ArrowRight className="mt-auto h-4 w-4 text-white/50 transition-all group-hover:translate-x-1 group-hover:text-white" />
+                  <span className="text-[9px] font-semibold text-white text-center leading-tight">
+                    {c.label}
+                  </span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Desktop: grid */}
+        <div className="mt-4 hidden sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          {CATEGORIES.map((c) => {
+            const meta = CATEGORY_META[c.id];
+            const Icon = meta.icon;
+            return (
+              <Link
+                key={c.id}
+                to="/shop"
+                className="card-cmp group relative overflow-hidden rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${meta.gradient} opacity-90`} />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
+                <div className="relative flex flex-col items-center gap-1 px-2 py-3 md:gap-1.5 md:px-3 md:py-4">
+                  <div className="grid h-6 w-6 place-items-center rounded-lg bg-white/20 text-white md:h-9 md:w-9">
+                    <Icon className="h-3 w-3 md:h-4 md:w-4" />
+                  </div>
+                  <span className="text-[9px] font-semibold text-white text-center leading-tight md:text-xs">
+                    {c.label}
+                  </span>
+                  <span className="hidden text-[9px] text-white/70 text-center leading-tight md:block">
+                    {c.blurb}
+                  </span>
                 </div>
               </Link>
             );
@@ -169,57 +180,61 @@ function Home() {
       </section>
 
       {/* FEATURED PRODUCTS */}
-      <section className="lazy-section container-page pb-20">
-        <div className="flex items-end justify-between gap-6">
-          <SectionHeader
-            eyebrow="Featured"
-            title="Engineered. Tested. Trusted."
-            subtitle="Best-selling panels, inverters, batteries and kits — picked by our engineers."
-          />
+      <section className="container-page pb-16">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-lg font-semibold tracking-tight md:text-2xl">Featured products</h2>
           <Link
             to="/shop"
-            className="hidden shrink-0 items-center gap-1 rounded-full border border-hairline px-4 py-2 text-xs font-medium hover:bg-accent md:inline-flex"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-hairline px-4 py-2 text-xs font-medium hover:bg-accent"
           >
-            View all
-            <ArrowRight className="h-3.5 w-3.5" />
+            View all <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {featured.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}
         </div>
       </section>
 
+      {/* TRUST STRIP */}
+      <section className="border-y border-hairline bg-surface/40">
+        <div className="container-page grid grid-cols-2 gap-4 py-6 md:grid-cols-4 md:gap-6 md:py-8">
+          <Trust icon={ShieldCheck} title="Tier-1 components" sub="Itel-certified" />
+          <Trust icon={Truck} title="Nationwide delivery" sub="Free in Lagos" />
+          <Trust icon={BatteryCharging} title="10-year battery" sub="Smart BMS" />
+          <Trust icon={Sun} title="25-year panel" sub="Linear warranty" />
+        </div>
+      </section>
+
       {/* CALCULATOR CTA */}
-      <section className="lazy-section container-page pb-24">
-        <div className="surface relative overflow-hidden rounded-3xl p-10 md:p-16">
+      <section className="container-page pb-20 md:pb-24">
+        <div className="surface relative overflow-hidden rounded-3xl p-8 md:p-16">
           <div className="absolute inset-0 opacity-60 energy-grid" />
           <div
             className="absolute right-0 top-0 h-full w-1/2 opacity-70"
             style={{ background: "var(--gradient-hero)" }}
           />
-          <div className="relative grid gap-10 md:grid-cols-2 md:items-center">
+          <div className="relative grid gap-6 md:grid-cols-2 md:items-center md:gap-10">
             <div>
               <p className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--solar)]">
                 The Itel calculator
               </p>
-              <h2 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-5xl">
                 Don't guess your system size.
               </h2>
-              <p className="mt-4 max-w-md text-muted-foreground">
-                Tell us what you run. We'll size your panels, inverter and battery, estimate cost,
-                payback period and CO₂ savings — in under 60 seconds.
+              <p className="mt-3 max-w-md text-sm text-muted-foreground md:mt-4">
+                Size your panels, inverter and battery, estimate cost and payback in under 60s.
               </p>
               <Link
                 to="/calculator"
-                className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-red)] transition-transform hover:scale-[1.02]"
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-glow-red)] transition-transform hover:scale-[1.02]"
               >
                 Start the calculator
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
-            <div className="grid gap-3">
+            <div className="grid gap-2 md:gap-3">
               <CalcStat label="Daily energy" value="14.6 kWh" tone="solar" />
               <CalcStat label="Recommended array" value="6 × 550W = 3.3 kW" tone="solar" />
               <CalcStat label="Battery bank" value="10.2 kWh LiFePO4" tone="tech" />
@@ -251,32 +266,14 @@ function Trust({
   sub: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-accent">
-        <Icon className="h-4 w-4 text-[var(--solar)]" />
+    <div className="flex items-center gap-2.5 md:items-start md:gap-3">
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-accent md:h-9 md:w-9">
+        <Icon className="h-3.5 w-3.5 text-[var(--solar)] md:h-4 md:w-4" />
       </span>
       <div>
-        <p className="text-sm font-semibold">{title}</p>
-        <p className="text-xs text-muted-foreground">{sub}</p>
+        <p className="text-xs font-semibold md:text-sm">{title}</p>
+        <p className="text-[10px] text-muted-foreground md:text-xs">{sub}</p>
       </div>
-    </div>
-  );
-}
-
-function SectionHeader({
-  eyebrow,
-  title,
-  subtitle,
-}: {
-  eyebrow: string;
-  title: string;
-  subtitle?: string;
-}) {
-  return (
-    <div className="max-w-2xl">
-      <p className="text-xs font-mono uppercase tracking-[0.2em] text-[var(--solar)]">{eyebrow}</p>
-      <h2 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">{title}</h2>
-      {subtitle && <p className="mt-3 text-muted-foreground">{subtitle}</p>}
     </div>
   );
 }
@@ -291,10 +288,12 @@ function CalcStat({
   tone: "solar" | "tech";
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-hairline bg-background/50 px-5 py-4 backdrop-blur">
-      <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">{label}</span>
+    <div className="flex items-center justify-between rounded-xl border border-hairline bg-background/50 px-4 py-3 backdrop-blur md:px-5 md:py-4">
+      <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground md:text-xs">
+        {label}
+      </span>
       <span
-        className="font-mono text-sm font-semibold"
+        className="font-mono text-xs font-semibold md:text-sm"
         style={{ color: tone === "solar" ? "var(--solar)" : "var(--tech)" }}
       >
         {value}
