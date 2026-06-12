@@ -1,8 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BatteryCharging, Calculator, ShieldCheck, Sun, Truck, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  BatteryCharging,
+  Calculator,
+  Cpu,
+  Package,
+  ShieldCheck,
+  Sun,
+  Truck,
+  Wrench,
+  Zap,
+} from "lucide-react";
 import { EnergyFlow } from "@/components/site/EnergyFlow";
 import { ProductCard } from "@/components/site/ProductCard";
-import { PRODUCTS, CATEGORIES } from "@/lib/products";
+import { PRODUCTS, CATEGORIES, type ProductCategory } from "@/lib/products";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,6 +34,18 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+const CATEGORY_META: Record<
+  ProductCategory,
+  { gradient: string; icon: React.ComponentType<{ className?: string }> }
+> = {
+  panels: { gradient: "from-teal-600 to-emerald-500", icon: Sun },
+  inverters: { gradient: "from-blue-600 to-indigo-500", icon: Cpu },
+  batteries: { gradient: "from-violet-600 to-purple-500", icon: BatteryCharging },
+  controllers: { gradient: "from-amber-600 to-orange-500", icon: Zap },
+  kits: { gradient: "from-orange-600 to-red-500", icon: Package },
+  accessories: { gradient: "from-slate-600 to-gray-500", icon: Wrench },
+};
+
 function Home() {
   const featured = PRODUCTS.filter((p) => p.badge).slice(0, 4);
 
@@ -30,10 +53,7 @@ function Home() {
     <div>
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div
-          className="absolute inset-0 -z-10"
-          style={{ background: "var(--gradient-hero)" }}
-        />
+        <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
         <div className="absolute inset-0 -z-10 energy-grid opacity-60" />
 
         <div className="container-page grid gap-12 pb-20 pt-16 md:grid-cols-[1.1fr_1fr] md:gap-8 md:pb-28 md:pt-24">
@@ -100,9 +120,17 @@ function Home() {
       {/* TRUST STRIP */}
       <section className="lazy-section border-y border-hairline bg-surface/40">
         <div className="container-page grid gap-6 py-8 md:grid-cols-4">
-          <Trust icon={ShieldCheck} title="Tier-1 components only" sub="Every product Itel-certified" />
+          <Trust
+            icon={ShieldCheck}
+            title="Tier-1 components only"
+            sub="Every product Itel-certified"
+          />
           <Trust icon={Truck} title="Nationwide delivery" sub="Free in Lagos · 3–7 days others" />
-          <Trust icon={BatteryCharging} title="10-year battery warranty" sub="LiFePO4 with smart BMS" />
+          <Trust
+            icon={BatteryCharging}
+            title="10-year battery warranty"
+            sub="LiFePO4 with smart BMS"
+          />
           <Trust icon={Sun} title="25-year panel warranty" sub="Linear power guarantee" />
         </div>
       </section>
@@ -114,21 +142,29 @@ function Home() {
           title="Everything to engineer your system."
           subtitle="From single panels to turnkey kits, every component is tested for African conditions."
         />
-        <div className="mt-10 grid gap-3 md:grid-cols-3 lg:grid-cols-6">
-          {CATEGORIES.map((c) => (
-            <Link
-              key={c.id}
-              to="/shop"
-              className="group surface rounded-2xl p-5 transition-all hover:border-white/20 hover:bg-surface-2"
-            >
-              <div className="mb-8 grid h-10 w-10 place-items-center rounded-lg bg-[var(--gradient-red)] text-primary-foreground">
-                <Sun className="h-4 w-4" />
-              </div>
-              <p className="text-sm font-semibold">{c.label}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{c.blurb}</p>
-              <ArrowRight className="mt-4 h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground" />
-            </Link>
-          ))}
+        <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {CATEGORIES.map((c) => {
+            const meta = CATEGORY_META[c.id];
+            const Icon = meta.icon;
+            return (
+              <Link
+                key={c.id}
+                to="/shop"
+                className="group relative overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${meta.gradient} opacity-90`} />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_60%)]" />
+                <div className="relative flex flex-col items-start p-5 min-h-[140px]">
+                  <div className="mb-3 grid h-10 w-10 place-items-center rounded-xl bg-white/20 text-white">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <p className="text-sm font-semibold text-white">{c.label}</p>
+                  <p className="mt-0.5 text-xs text-white/70">{c.blurb}</p>
+                  <ArrowRight className="mt-auto h-4 w-4 text-white/50 transition-all group-hover:translate-x-1 group-hover:text-white" />
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 

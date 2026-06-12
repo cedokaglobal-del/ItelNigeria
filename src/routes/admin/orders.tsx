@@ -8,7 +8,8 @@ import { Check, ChevronDown, Search } from "lucide-react";
 
 export const Route = createFileRoute("/admin/orders")({
   beforeLoad: () => {
-    if (typeof window !== "undefined" && !isAdminAuthenticated()) throw redirect({ to: "/admin/login" });
+    if (typeof window !== "undefined" && !isAdminAuthenticated())
+      throw redirect({ to: "/admin/login" });
   },
   head: () => ({ meta: [{ title: "Orders — Itel Admin" }] }),
   component: AdminOrders,
@@ -28,7 +29,12 @@ function AdminOrders() {
     if (statusFilter !== "all") list = list.filter((o) => o.status === statusFilter);
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter((o) => o.id.toLowerCase().includes(q) || o.customer.name.toLowerCase().includes(q) || o.customer.email.toLowerCase().includes(q));
+      list = list.filter(
+        (o) =>
+          o.id.toLowerCase().includes(q) ||
+          o.customer.name.toLowerCase().includes(q) ||
+          o.customer.email.toLowerCase().includes(q),
+      );
     }
     return [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [orders, search, statusFilter]);
@@ -92,14 +98,19 @@ function AdminOrders() {
                       <p className="truncate text-xs text-muted-foreground">{o.customer.email}</p>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-right font-mono text-xs font-semibold md:px-6">{formatNGN(o.total)}</td>
+                  <td className="px-4 py-3 text-right font-mono text-xs font-semibold md:px-6">
+                    {formatNGN(o.total)}
+                  </td>
                   <td className="px-4 py-3 text-center md:px-6">
                     <div className="relative inline-block">
                       <button
                         type="button"
                         onClick={() => setOpenDropdown(openDropdown === o.id ? null : o.id)}
                         className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-medium capitalize transition-all hover:opacity-80"
-                        style={{ background: `color-mix(in oklab, ${statusColor(o.status)} 15%, transparent)`, color: statusColor(o.status) }}
+                        style={{
+                          background: `color-mix(in oklab, ${statusColor(o.status)} 15%, transparent)`,
+                          color: statusColor(o.status),
+                        }}
                       >
                         {statusLabel(o.status)}
                         <ChevronDown className="h-3 w-3" />
@@ -110,12 +121,18 @@ function AdminOrders() {
                             <button
                               key={s}
                               type="button"
-                              onClick={() => { updateStatus(o.id, s); setOpenDropdown(null); }}
+                              onClick={() => {
+                                updateStatus(o.id, s);
+                                setOpenDropdown(null);
+                              }}
                               className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium capitalize transition-colors hover:bg-surface ${
                                 s === o.status ? "text-foreground" : "text-muted-foreground"
                               }`}
                             >
-                              <span className="h-2 w-2 rounded-full" style={{ background: statusColor(s) }} />
+                              <span
+                                className="h-2 w-2 rounded-full"
+                                style={{ background: statusColor(s) }}
+                              />
                               {statusLabel(s)}
                               {s === o.status && <Check className="ml-auto h-3 w-3" />}
                             </button>
@@ -124,12 +141,23 @@ function AdminOrders() {
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-right text-xs capitalize text-muted-foreground md:px-6">{o.payment}</td>
-                  <td className="px-4 py-3 text-right text-xs text-muted-foreground md:px-6">{new Date(o.date).toLocaleDateString("en-NG", { day: "numeric", month: "short" })}</td>
+                  <td className="px-4 py-3 text-right text-xs capitalize text-muted-foreground md:px-6">
+                    {o.payment}
+                  </td>
+                  <td className="px-4 py-3 text-right text-xs text-muted-foreground md:px-6">
+                    {new Date(o.date).toLocaleDateString("en-NG", {
+                      day: "numeric",
+                      month: "short",
+                    })}
+                  </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={6} className="px-6 py-12 text-center text-sm text-muted-foreground">No orders match your filter.</td></tr>
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-sm text-muted-foreground">
+                    No orders match your filter.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

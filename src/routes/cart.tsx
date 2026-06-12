@@ -56,10 +56,7 @@ function CartPage() {
       <div className="mt-8 grid gap-8 lg:grid-cols-[1.5fr_1fr]">
         <ul className="space-y-3">
           {detailed.map(({ product, qty, lineTotal }) => (
-            <li
-              key={product.slug}
-              className="surface flex items-center gap-4 rounded-2xl p-4"
-            >
+            <li key={product.slug} className="surface flex items-center gap-4 rounded-2xl p-4">
               <Link
                 to="/products/$slug"
                 params={{ slug: product.slug }}
@@ -135,7 +132,9 @@ function CartPage() {
                 <dt className="text-sm font-semibold">Total</dt>
                 <dd className="font-mono text-xl font-semibold">{formatNGN(total)}</dd>
               </div>
-              <p className="mt-1 text-[11px] text-muted-foreground">VAT included where applicable</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                VAT included where applicable
+              </p>
             </div>
           </dl>
 

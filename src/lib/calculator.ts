@@ -15,7 +15,7 @@ export const APPLIANCE_PRESETS: Omit<Appliance, "id" | "qty" | "hours">[] = [
   { name: "LED bulb", watts: 10 },
   { name: "Ceiling fan", watts: 75 },
   { name: "Standing fan", watts: 60 },
-  { name: "TV (LED 43\")", watts: 100 },
+  { name: 'TV (LED 43")', watts: 100 },
   { name: "Decoder", watts: 25 },
   { name: "Laptop", watts: 65 },
   { name: "Refrigerator", watts: 150 },
@@ -78,51 +78,37 @@ const GEN_COST_PER_KWH = 850;
 export function calculate(input: CalcInput): CalcResult {
   const { appliances, sunHours, autonomyDays, battery, systemVoltage } = input;
 
-  const dailyEnergyWh = appliances.reduce(
-    (s, a) => s + a.watts * a.qty * a.hours,
-    0,
-  );
+  const dailyEnergyWh = appliances.reduce((s, a) => s + a.watts * a.qty * a.hours, 0);
   const dailyEnergyKWh = dailyEnergyWh / 1000;
   const peakLoadW = appliances.reduce((s, a) => s + a.watts * a.qty, 0);
 
   // Panel array sizing accounting for inverter & battery losses + derate
-  const requiredSolarKWh =
-    dailyEnergyKWh / (INVERTER_EFF * BATTERY_EFF * PANEL_DERATE);
+  const requiredSolarKWh = dailyEnergyKWh / (INVERTER_EFF * BATTERY_EFF * PANEL_DERATE);
   const panelArrayKW = sunHours > 0 ? requiredSolarKWh / sunHours : 0;
   const panelCountW550 = Math.max(1, Math.ceil((panelArrayKW * 1000) / PANEL_W));
 
   // Inverter: 1.25x peak load, rounded up to nearest 1kVA
-  const inverterKVA = Math.max(
-    1,
-    Math.ceil(((peakLoadW / 1000) * 1.25) / 1) * 1,
-  );
+  const inverterKVA = Math.max(1, Math.ceil(((peakLoadW / 1000) * 1.25) / 1) * 1);
 
   // Battery: cover autonomyDays of load, factoring DoD + inverter eff
   const dod = battery === "lithium" ? LITHIUM_DOD : TUBULAR_DOD;
-  const batteryCapacityKWh =
-    (dailyEnergyKWh * autonomyDays) / (dod * INVERTER_EFF);
+  const batteryCapacityKWh = (dailyEnergyKWh * autonomyDays) / (dod * INVERTER_EFF);
 
   // Controller current
-  const controllerAmps = Math.ceil(
-    (panelCountW550 * PANEL_W) / systemVoltage / 0.9,
-  );
+  const controllerAmps = Math.ceil((panelCountW550 * PANEL_W) / systemVoltage / 0.9);
 
   // Costs
   const panelsCost = panelCountW550 * PANEL_COST;
   const batteryCost =
-    batteryCapacityKWh *
-    (battery === "lithium" ? LITHIUM_COST_PER_KWH : TUBULAR_COST_PER_KWH);
+    batteryCapacityKWh * (battery === "lithium" ? LITHIUM_COST_PER_KWH : TUBULAR_COST_PER_KWH);
   const inverterCost = inverterKVA * INVERTER_COST_PER_KVA;
   const controllerCost = controllerAmps * CONTROLLER_COST_PER_AMP;
   const hardware = panelsCost + batteryCost + inverterCost + controllerCost;
   const estimatedCostNGN = Math.round(hardware * (1 + BOS_FACTOR));
 
   // ROI vs generator
-  const monthlyGenSavingsNGN = Math.round(
-    dailyEnergyKWh * 30 * GEN_COST_PER_KWH,
-  );
-  const paybackMonths =
-    monthlyGenSavingsNGN > 0 ? estimatedCostNGN / monthlyGenSavingsNGN : 0;
+  const monthlyGenSavingsNGN = Math.round(dailyEnergyKWh * 30 * GEN_COST_PER_KWH);
+  const paybackMonths = monthlyGenSavingsNGN > 0 ? estimatedCostNGN / monthlyGenSavingsNGN : 0;
 
   // Environmental impact (0.7 kg CO2 per kWh avoided from diesel/grid)
   const co2SavedKgPerYear = Math.round(dailyEnergyKWh * 365 * 0.7);
@@ -131,7 +117,11 @@ export function calculate(input: CalcInput): CalcResult {
   const breakdown: CalcResult["breakdown"] = [
     { label: "Daily energy need", value: `${dailyEnergyKWh.toFixed(1)} kWh`, tone: "solar" },
     { label: "Peak load", value: `${(peakLoadW / 1000).toFixed(2)} kW` },
-    { label: "Solar array", value: `${panelCountW550} × 550W = ${(panelCountW550 * PANEL_W / 1000).toFixed(2)} kW`, tone: "solar" },
+    {
+      label: "Solar array",
+      value: `${panelCountW550} × 550W = ${((panelCountW550 * PANEL_W) / 1000).toFixed(2)} kW`,
+      tone: "solar",
+    },
     { label: "Inverter", value: `${inverterKVA} kVA hybrid` },
     {
       label: "Battery bank",
@@ -146,7 +136,7 @@ export function calculate(input: CalcInput): CalcResult {
     dailyEnergyKWh,
     peakLoadW,
     panelCountW550,
-    panelArrayKW: panelCountW550 * PANEL_W / 1000,
+    panelArrayKW: (panelCountW550 * PANEL_W) / 1000,
     inverterKVA,
     batteryCapacityKWh,
     controllerAmps,

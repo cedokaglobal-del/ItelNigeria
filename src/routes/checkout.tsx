@@ -79,7 +79,13 @@ function CheckoutPage() {
         <div className="space-y-6">
           <Section title="Contact">
             <Field label="Full name" name="name" placeholder="Jane Doe" required />
-            <Field label="Email" name="email" type="email" placeholder="jane@example.com" required />
+            <Field
+              label="Email"
+              name="email"
+              type="email"
+              placeholder="jane@example.com"
+              required
+            />
             <Field label="Phone" name="phone" type="tel" placeholder="+234 800 000 0000" required />
           </Section>
 
@@ -124,7 +130,10 @@ function CheckoutPage() {
           </h2>
           <ul className="mt-5 divide-y divide-hairline">
             {detailed.map((d) => (
-              <li key={d.product.slug} className="flex items-center justify-between gap-3 py-3 text-sm">
+              <li
+                key={d.product.slug}
+                className="flex items-center justify-between gap-3 py-3 text-sm"
+              >
                 <div className="min-w-0">
                   <p className="truncate font-medium">{d.product.name}</p>
                   <p className="text-xs text-muted-foreground">

@@ -8,7 +8,11 @@ const PAGES = [
   { loc: "/solar-systems", priority: "0.9", changefreq: "daily" },
   { loc: "/cart", priority: "0.5", changefreq: "monthly" },
   { loc: "/checkout", priority: "0.5", changefreq: "monthly" },
-  ...PRODUCTS.map((p) => ({ loc: `/products/${p.slug}` as const, priority: "0.7", changefreq: "weekly" as const })),
+  ...PRODUCTS.map((p) => ({
+    loc: `/products/${p.slug}` as const,
+    priority: "0.7",
+    changefreq: "weekly" as const,
+  })),
 ];
 
 export const Route = createFileRoute("/sitemap/xml")({

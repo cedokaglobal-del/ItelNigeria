@@ -53,7 +53,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      { /* Mobile header */ }
+      {/* Mobile header */}
       <div className="flex flex-1 flex-col">
         <header className="sticky top-0 z-40 border-b bg-card/80 backdrop-blur lg:hidden">
           <div className="flex h-14 items-center justify-between px-4">
@@ -67,9 +67,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8">
-          {children}
-        </main>
+        <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

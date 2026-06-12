@@ -14,10 +14,6 @@ export default defineConfig({
   css: { transformer: "lightningcss" },
   resolve: {
     alias: { "@": `${process.cwd()}/src` },
-    dedupe: [
-      "react",
-      "react-dom",
-      "@tanstack/react-query",
-    ],
+    dedupe: ["react", "react-dom", "@tanstack/react-query"],
   },
 });

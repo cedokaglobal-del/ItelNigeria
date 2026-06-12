@@ -194,16 +194,21 @@ function seedImages(slug: string): string[] {
 }
 
 export function generateDescription(system: SolarSystem): string {
-  const arrayKw = (system.totalPanels * system.panelWattage / 1000).toFixed(2);
-  const dailyKwh = (system.totalPanels * system.panelWattage * 5.5 / 1000).toFixed(1);
+  const arrayKw = ((system.totalPanels * system.panelWattage) / 1000).toFixed(2);
+  const dailyKwh = ((system.totalPanels * system.panelWattage * 5.5) / 1000).toFixed(1);
   const monthlyKwh = (Number(dailyKwh) * 30).toFixed(0);
-  const panelDesc = system.totalPanels >= 10 ? "high-efficiency N-type bifacial panels that capture light from both sides for maximum yield" : `premium ${system.panelWattage}W monocrystalline PERC panels with anti-reflective coating`;
-  const batteryDesc = system.batteryCapacityKWh >= 10
-    ? `${system.batteryCapacityKWh}kWh ${system.batteryType} battery bank delivers whole-home or business-grade energy reserve, supporting ${system.batteryCapacityKWh >= 15 ? "heavy loads like borehole pumps, multiple air conditioners, and commercial kitchen equipment" : "multiple air conditioners, kitchen appliances, and home entertainment systems"} through extended grid outages`
-    : `${system.batteryCapacityKWh}kWh ${system.batteryType} battery provides enough stored energy to run your essential loads — lights, fans, TVs, refrigerator, and internet — through any outage`;
-  const inverterDesc = system.inverterKVA >= 10
-    ? `The ${system.inverterKVA}kVA hybrid inverter features ${system.inverterKVA >= 15 ? "triple MPPT" : "dual MPPT"} charge controllers, allowing it to harvest maximum power from ${system.totalPanels} panels even with ${system.totalPanels >= 10 ? "multiple roof orientations" : "mixed morning and afternoon sun"}`
-    : `The ${system.inverterKVA}kVA pure sine wave hybrid inverter intelligently switches between solar, battery, and grid power — ensuring uninterrupted supply while prioritising solar to minimise your electricity bill`;
+  const panelDesc =
+    system.totalPanels >= 10
+      ? "high-efficiency N-type bifacial panels that capture light from both sides for maximum yield"
+      : `premium ${system.panelWattage}W monocrystalline PERC panels with anti-reflective coating`;
+  const batteryDesc =
+    system.batteryCapacityKWh >= 10
+      ? `${system.batteryCapacityKWh}kWh ${system.batteryType} battery bank delivers whole-home or business-grade energy reserve, supporting ${system.batteryCapacityKWh >= 15 ? "heavy loads like borehole pumps, multiple air conditioners, and commercial kitchen equipment" : "multiple air conditioners, kitchen appliances, and home entertainment systems"} through extended grid outages`
+      : `${system.batteryCapacityKWh}kWh ${system.batteryType} battery provides enough stored energy to run your essential loads — lights, fans, TVs, refrigerator, and internet — through any outage`;
+  const inverterDesc =
+    system.inverterKVA >= 10
+      ? `The ${system.inverterKVA}kVA hybrid inverter features ${system.inverterKVA >= 15 ? "triple MPPT" : "dual MPPT"} charge controllers, allowing it to harvest maximum power from ${system.totalPanels} panels even with ${system.totalPanels >= 10 ? "multiple roof orientations" : "mixed morning and afternoon sun"}`
+      : `The ${system.inverterKVA}kVA pure sine wave hybrid inverter intelligently switches between solar, battery, and grid power — ensuring uninterrupted supply while prioritising solar to minimise your electricity bill`;
 
   const t = [
     `The <strong>${system.name}</strong> is a complete ${system.voltage} solar energy system engineered for Nigerian homes and businesses. It combines ${system.totalPanels} × ${system.panelWattage}W ${panelDesc} with a ${system.inverterKVA}kVA pure sine wave hybrid inverter and a ${system.batteryCapacityKWh}kWh ${system.batteryType} battery bank — delivering a total solar array capacity of <strong>${arrayKw}kW</strong>.`,
@@ -218,7 +223,8 @@ function seedSolarSystems(): SolarSystem[] {
     {
       slug: "solar-starter-3kva",
       name: "Itel Essential Home 3kVA",
-      tagline: "Backup for lights, fans, TV, and router — keeps your essentials running through any outage.",
+      tagline:
+        "Backup for lights, fans, TV, and router — keeps your essentials running through any outage.",
       images: seedImages("solar-starter-3kva"),
       badge: "Best for homes",
       rating: 4.9,
@@ -230,11 +236,22 @@ function seedSolarSystems(): SolarSystem[] {
       batteryCapacityKWh: 5.12,
       batteryType: "LiFePO4",
       price: 2850000,
-      whatItPowers: "8 LED bulbs (8 hrs), 2 ceiling fans (8 hrs), 43\" LED TV (6 hrs), decoder (6 hrs), WiFi router (24 hrs), refrigerator (24 hrs), 2 phones/laptops (4 hrs). Total daily load: ~4.8 kWh",
+      whatItPowers:
+        '8 LED bulbs (8 hrs), 2 ceiling fans (8 hrs), 43" LED TV (6 hrs), decoder (6 hrs), WiFi router (24 hrs), refrigerator (24 hrs), 2 phones/laptops (4 hrs). Total daily load: ~4.8 kWh',
       components: [
         { type: "panel", name: "Itel Mono PERC 550W", spec: "550W / Mono PERC", qty: 4 },
-        { type: "inverter", name: "Itel Hybrid Inverter 3kVA", spec: "3kVA / 24V / 60A MPPT", qty: 1 },
-        { type: "battery", name: "Itel LiFePO4 5.12kWh", spec: "5.12kWh / 48V / Wall-Mount", qty: 1 },
+        {
+          type: "inverter",
+          name: "Itel Hybrid Inverter 3kVA",
+          spec: "3kVA / 24V / 60A MPPT",
+          qty: 1,
+        },
+        {
+          type: "battery",
+          name: "Itel LiFePO4 5.12kWh",
+          spec: "5.12kWh / 48V / Wall-Mount",
+          qty: 1,
+        },
         { type: "accessory", name: "DC Isolator Switch 32A", spec: "32A / IP65", qty: 1 },
         { type: "accessory", name: "PV Combiner Box 4-String", spec: "4-string / 1000V", qty: 1 },
       ],
@@ -270,14 +287,30 @@ function seedSolarSystems(): SolarSystem[] {
       batteryCapacityKWh: 10.24,
       batteryType: "LiFePO4",
       price: 5200000,
-      whatItPowers: "12 LED bulbs (8 hrs), 3 ceiling fans (10 hrs), 55\" LED TV (8 hrs), decoder (8 hrs), WiFi router (24 hrs), refrigerator (24 hrs), 1HP air conditioner (6 hrs), microwave (30 min/day), washing machine (2 hrs/day), 3 laptops (6 hrs). Total daily load: ~9.2 kWh",
+      whatItPowers:
+        '12 LED bulbs (8 hrs), 3 ceiling fans (10 hrs), 55" LED TV (8 hrs), decoder (8 hrs), WiFi router (24 hrs), refrigerator (24 hrs), 1HP air conditioner (6 hrs), microwave (30 min/day), washing machine (2 hrs/day), 3 laptops (6 hrs). Total daily load: ~9.2 kWh',
       components: [
         { type: "panel", name: "Itel Mono PERC 550W", spec: "550W / Mono PERC", qty: 6 },
-        { type: "inverter", name: "Itel Hybrid Inverter 5kVA", spec: "5kVA / 48V / 80A MPPT", qty: 1 },
-        { type: "battery", name: "Itel LiFePO4 5.12kWh", spec: "5.12kWh / 48V / Wall-Mount", qty: 2 },
+        {
+          type: "inverter",
+          name: "Itel Hybrid Inverter 5kVA",
+          spec: "5kVA / 48V / 80A MPPT",
+          qty: 1,
+        },
+        {
+          type: "battery",
+          name: "Itel LiFePO4 5.12kWh",
+          spec: "5.12kWh / 48V / Wall-Mount",
+          qty: 2,
+        },
         { type: "accessory", name: "DC Isolator Switch 63A", spec: "63A / IP65", qty: 1 },
         { type: "accessory", name: "PV Combiner Box 6-String", spec: "6-string / 1000V", qty: 1 },
-        { type: "accessory", name: "Surge Protection Device", spec: "40kA / Type 2 / DC+AC", qty: 2 },
+        {
+          type: "accessory",
+          name: "Surge Protection Device",
+          spec: "40kA / Type 2 / DC+AC",
+          qty: 2,
+        },
       ],
       installationAccessories: [
         "Roof mount rails (set of 6) — aluminum, corrosion-resistant",
@@ -312,15 +345,36 @@ function seedSolarSystems(): SolarSystem[] {
       batteryCapacityKWh: 15.36,
       batteryType: "LiFePO4",
       price: 8950000,
-      whatItPowers: "20 LED bulbs (10 hrs), 6 ceiling fans (10 hrs), 2 × 55\" TVs (10 hrs), CCTV system (24 hrs), WiFi + router (24 hrs), 2 refrigerators (24 hrs), 1.5HP AC (8 hrs), 1HP AC (6 hrs), microwave (1 hr/day), water dispenser (24 hrs), 4 laptops (8 hrs), printer (2 hrs), POS system (12 hrs). Total daily load: ~18.5 kWh",
+      whatItPowers:
+        '20 LED bulbs (10 hrs), 6 ceiling fans (10 hrs), 2 × 55" TVs (10 hrs), CCTV system (24 hrs), WiFi + router (24 hrs), 2 refrigerators (24 hrs), 1.5HP AC (8 hrs), 1HP AC (6 hrs), microwave (1 hr/day), water dispenser (24 hrs), 4 laptops (8 hrs), printer (2 hrs), POS system (12 hrs). Total daily load: ~18.5 kWh',
       components: [
         { type: "panel", name: "Itel Mono PERC 550W", spec: "550W / Mono PERC", qty: 8 },
-        { type: "inverter", name: "Itel Hybrid Inverter 10kVA", spec: "10kVA / 48V / Dual MPPT", qty: 1 },
-        { type: "battery", name: "Itel LiFePO4 5.12kWh", spec: "5.12kWh / 48V / Wall-Mount", qty: 3 },
+        {
+          type: "inverter",
+          name: "Itel Hybrid Inverter 10kVA",
+          spec: "10kVA / 48V / Dual MPPT",
+          qty: 1,
+        },
+        {
+          type: "battery",
+          name: "Itel LiFePO4 5.12kWh",
+          spec: "5.12kWh / 48V / Wall-Mount",
+          qty: 3,
+        },
         { type: "accessory", name: "DC Isolator Switch 100A", spec: "100A / IP65", qty: 1 },
         { type: "accessory", name: "PV Combiner Box 8-String", spec: "8-string / 1000V", qty: 1 },
-        { type: "accessory", name: "Surge Protection Device", spec: "40kA / Type 2 / DC+AC", qty: 2 },
-        { type: "accessory", name: "Energy Meter (MID Certified)", spec: "3-phase / RS485", qty: 1 },
+        {
+          type: "accessory",
+          name: "Surge Protection Device",
+          spec: "40kA / Type 2 / DC+AC",
+          qty: 2,
+        },
+        {
+          type: "accessory",
+          name: "Energy Meter (MID Certified)",
+          spec: "3-phase / RS485",
+          qty: 1,
+        },
       ],
       installationAccessories: [
         "Roof mount rails (set of 8) — heavy-duty aluminum",
@@ -356,16 +410,52 @@ function seedSolarSystems(): SolarSystem[] {
       batteryCapacityKWh: 20.48,
       batteryType: "LiFePO4",
       price: 15800000,
-      whatItPowers: "30 LED bulbs (12 hrs), 8 ceiling fans (12 hrs), 3 × 65\" TVs (10 hrs), CCTV (24 hrs), whole-home WiFi mesh (24 hrs), 2 refrigerators (24 hrs), freezer (24 hrs), 1.5HP AC (10 hrs), 2 × 1HP AC (8 hrs), borehole pump 1HP (2 hrs/day), microwave (1 hr), oven (1 hr), washing machine (3 hrs), 6 laptops (8 hrs), home theatre (4 hrs), workshop tools (3 hrs). Total daily load: ~32 kWh",
+      whatItPowers:
+        '30 LED bulbs (12 hrs), 8 ceiling fans (12 hrs), 3 × 65" TVs (10 hrs), CCTV (24 hrs), whole-home WiFi mesh (24 hrs), 2 refrigerators (24 hrs), freezer (24 hrs), 1.5HP AC (10 hrs), 2 × 1HP AC (8 hrs), borehole pump 1HP (2 hrs/day), microwave (1 hr), oven (1 hr), washing machine (3 hrs), 6 laptops (8 hrs), home theatre (4 hrs), workshop tools (3 hrs). Total daily load: ~32 kWh',
       components: [
-        { type: "panel", name: "Itel N-Type Bifacial 600W", spec: "600W / Bifacial / N-Type", qty: 12 },
-        { type: "inverter", name: "Itel Hybrid Inverter 15kVA", spec: "15kVA / 48V / Triple MPPT", qty: 1 },
-        { type: "battery", name: "Itel LiFePO4 5.12kWh", spec: "5.12kWh / 48V / Wall-Mount", qty: 4 },
+        {
+          type: "panel",
+          name: "Itel N-Type Bifacial 600W",
+          spec: "600W / Bifacial / N-Type",
+          qty: 12,
+        },
+        {
+          type: "inverter",
+          name: "Itel Hybrid Inverter 15kVA",
+          spec: "15kVA / 48V / Triple MPPT",
+          qty: 1,
+        },
+        {
+          type: "battery",
+          name: "Itel LiFePO4 5.12kWh",
+          spec: "5.12kWh / 48V / Wall-Mount",
+          qty: 4,
+        },
         { type: "accessory", name: "DC Isolator Switch 160A", spec: "160A / IP65", qty: 1 },
-        { type: "accessory", name: "PV Combiner Box 12-String", spec: "12-string / 1000V / With SPD", qty: 1 },
-        { type: "accessory", name: "Surge Protection Device", spec: "40kA / Type 2 / DC+AC", qty: 2 },
-        { type: "accessory", name: "Energy Meter (MID Certified)", spec: "3-phase / RS485 / Bi-directional", qty: 1 },
-        { type: "accessory", name: "Remote Monitoring Gateway", spec: "4G / WiFi / Ethernet", qty: 1 },
+        {
+          type: "accessory",
+          name: "PV Combiner Box 12-String",
+          spec: "12-string / 1000V / With SPD",
+          qty: 1,
+        },
+        {
+          type: "accessory",
+          name: "Surge Protection Device",
+          spec: "40kA / Type 2 / DC+AC",
+          qty: 2,
+        },
+        {
+          type: "accessory",
+          name: "Energy Meter (MID Certified)",
+          spec: "3-phase / RS485 / Bi-directional",
+          qty: 1,
+        },
+        {
+          type: "accessory",
+          name: "Remote Monitoring Gateway",
+          spec: "4G / WiFi / Ethernet",
+          qty: 1,
+        },
       ],
       installationAccessories: [
         "Roof mount rails (set of 12) — heavy-duty galvanized steel",
@@ -401,7 +491,12 @@ function migrateSystem(s: SolarSystem): SolarSystem {
   };
 }
 
-export function useSolarSystems(): [SolarSystem[], (slug: string, price: number) => void, (system: SolarSystem) => void, (slug: string) => void] {
+export function useSolarSystems(): [
+  SolarSystem[],
+  (slug: string, price: number) => void,
+  (system: SolarSystem) => void,
+  (slug: string) => void,
+] {
   const [systems, setSystems] = useState<SolarSystem[]>(() => {
     if (typeof window === "undefined") return seedSolarSystems();
     try {
@@ -410,12 +505,18 @@ export function useSolarSystems(): [SolarSystem[], (slug: string, price: number)
         const parsed = JSON.parse(raw) as SolarSystem[];
         if (Array.isArray(parsed)) return parsed.map(migrateSystem);
       }
-    } catch { console.warn("SolarSystems: failed to parse saved data"); }
+    } catch {
+      console.warn("SolarSystems: failed to parse saved data");
+    }
     return seedSolarSystems();
   });
 
   useEffect(() => {
-    try { localStorage.setItem(KEY, JSON.stringify(systems)); } catch { console.warn("SolarSystems: failed to persist"); }
+    try {
+      localStorage.setItem(KEY, JSON.stringify(systems));
+    } catch {
+      console.warn("SolarSystems: failed to persist");
+    }
   }, [systems]);
 
   const updatePrice = useCallback((slug: string, price: number) => {
@@ -423,7 +524,10 @@ export function useSolarSystems(): [SolarSystem[], (slug: string, price: number)
   }, []);
 
   const addSystem = useCallback((system: SolarSystem) => {
-    setSystems((prev) => [...prev, { ...system, images: system.images?.length ? system.images : seedImages(system.slug) }]);
+    setSystems((prev) => [
+      ...prev,
+      { ...system, images: system.images?.length ? system.images : seedImages(system.slug) },
+    ]);
   }, []);
 
   const deleteSystem = useCallback((slug: string) => {

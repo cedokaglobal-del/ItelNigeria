@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
-import { Star } from "lucide-react";
+import { Star, ShoppingBag } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSolarSystems } from "@/lib/solar-systems";
 import { formatNGN } from "@/lib/format";
@@ -10,7 +10,11 @@ export const Route = createFileRoute("/solar-systems")({
   head: () => ({
     meta: [
       { title: "Solar Systems — Itel Energy" },
-      { name: "description", content: "Pre-engineered solar systems for homes and businesses. Complete combos with panels, inverters, batteries, and installation accessories." },
+      {
+        name: "description",
+        content:
+          "Pre-engineered solar systems for homes and businesses. Complete combos with panels, inverters, batteries, and installation accessories.",
+      },
       { property: "og:url", content: "https://itelenergy.com/solar-systems" },
     ],
     links: [{ rel: "canonical", href: "https://itelenergy.com/solar-systems" }],
@@ -49,9 +53,12 @@ function SolarSystemsPage() {
       <section className="relative overflow-hidden border-b bg-gradient-to-b from-primary/[0.04] to-transparent">
         <div className="container-page py-12 md:py-16">
           <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">Solar systems</h1>
+            <h1 className="text-balance text-3xl font-semibold tracking-tight md:text-4xl">
+              Solar systems
+            </h1>
             <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-              Pre-engineered combos — panels, inverter, battery, and all accessories. Designed and guaranteed by Itel.
+              Pre-engineered combos — panels, inverter, battery, and all accessories. Designed and
+              guaranteed by Itel.
             </p>
           </div>
         </div>
@@ -60,54 +67,72 @@ function SolarSystemsPage() {
       <section className="container-page py-8">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-6">
           <div className="flex gap-1.5">
-            <FilterChip active={filterVoltage === "all"} onClick={() => handleFilter("all")}>All</FilterChip>
-            <FilterChip active={filterVoltage === "24V"} onClick={() => handleFilter("24V")}>24V</FilterChip>
-            <FilterChip active={filterVoltage === "48V"} onClick={() => handleFilter("48V")}>48V</FilterChip>
+            <FilterChip active={filterVoltage === "all"} onClick={() => handleFilter("all")}>
+              All
+            </FilterChip>
+            <FilterChip active={filterVoltage === "24V"} onClick={() => handleFilter("24V")}>
+              24V Systems
+            </FilterChip>
+            <FilterChip active={filterVoltage === "48V"} onClick={() => handleFilter("48V")}>
+              48V Systems
+            </FilterChip>
           </div>
-          <p className="text-xs text-muted-foreground">{filtered.length} system{filtered.length !== 1 ? "s" : ""}</p>
+          <p className="text-xs text-muted-foreground">
+            {filtered.length} system{filtered.length !== 1 ? "s" : ""}
+          </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {paged.map((sys) => (
             <Link
               key={sys.slug}
               to="/solar-systems/$slug"
               params={{ slug: sys.slug }}
-              className="group overflow-hidden rounded-xl border bg-card shadow-sm transition-all hover:shadow-md"
+              className="group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[var(--shadow-elevated)]"
             >
-              <div className="relative">
-                <ImageCarousel images={sys.images} alt={sys.name} className="aspect-[7/5]" />
+              <div className="relative overflow-hidden">
+                <ImageCarousel
+                  images={sys.images}
+                  alt={sys.name}
+                  className="aspect-[7/5] rounded-b-none"
+                />
                 {sys.badge && (
-                  <span className="absolute left-2 top-2 z-10 rounded-full bg-primary/90 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
+                  <span className="absolute left-3 top-3 z-10 rounded-full bg-primary/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-primary-foreground shadow-sm backdrop-blur-sm">
                     {sys.badge}
                   </span>
                 )}
+                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent" />
               </div>
-              <div className="p-3.5">
-                <p className="text-[9px] font-semibold uppercase tracking-widest text-primary">{sys.voltage} · {sys.totalPanels}×{sys.panelWattage}W</p>
-                <h2 className="mt-0.5 truncate text-sm font-semibold tracking-tight">{sys.name}</h2>
-                <p className="mt-0.5 line-clamp-1 text-[11px] text-muted-foreground">{sys.tagline}</p>
+              <div className="flex flex-1 flex-col gap-1.5 p-4">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-primary">
+                  {sys.voltage} · {sys.totalPanels}×{sys.panelWattage}W
+                </p>
+                <h2 className="text-sm font-semibold leading-snug tracking-tight">{sys.name}</h2>
+                <p className="line-clamp-1 text-xs text-muted-foreground">{sys.tagline}</p>
 
-                <div className="mt-2.5 flex items-center gap-3 rounded-lg border bg-surface px-2.5 py-2">
-                  <span className="font-mono text-[11px] font-semibold">{sys.inverterKVA}kVA</span>
-                  <span className="text-[10px] text-muted-foreground">·</span>
-                  <span className="font-mono text-[11px] font-semibold">{sys.batteryCapacityKWh}kWh</span>
-                  <span className="text-[10px] text-muted-foreground">·</span>
-                  <span className="font-mono text-[11px] font-semibold">{sys.voltage}</span>
+                <div className="mt-1.5 flex items-center gap-2 rounded-lg border bg-surface/80 px-2.5 py-1.5">
+                  <span className="font-mono text-[10px] font-semibold">{sys.inverterKVA}kVA</span>
+                  <span className="text-[9px] text-muted-foreground">·</span>
+                  <span className="font-mono text-[10px] font-semibold">
+                    {sys.batteryCapacityKWh}kWh
+                  </span>
+                  <span className="text-[9px] text-muted-foreground">·</span>
+                  <span className="font-mono text-[10px] font-semibold">{sys.voltage}</span>
                 </div>
 
-                <div className="mt-2.5 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                    <Star className="h-2.5 w-2.5 fill-[var(--solar)] text-[var(--solar)]" />
-                    <span className="font-medium text-foreground">{sys.rating}</span>
-                    <span>({sys.reviews})</span>
+                <div className="mt-auto flex items-end justify-between gap-2 pt-3">
+                  <div>
+                    <p className="font-mono text-base font-bold tracking-tight text-primary">
+                      {formatNGN(sys.price)}
+                    </p>
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                      <Star className="h-2.5 w-2.5 fill-[var(--solar)] text-[var(--solar)]" />
+                      <span className="font-medium text-foreground">{sys.rating}</span>
+                      <span>({sys.reviews})</span>
+                    </div>
                   </div>
-                  <p className="font-mono text-sm font-bold tracking-tight text-primary">{formatNGN(sys.price)}</p>
-                </div>
-
-                <div className="mt-2.5">
-                  <span className="inline-flex w-full items-center justify-center gap-1 rounded-lg bg-primary/10 px-3 py-1.5 text-[10px] font-semibold text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                    View system
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-hairline px-3.5 py-1.5 text-[11px] font-medium transition-all group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground active:scale-95">
+                    <ShoppingBag className="h-3 w-3" /> View
                   </span>
                 </div>
               </div>
@@ -116,7 +141,12 @@ function SolarSystemsPage() {
         </div>
 
         {paged.length === 0 && (
-          <p className="py-20 text-center text-sm text-muted-foreground">No systems match this filter.</p>
+          <div className="py-20 text-center">
+            <p className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">
+              No results
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">No systems match this filter.</p>
+          </div>
         )}
 
         <Pagination page={page} totalPages={totalPages} onPage={setPage} />
@@ -125,18 +155,26 @@ function SolarSystemsPage() {
   );
 }
 
-function FilterChip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function FilterChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-[11px] font-medium transition-all ${
-        active ? "border-primary bg-primary text-primary-foreground" : "border-hairline text-muted-foreground hover:bg-accent"
+      className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all ${
+        active
+          ? "border-primary bg-primary text-primary-foreground shadow-[var(--shadow-glow-red)]"
+          : "border-hairline text-muted-foreground hover:bg-accent hover:border-foreground/20"
       }`}
     >
       {children}
     </button>
   );
 }
-
-

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { Package, Sun, Cpu, BatteryCharging, Zap, Wrench, type LucideIcon } from "lucide-react";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Pagination } from "@/components/site/Pagination";
 import { CATEGORIES, getProducts, type ProductCategory } from "@/lib/products";
@@ -9,7 +10,11 @@ export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
       { title: "Shop — Itel Energy" },
-      { name: "description", content: "Solar panels, inverters, lithium batteries, MPPT controllers, mounts and complete kits. Premium components for African conditions." },
+      {
+        name: "description",
+        content:
+          "Solar panels, inverters, lithium batteries, MPPT controllers, mounts and complete kits. Premium components for African conditions.",
+      },
       { property: "og:url", content: "https://itelenergy.com/shop" },
     ],
     links: [{ rel: "canonical", href: "https://itelenergy.com/shop" }],
@@ -18,6 +23,15 @@ export const Route = createFileRoute("/shop")({
 });
 
 type Filter = ProductCategory | "all";
+
+const CAT_ICONS: Record<ProductCategory, LucideIcon> = {
+  panels: Sun,
+  inverters: Cpu,
+  batteries: BatteryCharging,
+  controllers: Zap,
+  kits: Package,
+  accessories: Wrench,
+};
 
 const PER_PAGE = 8;
 
@@ -52,6 +66,7 @@ function Shop() {
 
   return (
     <div>
+      {/* HERO */}
       <section className="relative overflow-hidden border-b border-hairline">
         <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
         <div className="container-page py-14 md:py-20">
@@ -67,16 +82,26 @@ function Shop() {
       </section>
 
       <section className="container-page py-10">
+        {/* ── Filters + Sort ── */}
         <div className="flex flex-wrap items-center justify-between gap-4 pb-6">
-          <div className="-mx-1 flex flex-wrap gap-1.5">
-            <FilterChip active={filter === "all"} onClick={() => handleFilter("all")}>All</FilterChip>
-            {CATEGORIES.map((c) => (
-              <FilterChip key={c.id} active={filter === c.id} onClick={() => handleFilter(c.id)}>{c.label}</FilterChip>
-            ))}
+          <div className="flex flex-wrap gap-1.5">
+            <FilterChip active={filter === "all"} onClick={() => handleFilter("all")}>
+              <Package className="h-3 w-3" /> All
+            </FilterChip>
+            {CATEGORIES.map((c) => {
+              const Icon = CAT_ICONS[c.id];
+              return (
+                <FilterChip key={c.id} active={filter === c.id} onClick={() => handleFilter(c.id)}>
+                  <Icon className="h-3 w-3" /> {c.label}
+                </FilterChip>
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <label htmlFor="sort">Sort</label>
+            <label htmlFor="sort" className="hidden sm:inline">
+              Sort by
+            </label>
             <select
               id="sort"
               value={sort}
@@ -91,6 +116,14 @@ function Shop() {
           </div>
         </div>
 
+        {/* ── Results count ── */}
+        <p className="pb-4 text-xs text-muted-foreground">
+          {products.length} product{products.length !== 1 ? "s" : ""}
+          {filter !== "all" &&
+            ` in ${CATEGORIES.find((c) => c.id === filter)?.label.toLowerCase() || filter}`}
+        </p>
+
+        {/* ── Grid ── */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {paged.map((p) => (
             <ProductCard key={p.slug} product={p} />
@@ -98,7 +131,19 @@ function Shop() {
         </div>
 
         {products.length === 0 && (
-          <p className="py-20 text-center text-sm text-muted-foreground">No products match this filter.</p>
+          <div className="py-20 text-center">
+            <p className="text-xs font-mono uppercase tracking-[0.2em] text-muted-foreground">
+              No results
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">No products match this filter.</p>
+            <button
+              type="button"
+              onClick={() => handleFilter("all")}
+              className="mt-4 rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              Clear filters
+            </button>
+          </div>
         )}
 
         <Pagination page={page} totalPages={totalPages} onPage={setPage} />
@@ -120,10 +165,10 @@ function FilterChip({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all ${
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all ${
         active
           ? "border-primary bg-primary text-primary-foreground shadow-[var(--shadow-glow-red)]"
-          : "border-hairline text-foreground/80 hover:bg-accent"
+          : "border-hairline text-foreground/80 hover:bg-accent hover:border-foreground/20"
       }`}
     >
       {children}

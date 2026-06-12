@@ -1,6 +1,14 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function Pagination({ page, totalPages, onPage }: { page: number; totalPages: number; onPage: (p: number) => void }) {
+export function Pagination({
+  page,
+  totalPages,
+  onPage,
+}: {
+  page: number;
+  totalPages: number;
+  onPage: (p: number) => void;
+}) {
   if (totalPages <= 1) return null;
   const pages: (number | "...")[] = [];
   for (let i = 1; i <= totalPages; i++) {
@@ -22,19 +30,26 @@ export function Pagination({ page, totalPages, onPage }: { page: number; totalPa
       </button>
       {pages.map((p, i) =>
         p === "..." ? (
-          <span key={`e${i}`} className="grid h-9 w-9 place-items-center text-xs text-muted-foreground">...</span>
+          <span
+            key={`e${i}`}
+            className="grid h-9 w-9 place-items-center text-xs text-muted-foreground"
+          >
+            ...
+          </span>
         ) : (
           <button
             key={p}
             type="button"
             onClick={() => onPage(p)}
             className={`grid h-9 w-9 place-items-center rounded-lg text-xs font-semibold transition-colors ${
-              p === page ? "bg-primary text-primary-foreground" : "border text-muted-foreground hover:bg-accent hover:text-foreground"
+              p === page
+                ? "bg-primary text-primary-foreground"
+                : "border text-muted-foreground hover:bg-accent hover:text-foreground"
             }`}
           >
             {p}
           </button>
-        )
+        ),
       )}
       <button
         type="button"

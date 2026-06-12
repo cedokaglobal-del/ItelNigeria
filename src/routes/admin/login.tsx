@@ -36,20 +36,25 @@ function AdminLogin() {
             <Logo />
           </div>
           <h1 className="text-center text-lg font-semibold tracking-tight">Admin Login</h1>
-          <p className="mt-1 text-center text-xs text-muted-foreground">Enter the admin password to continue</p>
+          <p className="mt-1 text-center text-xs text-muted-foreground">
+            Enter the admin password to continue
+          </p>
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
               <label className="block text-xs font-medium text-muted-foreground">Password</label>
               <input
                 type="password"
                 value={password}
-                onChange={(e) => { setPassword(e.target.value); setError(false); }}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError(false);
+                }}
                 className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 autoFocus
               />
               {error && <p className="mt-1 text-xs text-red-500">Incorrect password</p>}
             </div>
-              <button
+            <button
               type="submit"
               className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:brightness-110"
             >
@@ -57,7 +62,9 @@ function AdminLogin() {
             </button>
           </form>
           <p className="mt-6 text-center text-[10px] text-muted-foreground">
-            <a href="/" className="underline hover:text-foreground">Back to site</a>
+            <a href="/" className="underline hover:text-foreground">
+              Back to site
+            </a>
           </p>
         </div>
       </div>

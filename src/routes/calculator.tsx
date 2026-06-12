@@ -13,30 +13,13 @@ import {
   Zap,
 } from "lucide-react";
 import { lazy, Suspense, useMemo, useState } from "react";
-import {
-  APPLIANCE_PRESETS,
-  calculate,
-  type Appliance,
-  type CalcInput,
-} from "@/lib/calculator";
+import { APPLIANCE_PRESETS, calculate, type Appliance, type CalcInput } from "@/lib/calculator";
 import { formatNGN, formatNumber } from "@/lib/format";
 
 const BarChart = lazy(() =>
   import("recharts").then((m) => ({
-    default: ({
-      data,
-    }: {
-      data: { name: string; kWh: number }[];
-    }) => {
-      const {
-        Bar,
-        BarChart: BC,
-        CartesianGrid,
-        ResponsiveContainer,
-        Tooltip,
-        XAxis,
-        YAxis,
-      } = m;
+    default: ({ data }: { data: { name: string; kWh: number }[] }) => {
+      const { Bar, BarChart: BC, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } = m;
       return (
         <ResponsiveContainer width="100%" height="100%">
           <BC data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
@@ -86,7 +69,7 @@ export const Route = createFileRoute("/calculator")({
 
 const STARTER: Appliance[] = [
   { id: "1", name: "LED bulb", watts: 10, qty: 8, hours: 6 },
-  { id: "2", name: "TV (LED 43\")", watts: 100, qty: 1, hours: 6 },
+  { id: "2", name: 'TV (LED 43")', watts: 100, qty: 1, hours: 6 },
   { id: "3", name: "Refrigerator", watts: 150, qty: 1, hours: 24 },
   { id: "4", name: "Ceiling fan", watts: 75, qty: 2, hours: 8 },
   { id: "5", name: "Router / WiFi", watts: 15, qty: 1, hours: 24 },
@@ -116,8 +99,7 @@ function CalculatorPage() {
   const updateAppliance = (id: string, patch: Partial<Appliance>) =>
     setAppliances((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
 
-  const removeAppliance = (id: string) =>
-    setAppliances((prev) => prev.filter((a) => a.id !== id));
+  const removeAppliance = (id: string) => setAppliances((prev) => prev.filter((a) => a.id !== id));
 
   const chartData = useMemo(
     () =>
@@ -142,12 +124,11 @@ function CalculatorPage() {
               Itel Smart Sizing
             </span>
             <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight md:text-5xl">
-              Size your system in{" "}
-              <span className="text-primary">60 seconds</span>
+              Size your system in <span className="text-primary">60 seconds</span>
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              Tell us what appliances you want to power. We&apos;ll calculate your
-              solar array, inverter, battery bank, total cost, and payback period.
+              Tell us what appliances you want to power. We&apos;ll calculate your solar array,
+              inverter, battery bank, total cost, and payback period.
             </p>
           </div>
         </div>
@@ -155,9 +136,9 @@ function CalculatorPage() {
 
       <section className="container-page py-10">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-12">
-          { /* Inputs */ }
+          {/* Inputs */}
           <div className="space-y-8">
-            { /* Step 1 */ }
+            {/* Step 1 */}
             <div className="rounded-2xl border bg-card p-6 shadow-sm md:p-8">
               <div className="flex items-center gap-3">
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
@@ -213,7 +194,7 @@ function CalculatorPage() {
               </div>
             </div>
 
-            { /* Step 2 */ }
+            {/* Step 2 */}
             <div className="rounded-2xl border bg-card p-6 shadow-sm md:p-8">
               <div className="flex items-center gap-3">
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
@@ -270,7 +251,7 @@ function CalculatorPage() {
             </div>
           </div>
 
-          { /* Results */ }
+          {/* Results */}
           <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
             <div className="rounded-2xl border bg-card p-6 shadow-sm md:p-8">
               <div className="flex items-center justify-between">
@@ -294,11 +275,7 @@ function CalculatorPage() {
                   label="Solar array"
                   value={`${result.panelCountW550} \u00d7 550W`}
                 />
-                <ResultCard
-                  icon={Cpu}
-                  label="Inverter"
-                  value={`${result.inverterKVA} kVA`}
-                />
+                <ResultCard icon={Cpu} label="Inverter" value={`${result.inverterKVA} kVA`} />
                 <ResultCard
                   icon={BatteryCharging}
                   label="Battery bank"
@@ -307,9 +284,7 @@ function CalculatorPage() {
               </div>
 
               <div className="mt-6 rounded-xl border bg-surface p-6">
-                <p className="text-xs font-medium text-muted-foreground">
-                  Estimated total cost
-                </p>
+                <p className="text-xs font-medium text-muted-foreground">Estimated total cost</p>
                 <p className="mt-1 text-3xl font-bold tracking-tight text-primary">
                   {formatNGN(result.estimatedCostNGN)}
                 </p>
@@ -340,10 +315,8 @@ function CalculatorPage() {
                     {formatNGN(result.monthlyGenSavingsNGN)}
                   </span>{" "}
                   in monthly generator costs &mdash; equivalent to planting{" "}
-                  <span className="font-semibold text-primary">
-                    {result.treesEquivalent}
-                  </span>{" "}
-                  trees a year.
+                  <span className="font-semibold text-primary">{result.treesEquivalent}</span> trees
+                  a year.
                 </div>
               </div>
 
@@ -364,17 +337,14 @@ function CalculatorPage() {
               </div>
             </div>
 
-            { /* Spec breakdown */ }
+            {/* Spec breakdown */}
             <div className="rounded-2xl border bg-card p-6 shadow-sm md:p-8">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Specification breakdown
               </p>
               <dl className="mt-4 divide-y">
                 {result.breakdown.map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex items-center justify-between py-3 text-sm"
-                  >
+                  <div key={row.label} className="flex items-center justify-between py-3 text-sm">
                     <dt className="text-muted-foreground">{row.label}</dt>
                     <dd
                       className="font-mono text-xs font-semibold"
@@ -394,7 +364,7 @@ function CalculatorPage() {
               </dl>
             </div>
 
-            { /* Chart */ }
+            {/* Chart */}
             {chartData.length > 0 && (
               <div className="rounded-2xl border bg-card p-6 shadow-sm md:p-8">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -451,15 +421,34 @@ function ApplianceRow({
         <div className="flex gap-2">
           <div className="flex-1">
             <p className="mb-0.5 text-[10px] font-medium text-muted-foreground">Watts</p>
-            <NumberInput value={appliance.watts} onChange={(v) => onChange({ watts: v })} suffix="W" min={1} max={5000} />
+            <NumberInput
+              value={appliance.watts}
+              onChange={(v) => onChange({ watts: v })}
+              suffix="W"
+              min={1}
+              max={5000}
+            />
           </div>
           <div className="flex-1">
             <p className="mb-0.5 text-[10px] font-medium text-muted-foreground">Qty</p>
-            <NumberInput value={appliance.qty} onChange={(v) => onChange({ qty: v })} suffix="×" min={0} max={50} />
+            <NumberInput
+              value={appliance.qty}
+              onChange={(v) => onChange({ qty: v })}
+              suffix="×"
+              min={0}
+              max={50}
+            />
           </div>
           <div className="flex-1">
             <p className="mb-0.5 text-[10px] font-medium text-muted-foreground">Hrs</p>
-            <NumberInput value={appliance.hours} onChange={(v) => onChange({ hours: v })} suffix="h" min={0} max={24} step={0.5} />
+            <NumberInput
+              value={appliance.hours}
+              onChange={(v) => onChange({ hours: v })}
+              suffix="h"
+              min={0}
+              max={24}
+              step={0.5}
+            />
           </div>
         </div>
       </div>
@@ -470,9 +459,28 @@ function ApplianceRow({
           onChange={(e) => onChange({ name: e.target.value })}
           className="rounded-md bg-transparent px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
         />
-        <NumberInput value={appliance.watts} onChange={(v) => onChange({ watts: v })} suffix="W" min={1} max={5000} />
-        <NumberInput value={appliance.qty} onChange={(v) => onChange({ qty: v })} suffix="×" min={0} max={50} />
-        <NumberInput value={appliance.hours} onChange={(v) => onChange({ hours: v })} suffix="h" min={0} max={24} step={0.5} />
+        <NumberInput
+          value={appliance.watts}
+          onChange={(v) => onChange({ watts: v })}
+          suffix="W"
+          min={1}
+          max={5000}
+        />
+        <NumberInput
+          value={appliance.qty}
+          onChange={(v) => onChange({ qty: v })}
+          suffix="×"
+          min={0}
+          max={50}
+        />
+        <NumberInput
+          value={appliance.hours}
+          onChange={(v) => onChange({ hours: v })}
+          suffix="h"
+          min={0}
+          max={24}
+          step={0.5}
+        />
         <button
           type="button"
           onClick={onRemove}

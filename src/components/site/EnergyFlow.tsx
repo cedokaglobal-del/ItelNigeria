@@ -46,9 +46,22 @@ export const EnergyFlow = memo(function EnergyFlow() {
 
       {/* Inverter */}
       <g transform="translate(160 190)">
-        <rect width="100" height="80" rx="10" fill="oklch(0.22 0.02 260)" stroke="oklch(1 0 0 / 0.14)" />
+        <rect
+          width="100"
+          height="80"
+          rx="10"
+          fill="oklch(0.22 0.02 260)"
+          stroke="oklch(1 0 0 / 0.14)"
+        />
         <rect x="10" y="12" width="80" height="24" rx="3" fill="oklch(0.12 0.02 260)" />
-        <text x="50" y="29" textAnchor="middle" fontFamily="monospace" fontSize="11" fill="oklch(0.83 0.17 86)">
+        <text
+          x="50"
+          y="29"
+          textAnchor="middle"
+          fontFamily="monospace"
+          fontSize="11"
+          fill="oklch(0.83 0.17 86)"
+        >
           5.2 kW
         </text>
         <circle cx="22" cy="58" r="4" fill="oklch(0.68 0.18 244)" />
@@ -58,10 +71,24 @@ export const EnergyFlow = memo(function EnergyFlow() {
 
       {/* Battery */}
       <g transform="translate(300 200)">
-        <rect width="80" height="80" rx="8" fill="oklch(0.22 0.02 260)" stroke="oklch(1 0 0 / 0.14)" />
+        <rect
+          width="80"
+          height="80"
+          rx="8"
+          fill="oklch(0.22 0.02 260)"
+          stroke="oklch(1 0 0 / 0.14)"
+        />
         <rect x="10" y="10" width="60" height="8" rx="2" fill="oklch(0.12 0.02 260)" />
         {[0, 1, 2, 3].map((i) => (
-          <rect key={i} x="10" y={26 + i * 10} width={56 - i * 4} height="5" rx="2" fill="oklch(0.83 0.17 86 / 0.9)" />
+          <rect
+            key={i}
+            x="10"
+            y={26 + i * 10}
+            width={56 - i * 4}
+            height="5"
+            rx="2"
+            fill="oklch(0.83 0.17 86 / 0.9)"
+          />
         ))}
       </g>
 
@@ -78,9 +105,27 @@ export const EnergyFlow = memo(function EnergyFlow() {
       </g>
 
       {/* Flow lines */}
-      <path d="M120 150 Q 180 170 200 190" stroke="oklch(0.83 0.17 86)" strokeWidth="2" fill="none" className="animate-flow" />
-      <path d="M260 230 Q 290 235 300 240" stroke="oklch(0.68 0.18 244)" strokeWidth="2" fill="none" className="animate-flow" />
-      <path d="M160 240 Q 145 250 130 250" stroke="oklch(0.6 0.245 27)" strokeWidth="2" fill="none" className="animate-flow" />
+      <path
+        d="M120 150 Q 180 170 200 190"
+        stroke="oklch(0.83 0.17 86)"
+        strokeWidth="2"
+        fill="none"
+        className="animate-flow"
+      />
+      <path
+        d="M260 230 Q 290 235 300 240"
+        stroke="oklch(0.68 0.18 244)"
+        strokeWidth="2"
+        fill="none"
+        className="animate-flow"
+      />
+      <path
+        d="M160 240 Q 145 250 130 250"
+        stroke="oklch(0.6 0.245 27)"
+        strokeWidth="2"
+        fill="none"
+        className="animate-flow"
+      />
     </svg>
   );
 });

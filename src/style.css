@@ -53,7 +53,8 @@
   --shadow-glow-gold: 0 8px 32px -6px color-mix(in oklab, var(--solar) 35%, transparent);
   --shadow-elevated: 0 20px 60px -20px rgb(0 0 0 / 0.12);
 
-  --gradient-hero: radial-gradient(
+  --gradient-hero:
+    radial-gradient(
       1200px 600px at 80% -10%,
       color-mix(in oklab, var(--solar) 12%, transparent),
       transparent 60%

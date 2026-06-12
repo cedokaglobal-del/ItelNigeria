@@ -9,33 +9,74 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 export const Route = createFileRoute("/admin/solar-systems")({
   beforeLoad: () => {
-    if (typeof window !== "undefined" && !isAdminAuthenticated()) throw redirect({ to: "/admin/login" });
+    if (typeof window !== "undefined" && !isAdminAuthenticated())
+      throw redirect({ to: "/admin/login" });
   },
   head: () => ({ meta: [{ title: "Solar Systems — Itel Admin" }] }),
   component: AdminSolarSystems,
 });
 
-type FormState = { name: string; tagline: string; slug: string; price: number; voltage: string; totalPanels: number; panelWattage: number; inverterKVA: number; batteryCapacityKWh: number; batteryType: string; whatItPowers: string; description: string; components: SolarComponent[]; highlights: string[]; installationAccessories: string[] };
+type FormState = {
+  name: string;
+  tagline: string;
+  slug: string;
+  price: number;
+  voltage: string;
+  totalPanels: number;
+  panelWattage: number;
+  inverterKVA: number;
+  batteryCapacityKWh: number;
+  batteryType: string;
+  whatItPowers: string;
+  description: string;
+  components: SolarComponent[];
+  highlights: string[];
+  installationAccessories: string[];
+};
 
 const emptyForm: FormState = {
-  name: "", tagline: "", slug: "", price: 0, voltage: "48V",
-  totalPanels: 4, panelWattage: 550, inverterKVA: 5, batteryCapacityKWh: 5.12,
-  batteryType: "LiFePO4", whatItPowers: "", description: "",
+  name: "",
+  tagline: "",
+  slug: "",
+  price: 0,
+  voltage: "48V",
+  totalPanels: 4,
+  panelWattage: 550,
+  inverterKVA: 5,
+  batteryCapacityKWh: 5.12,
+  batteryType: "LiFePO4",
+  whatItPowers: "",
+  description: "",
   components: [{ type: "panel", name: "", spec: "", qty: 1 }],
-  highlights: [""], installationAccessories: [""],
+  highlights: [""],
+  installationAccessories: [""],
 };
 
 function systemToForm(sys: SolarSystem): FormState {
   return {
-    name: sys.name, tagline: sys.tagline, slug: sys.slug, price: sys.price,
-    voltage: sys.voltage, totalPanels: sys.totalPanels, panelWattage: sys.panelWattage,
-    inverterKVA: sys.inverterKVA, batteryCapacityKWh: sys.batteryCapacityKWh,
-    batteryType: sys.batteryType, whatItPowers: sys.whatItPowers, description: sys.description || "",
-    components: sys.components, highlights: sys.highlights, installationAccessories: sys.installationAccessories,
+    name: sys.name,
+    tagline: sys.tagline,
+    slug: sys.slug,
+    price: sys.price,
+    voltage: sys.voltage,
+    totalPanels: sys.totalPanels,
+    panelWattage: sys.panelWattage,
+    inverterKVA: sys.inverterKVA,
+    batteryCapacityKWh: sys.batteryCapacityKWh,
+    batteryType: sys.batteryType,
+    whatItPowers: sys.whatItPowers,
+    description: sys.description || "",
+    components: sys.components,
+    highlights: sys.highlights,
+    installationAccessories: sys.installationAccessories,
   };
 }
 
-export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: SolarSystem) => void }) {
+export function AdminSolarSystemsContent({
+  onPublish,
+}: {
+  onPublish?: (system: SolarSystem) => void;
+}) {
   const [systems, updatePrice, addSystem, deleteSystem] = useSolarSystems();
   const [priceEdit, setPriceEdit] = useState<{ slug: string; price: number } | null>(null);
   const [form, setForm] = useState<FormState | null>(null);
@@ -95,8 +136,8 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
   }
 
   function energyInfo(sys: SolarSystem) {
-    const arrayKw = (sys.totalPanels * sys.panelWattage / 1000).toFixed(2);
-    const dailyKwh = (sys.totalPanels * sys.panelWattage * 5.5 / 1000).toFixed(1);
+    const arrayKw = ((sys.totalPanels * sys.panelWattage) / 1000).toFixed(2);
+    const dailyKwh = ((sys.totalPanels * sys.panelWattage * 5.5) / 1000).toFixed(1);
     return { arrayKw, dailyKwh };
   }
 
@@ -105,7 +146,9 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">Solar Systems</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Manage pre-configured solar system combos</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage pre-configured solar system combos
+          </p>
         </div>
         <button
           type="button"
@@ -129,9 +172,16 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-medium">{sys.name}</p>
-                    {sys.badge && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-primary">{sys.badge}</span>}
+                    {sys.badge && (
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-primary">
+                        {sys.badge}
+                      </span>
+                    )}
                   </div>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{sys.voltage} · {sys.totalPanels}×{sys.panelWattage}W · {sys.inverterKVA}kVA · {sys.batteryCapacityKWh}kWh</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {sys.voltage} · {sys.totalPanels}×{sys.panelWattage}W · {sys.inverterKVA}kVA ·{" "}
+                    {sys.batteryCapacityKWh}kWh
+                  </p>
                 </div>
                 <p className="font-mono text-sm font-semibold">{formatNGN(sys.price)}</p>
                 <div className="flex items-center gap-2">
@@ -145,7 +195,10 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
                   </button>
                   <button
                     type="button"
-                    onClick={() => { setEditingSlug(sys.slug); setForm(systemToForm(sys)); }}
+                    onClick={() => {
+                      setEditingSlug(sys.slug);
+                      setForm(systemToForm(sys));
+                    }}
                     className="rounded-lg border p-2 text-muted-foreground hover:bg-accent"
                     title="Edit full system"
                   >
@@ -166,7 +219,11 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
                 <EnergyMetric label="Array" value={`${arrayKw} kW`} />
                 <EnergyMetric label="Daily yield" value={`${dailyKwh} kWh`} />
                 <EnergyMetric label="Components" value={`${compCount} items`} />
-                <EnergyMetric label="Price/kWh" value={formatNGN(Math.round(sys.price / Number(dailyKwh)))} sub="/day" />
+                <EnergyMetric
+                  label="Price/kWh"
+                  value={formatNGN(Math.round(sys.price / Number(dailyKwh)))}
+                  sub="/day"
+                />
                 {onPublish && (
                   <button
                     type="button"
@@ -188,9 +245,16 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
           <div className="w-full max-w-sm rounded-2xl border bg-card p-6 shadow-xl">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">Edit price</h2>
-              <button onClick={() => setPriceEdit(null)} className="text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
+              <button
+                onClick={() => setPriceEdit(null)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <label className="mt-4 block text-xs font-medium text-muted-foreground">Price (NGN)</label>
+            <label className="mt-4 block text-xs font-medium text-muted-foreground">
+              Price (NGN)
+            </label>
             <input
               type="number"
               value={priceEdit.price}
@@ -198,8 +262,18 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
               className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm"
             />
             <div className="mt-4 flex justify-end gap-2">
-              <button onClick={() => setPriceEdit(null)} className="rounded-xl border px-4 py-2 text-sm">Cancel</button>
-              <button onClick={() => handleSavePrice(priceEdit.slug, priceEdit.price)} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">Save</button>
+              <button
+                onClick={() => setPriceEdit(null)}
+                className="rounded-xl border px-4 py-2 text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleSavePrice(priceEdit.slug, priceEdit.price)}
+                className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+              >
+                Save
+              </button>
             </div>
           </div>
         </div>
@@ -211,61 +285,160 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
           <div className="mx-auto max-w-2xl rounded-2xl border bg-card p-6 shadow-xl">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">{editingSlug ? "Edit system" : "New solar system"}</h2>
-              <button onClick={() => { setForm(null); setEditingSlug(null); }} className="text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
+              <button
+                onClick={() => {
+                  setForm(null);
+                  setEditingSlug(null);
+                }}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field label="Name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-              <Field label="Slug" value={form.slug} onChange={(v) => setForm({ ...form, slug: v })} />
+              <Field
+                label="Name"
+                value={form.name}
+                onChange={(v) => setForm({ ...form, name: v })}
+              />
+              <Field
+                label="Slug"
+                value={form.slug}
+                onChange={(v) => setForm({ ...form, slug: v })}
+              />
               <div className="sm:col-span-2">
-                <Field label="Tagline" value={form.tagline} onChange={(v) => setForm({ ...form, tagline: v })} />
+                <Field
+                  label="Tagline"
+                  value={form.tagline}
+                  onChange={(v) => setForm({ ...form, tagline: v })}
+                />
               </div>
               <div className="sm:col-span-2">
-                <Field label="Description" value={form.description} onChange={(v) => setForm({ ...form, description: v })} />
+                <Field
+                  label="Description"
+                  value={form.description}
+                  onChange={(v) => setForm({ ...form, description: v })}
+                />
               </div>
-              <Field label="Price (NGN)" type="number" value={String(form.price)} onChange={(v) => setForm({ ...form, price: Number(v) })} />
-              <Select label="Voltage" value={form.voltage} options={["24V", "48V"]} onChange={(v) => setForm({ ...form, voltage: v })} />
-              <Field label="Panels (qty)" type="number" value={String(form.totalPanels)} onChange={(v) => setForm({ ...form, totalPanels: Number(v) })} />
-              <Field label="Panel wattage" type="number" value={String(form.panelWattage)} onChange={(v) => setForm({ ...form, panelWattage: Number(v) })} />
-              <Field label="Inverter (kVA)" type="number" value={String(form.inverterKVA)} onChange={(v) => setForm({ ...form, inverterKVA: Number(v) })} />
-              <Field label="Battery (kWh)" type="number" value={String(form.batteryCapacityKWh)} onChange={(v) => setForm({ ...form, batteryCapacityKWh: Number(v) })} />
-              <Select label="Battery type" value={form.batteryType} options={["LiFePO4", "Tubular"]} onChange={(v) => setForm({ ...form, batteryType: v })} />
+              <Field
+                label="Price (NGN)"
+                type="number"
+                value={String(form.price)}
+                onChange={(v) => setForm({ ...form, price: Number(v) })}
+              />
+              <Select
+                label="Voltage"
+                value={form.voltage}
+                options={["24V", "48V"]}
+                onChange={(v) => setForm({ ...form, voltage: v })}
+              />
+              <Field
+                label="Panels (qty)"
+                type="number"
+                value={String(form.totalPanels)}
+                onChange={(v) => setForm({ ...form, totalPanels: Number(v) })}
+              />
+              <Field
+                label="Panel wattage"
+                type="number"
+                value={String(form.panelWattage)}
+                onChange={(v) => setForm({ ...form, panelWattage: Number(v) })}
+              />
+              <Field
+                label="Inverter (kVA)"
+                type="number"
+                value={String(form.inverterKVA)}
+                onChange={(v) => setForm({ ...form, inverterKVA: Number(v) })}
+              />
+              <Field
+                label="Battery (kWh)"
+                type="number"
+                value={String(form.batteryCapacityKWh)}
+                onChange={(v) => setForm({ ...form, batteryCapacityKWh: Number(v) })}
+              />
+              <Select
+                label="Battery type"
+                value={form.batteryType}
+                options={["LiFePO4", "Tubular"]}
+                onChange={(v) => setForm({ ...form, batteryType: v })}
+              />
               <div className="sm:col-span-2">
-                <Field label="What it powers" value={form.whatItPowers} onChange={(v) => setForm({ ...form, whatItPowers: v })} />
+                <Field
+                  label="What it powers"
+                  value={form.whatItPowers}
+                  onChange={(v) => setForm({ ...form, whatItPowers: v })}
+                />
               </div>
             </div>
 
             <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Components</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Components
+              </p>
               {form.components.map((c, i) => (
-                <div key={i} className="mt-2 flex flex-wrap items-end gap-2 rounded-xl border bg-surface p-3">
-                  <Select label="Type" value={c.type} options={["panel", "inverter", "battery", "accessory"]} onChange={(v) => {
-                    const comps = [...form.components];
-                    comps[i] = { ...comps[i], type: v as SolarComponent["type"] };
-                    setForm({ ...form, components: comps });
-                  }} />
-                  <input placeholder="Name" value={c.name} onChange={(e) => {
-                    const comps = [...form.components];
-                    comps[i] = { ...comps[i], name: e.target.value };
-                    setForm({ ...form, components: comps });
-                  }} className="flex-1 rounded-lg border bg-card px-3 py-2 text-xs" />
-                  <input placeholder="Spec" value={c.spec} onChange={(e) => {
-                    const comps = [...form.components];
-                    comps[i] = { ...comps[i], spec: e.target.value };
-                    setForm({ ...form, components: comps });
-                  }} className="w-32 rounded-lg border bg-card px-3 py-2 text-xs" />
-                  <input placeholder="Qty" type="number" value={c.qty} onChange={(e) => {
-                    const comps = [...form.components];
-                    comps[i] = { ...comps[i], qty: Number(e.target.value) };
-                    setForm({ ...form, components: comps });
-                  }} className="w-16 rounded-lg border bg-card px-3 py-2 text-xs" />
-                  <button onClick={() => {
-                    setForm({ ...form, components: form.components.filter((_, j) => j !== i) });
-                  }} className="rounded-lg border p-2 text-muted-foreground"><Trash2 className="h-3.5 w-3.5" /></button>
+                <div
+                  key={i}
+                  className="mt-2 flex flex-wrap items-end gap-2 rounded-xl border bg-surface p-3"
+                >
+                  <Select
+                    label="Type"
+                    value={c.type}
+                    options={["panel", "inverter", "battery", "accessory"]}
+                    onChange={(v) => {
+                      const comps = [...form.components];
+                      comps[i] = { ...comps[i], type: v as SolarComponent["type"] };
+                      setForm({ ...form, components: comps });
+                    }}
+                  />
+                  <input
+                    placeholder="Name"
+                    value={c.name}
+                    onChange={(e) => {
+                      const comps = [...form.components];
+                      comps[i] = { ...comps[i], name: e.target.value };
+                      setForm({ ...form, components: comps });
+                    }}
+                    className="flex-1 rounded-lg border bg-card px-3 py-2 text-xs"
+                  />
+                  <input
+                    placeholder="Spec"
+                    value={c.spec}
+                    onChange={(e) => {
+                      const comps = [...form.components];
+                      comps[i] = { ...comps[i], spec: e.target.value };
+                      setForm({ ...form, components: comps });
+                    }}
+                    className="w-32 rounded-lg border bg-card px-3 py-2 text-xs"
+                  />
+                  <input
+                    placeholder="Qty"
+                    type="number"
+                    value={c.qty}
+                    onChange={(e) => {
+                      const comps = [...form.components];
+                      comps[i] = { ...comps[i], qty: Number(e.target.value) };
+                      setForm({ ...form, components: comps });
+                    }}
+                    className="w-16 rounded-lg border bg-card px-3 py-2 text-xs"
+                  />
+                  <button
+                    onClick={() => {
+                      setForm({ ...form, components: form.components.filter((_, j) => j !== i) });
+                    }}
+                    className="rounded-lg border p-2 text-muted-foreground"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
                 </div>
               ))}
               <button
-                onClick={() => setForm({ ...form, components: [...form.components, { type: "panel", name: "", spec: "", qty: 1 }] })}
+                onClick={() =>
+                  setForm({
+                    ...form,
+                    components: [...form.components, { type: "panel", name: "", spec: "", qty: 1 }],
+                  })
+                }
                 className="mt-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
               >
                 <Plus className="h-3 w-3" /> Add component
@@ -273,7 +446,9 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
             </div>
 
             <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Highlights (one per line)</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Highlights (one per line)
+              </p>
               <textarea
                 value={form.highlights.join("\n")}
                 onChange={(e) => setForm({ ...form, highlights: e.target.value.split("\n") })}
@@ -283,18 +458,33 @@ export function AdminSolarSystemsContent({ onPublish }: { onPublish?: (system: S
             </div>
 
             <div className="mt-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Installation accessories (one per line)</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Installation accessories (one per line)
+              </p>
               <textarea
                 value={form.installationAccessories.join("\n")}
-                onChange={(e) => setForm({ ...form, installationAccessories: e.target.value.split("\n") })}
+                onChange={(e) =>
+                  setForm({ ...form, installationAccessories: e.target.value.split("\n") })
+                }
                 className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm"
                 rows={4}
               />
             </div>
 
             <div className="mt-6 flex justify-end gap-2 border-t pt-4">
-              <button onClick={() => { setForm(null); setEditingSlug(null); }} className="rounded-xl border px-4 py-2 text-sm">Cancel</button>
-              <button onClick={handleSaveSystem} className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+              <button
+                onClick={() => {
+                  setForm(null);
+                  setEditingSlug(null);
+                }}
+                className="rounded-xl border px-4 py-2 text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveSystem}
+                className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+              >
                 {editingSlug ? "Save changes" : "Create system"}
               </button>
             </div>
@@ -323,25 +513,63 @@ function EnergyMetric({ label, value, sub }: { label: string; value: string; sub
   );
 }
 
-function Field({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (v: string) => void; type?: string }) {
+function Field({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+}) {
   return (
     <div>
       <label className="block text-xs font-medium text-muted-foreground">{label}</label>
       {type === "textarea" ? (
-        <textarea value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm" rows={3} />
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm"
+          rows={3}
+        />
       ) : (
-        <input type={type} value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm" />
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm"
+        />
       )}
     </div>
   );
 }
 
-function Select({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+function Select({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) {
   return (
     <div>
       <label className="block text-xs font-medium text-muted-foreground">{label}</label>
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm">
-        {options.map((o) => <option key={o} value={o}>{o}</option>)}
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm"
+      >
+        {options.map((o) => (
+          <option key={o} value={o}>
+            {o}
+          </option>
+        ))}
       </select>
     </div>
   );

@@ -1,7 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function ImageCarousel({ images, alt, className = "" }: { images: string[]; alt: string; className?: string }) {
+export function ImageCarousel({
+  images,
+  alt,
+  className = "",
+}: {
+  images: string[];
+  alt: string;
+  className?: string;
+}) {
   const [idx, setIdx] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const touchX = useRef(0);
@@ -65,7 +73,11 @@ export function ImageCarousel({ images, alt, className = "" }: { images: string[
         <>
           <button
             type="button"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); go(idx - 1); }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              go(idx - 1);
+            }}
             className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-1.5 text-white backdrop-blur-sm transition-all hover:bg-black/60 hover:scale-110 active:scale-95 md:opacity-0 md:group-hover:opacity-100"
             aria-label="Previous image"
           >
@@ -73,7 +85,11 @@ export function ImageCarousel({ images, alt, className = "" }: { images: string[
           </button>
           <button
             type="button"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); go(idx + 1); }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              go(idx + 1);
+            }}
             className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-1.5 text-white backdrop-blur-sm transition-all hover:bg-black/60 hover:scale-110 active:scale-95 md:opacity-0 md:group-hover:opacity-100"
             aria-label="Next image"
           >
@@ -85,7 +101,11 @@ export function ImageCarousel({ images, alt, className = "" }: { images: string[
               <button
                 key={i}
                 type="button"
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); go(i); }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  go(i);
+                }}
                 className={`rounded-full transition-all ${
                   i === idx ? "w-6 bg-white shadow-sm" : "w-1.5 bg-white/60 hover:bg-white/80"
                 } h-1.5`}

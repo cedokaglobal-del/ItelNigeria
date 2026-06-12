@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { getProduct, type Product } from "./products";
 import { useProducts } from "./admin-data";
 
@@ -27,7 +35,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(KEY);
       if (raw) setItems(JSON.parse(raw));
-    } catch { console.warn("Cart: failed to parse saved items"); }
+    } catch {
+      console.warn("Cart: failed to parse saved items");
+    }
   }, []);
 
   useEffect(() => {
@@ -38,8 +48,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const add = useCallback((slug: string, qty = 1) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.slug === slug);
-      if (existing)
-        return prev.map((i) => (i.slug === slug ? { ...i, qty: i.qty + qty } : i));
+      if (existing) return prev.map((i) => (i.slug === slug ? { ...i, qty: i.qty + qty } : i));
       return [...prev, { slug, qty }];
     });
   }, []);

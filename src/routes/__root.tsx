@@ -1,10 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  Outlet,
-  Link,
-  createRootRouteWithContext,
-  HeadContent,
-} from "@tanstack/react-router";
+import { Outlet, Link, createRootRouteWithContext, HeadContent } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 
 import appCss from "../style.css?url";
@@ -98,7 +93,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@itelenergy" },
       { name: "twitter:title", content: "Itel Energy — Power Independence Starts Here" },
-      { name: "twitter:description", content: "Premium solar panels, inverters, batteries and complete kits. Size your system in 60 seconds." },
+      {
+        name: "twitter:description",
+        content:
+          "Premium solar panels, inverters, batteries and complete kits. Size your system in 60 seconds.",
+      },
       { name: "robots", content: "index, follow" },
       { name: "googlebot", content: "index, follow" },
     ],
@@ -114,7 +113,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@type": "Organization",
           name: "Itel Energy",
           url: "https://itelenergy.com",
-          description: "Premium solar equipment and intelligent sizing for homes and businesses across Nigeria.",
+          description:
+            "Premium solar equipment and intelligent sizing for homes and businesses across Nigeria.",
           foundingDate: "2024",
           contactPoint: {
             "@type": "ContactPoint",
@@ -132,7 +132,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@type": "WebSite",
           name: "Itel Energy",
           url: "https://itelenergy.com",
-          description: "Premium solar panels, inverters, batteries and complete kits engineered for Nigeria. Size your system in 60 seconds.",
+          description:
+            "Premium solar panels, inverters, batteries and complete kits engineered for Nigeria. Size your system in 60 seconds.",
           potentialAction: {
             "@type": "SearchAction",
             target: "https://itelenergy.com/shop?q={search_term_string}",
@@ -160,9 +161,7 @@ function RootShell({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
         />
       </head>
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
