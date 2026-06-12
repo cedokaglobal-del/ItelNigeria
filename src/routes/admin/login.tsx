@@ -15,14 +15,11 @@ function AdminLogin() {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError(false);
-    const ok = await loginAdmin(password);
-    setLoading(false);
+    const ok = loginAdmin(password);
     if (ok) {
       router.navigate({ to: "/admin" });
     } else {
@@ -52,12 +49,11 @@ function AdminLogin() {
               />
               {error && <p className="mt-1 text-xs text-red-500">Incorrect password</p>}
             </div>
-            <button
+              <button
               type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:brightness-110 disabled:opacity-60"
+              className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:brightness-110"
             >
-              {loading ? "Verifying..." : "Sign in"}
+              Sign in
             </button>
           </form>
           <p className="mt-6 text-center text-[10px] text-muted-foreground">
