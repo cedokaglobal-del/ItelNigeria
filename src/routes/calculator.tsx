@@ -94,6 +94,9 @@ function CalculatorPage() {
   const [autonomyDays, setAutonomyDays] = useState(1);
   const [battery, setBattery] = useState<"lithium" | "tubular">("lithium");
   const [systemVoltage, setSystemVoltage] = useState<24 | 48>(48);
+  const [customOpen, setCustomOpen] = useState(false);
+  const [customName, setCustomName] = useState("My appliance");
+  const [customWatts, setCustomWatts] = useState(200);
 
   const result = useMemo(() => {
     try {
@@ -110,6 +113,17 @@ function CalculatorPage() {
       ...prev,
       { id: uid(), name: p.name, watts: p.watts, qty: 1, hours: 4 },
     ]);
+  };
+
+  const addCustomAppliance = () => {
+    const name = customName.trim() || "My appliance";
+    setAppliances((prev) => [
+      ...prev,
+      { id: uid(), name, watts: customWatts, qty: 1, hours: 4 },
+    ]);
+    setCustomOpen(false);
+    setCustomName("My appliance");
+    setCustomWatts(200);
   };
 
   const updateAppliance = (id: string, patch: Partial<Appliance>) =>
@@ -193,7 +207,7 @@ function CalculatorPage() {
                   ))}
                   <button
                     type="button"
-                    onClick={() => addAppliance({ name: "Custom appliance", watts: 100 })}
+                    onClick={() => setCustomOpen(true)}
                     className="inline-flex items-center gap-1 rounded-full border-2 border-dashed border-primary/40 bg-primary/[0.04] px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
                   >
                     <Wrench className="h-3 w-3" />
@@ -334,17 +348,7 @@ function CalculatorPage() {
                   {result.breakdown.map((row) => (
                     <div key={row.label} className="flex items-center justify-between py-3 text-sm">
                       <dt className="text-muted-foreground">{row.label}</dt>
-                      <dd
-                        className="font-mono text-xs font-semibold"
-                        style={{
-                          color:
-                            row.tone === "solar"
-                              ? "var(--solar)"
-                              : row.tone === "tech"
-                                ? "var(--tech)"
-                                : "var(--foreground)",
-                        }}
-                      >
+                      <dd className="font-mono text-xs font-semibold" style={{ color: row.tone === "solar" ? "var(--solar)" : "var(--foreground)" }}>
                         {row.value}
                       </dd>
                     </div>
@@ -360,6 +364,65 @@ function CalculatorPage() {
           )}
         </div>
       </section>
+
+      {customOpen && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl border bg-card p-6 shadow-xl">
+            <p className="text-base font-semibold">Add custom appliance</p>
+            <p className="mt-1 text-xs text-muted-foreground">Enter the details of your appliance</p>
+            <div className="mt-5 space-y-4">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">Name</label>
+                <input
+                  type="text"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  placeholder="e.g. Water heater"
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">Wattage</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={customWatts}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (v === "") { setCustomWatts(0); return; }
+                      const n = parseFloat(v);
+                      if (!isNaN(n)) setCustomWatts(Math.max(1, Math.min(5000, n)));
+                    }}
+                    min={1}
+                    max={5000}
+                    className="w-full rounded-lg border bg-background px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <span className="pointer-events-none absolute inset-y-0 right-3 grid place-items-center text-xs text-muted-foreground">
+                    W
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setCustomOpen(false)}
+                className="flex-1 rounded-xl border bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={addCustomAppliance}
+                className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:brightness-110"
+              >
+                Add appliance
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -497,23 +560,21 @@ function NumberInput({
     <div className="relative">
       <input
         type="number"
-        defaultValue={value}
+        value={value}
         min={min}
         max={max}
         step={step}
         onBlur={(e) => {
-          const v = parseFloat(e.target.value);
-          if (!isNaN(v)) {
-            onChange(Math.max(min, Math.min(max, v)));
-          }
+          const raw = e.target.value;
+          if (raw === "") { onChange(min); return; }
+          const v = parseFloat(raw);
+          if (!isNaN(v)) onChange(Math.max(min, Math.min(max, v)));
         }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            const v = parseFloat(e.currentTarget.value);
-            if (!isNaN(v)) {
-              onChange(Math.max(min, Math.min(max, v)));
-            }
-          }
+        onChange={(e) => {
+          const raw = e.target.value;
+          if (raw === "") return;
+          const v = parseFloat(raw);
+          if (!isNaN(v)) onChange(Math.max(min, Math.min(max, v)));
         }}
         className="w-full rounded-md bg-background/60 px-2 py-1.5 pr-6 text-right font-mono text-xs focus:outline-none focus:ring-1 focus:ring-primary"
       />
@@ -541,11 +602,11 @@ function RangeField({
       <div className="relative mt-2">
         <input
           type="range"
-          defaultValue={value}
+          value={value}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
           min={min}
           max={max}
           step={step}
-          onChange={(e) => onChange(parseFloat(e.target.value))}
           className="range-slider w-full"
         />
       </div>
