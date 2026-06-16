@@ -9,7 +9,7 @@ import { useProducts } from "@/lib/admin-data";
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Shop — Itel Energy" },
+      { title: "Shop — ItelNigeria" },
       {
         name: "description",
         content:

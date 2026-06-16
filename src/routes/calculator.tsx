@@ -25,7 +25,7 @@ import { formatNGN, formatNumber } from "@/lib/format";
 export const Route = createFileRoute("/calculator")({
   head: () => ({
     meta: [
-      { title: "Solar Calculator — Itel Energy" },
+      { title: "Solar Calculator — ItelNigeria" },
       { name: "description", content: "Size your solar system in 60 seconds. Add appliances, get panel, inverter, battery and cost estimates with payback period." },
     ],
   }),

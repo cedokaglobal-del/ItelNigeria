@@ -80,7 +80,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-mono-550w",
     name: "Itel Mono PERC 550W",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "panels",
     price: 165000,
     originalPrice: 190000,
@@ -104,7 +104,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-ntype-600w",
     name: "Itel N-Type Bifacial 600W",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "panels",
     price: 198000,
     images: imgFor("itel-ntype-600w", "Itel N-Type Bifacial 600W", "panels", "600W"),
@@ -127,7 +127,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-hybrid-5kva",
     name: "Itel Hybrid Inverter 5kVA / 48V",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "inverters",
     price: 685000,
     originalPrice: 785000,
@@ -156,7 +156,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-hybrid-10kva",
     name: "Itel Hybrid Inverter 10kVA / 48V",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "inverters",
     price: 1250000,
     images: imgFor(
@@ -183,7 +183,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-lifepo4-5kwh",
     name: "Itel LiFePO4 5.12kWh Wall-Mount",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "batteries",
     price: 1450000,
     originalPrice: 1650000,
@@ -212,7 +212,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-tubular-220ah",
     name: "Itel Deep-Cycle Tubular 220Ah",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "batteries",
     price: 245000,
     images: imgFor(
@@ -239,7 +239,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-mppt-60a",
     name: "Itel MPPT Charge Controller 60A",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "controllers",
     price: 145000,
     originalPrice: 170000,
@@ -267,7 +267,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-starter-3kva",
     name: "Itel Starter Kit · 3kVA Home Bundle",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "kits",
     price: 1850000,
     originalPrice: 2100000,
@@ -296,7 +296,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-pro-10kva",
     name: "Itel Pro Kit · 10kVA Business System",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "kits",
     price: 6500000,
     images: imgFor(
@@ -324,7 +324,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-dc-cable-6mm",
     name: "Itel Solar DC Cable 6mm² (100m)",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "accessories",
     price: 95000,
     originalPrice: 110000,
@@ -346,7 +346,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-rail-kit",
     name: "Itel Roof Mount Rail Kit (4 panels)",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "accessories",
     price: 78000,
     images: imgFor(
@@ -372,7 +372,7 @@ export const PRODUCTS: Product[] = [
   {
     slug: "itel-streetlight-60w",
     name: "Itel All-in-One Solar Street Light 60W",
-    brand: "Itel Energy",
+    brand: "ItelNigeria",
     category: "accessories",
     price: 135000,
     images: imgFor(

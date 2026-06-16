@@ -9,7 +9,7 @@ import { Pagination } from "@/components/site/Pagination";
 export const Route = createFileRoute("/solar-systems")({
   head: () => ({
     meta: [
-      { title: "Solar Systems — Itel Energy" },
+      { title: "Solar Systems — ItelNigeria" },
       {
         name: "description",
         content:

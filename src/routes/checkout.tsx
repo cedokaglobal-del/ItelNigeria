@@ -6,7 +6,7 @@ import { useCart } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Checkout — Itel Energy" }] }),
+  head: () => ({ meta: [{ title: "Checkout — ItelNigeria" }] }),
   component: CheckoutPage,
 });
 

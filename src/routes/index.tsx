@@ -18,13 +18,13 @@ import { PRODUCTS, CATEGORIES, type ProductCategory } from "@/lib/products";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Itel Energy — Power Independence Starts Here" },
+      { title: "ItelNigeria — Power Independence Starts Here" },
       {
         name: "description",
         content:
           "Premium solar panels, inverters, batteries and complete kits engineered for Nigeria. Size your system in 60 seconds.",
       },
-      { property: "og:title", content: "Itel Energy — Power Independence" },
+      { property: "og:title", content: "ItelNigeria — Power Independence" },
       {
         property: "og:description",
         content: "Premium solar equipment + intelligent sizing. Built for African sun.",

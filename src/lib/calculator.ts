@@ -1,5 +1,5 @@
 /**
- * Itel Energy solar sizing engine.
+ * ItelNigeria solar sizing engine.
  * Conservative, transparent assumptions tuned for Nigeria.
  */
 

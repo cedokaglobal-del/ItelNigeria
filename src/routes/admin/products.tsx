@@ -64,7 +64,7 @@ type ProductForm = {
 const emptyForm: ProductForm = {
   slug: "",
   name: "",
-  brand: "Itel Energy",
+  brand: "ItelNigeria",
   category: "panels",
   price: 0,
   originalPrice: "",
@@ -238,7 +238,7 @@ function AdminProducts() {
           addProduct({
             slug: compSlug,
             name: comp.name,
-            brand: "Itel Energy",
+            brand: "ItelNigeria",
             category: cat,
             price: Math.round(
               form.price /
@@ -791,7 +791,7 @@ function AdminProducts() {
             addProduct({
               slug: sys.slug,
               name: sys.name,
-              brand: "Itel Energy",
+              brand: "ItelNigeria",
               category: "kits",
               price: sys.price,
               images: sys.images,
@@ -821,7 +821,7 @@ function AdminProducts() {
               addProduct({
                 slug: compSlug,
                 name: comp.name,
-                brand: "Itel Energy",
+                brand: "ItelNigeria",
                 category: cat,
                 price: Math.round(sys.price / sys.components.length / comp.qty),
                 images: [],

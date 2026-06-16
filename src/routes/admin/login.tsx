@@ -7,7 +7,7 @@ export const Route = createFileRoute("/admin/login")({
   beforeLoad: () => {
     if (typeof window !== "undefined" && isAdminAuthenticated()) throw redirect({ to: "/admin" });
   },
-  head: () => ({ meta: [{ title: "Admin Login — Itel Energy" }] }),
+  head: () => ({ meta: [{ title: "Admin Login — ItelNigeria" }] }),
   component: AdminLogin,
 });
 

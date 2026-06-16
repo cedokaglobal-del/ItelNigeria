@@ -36,7 +36,7 @@ export function Footer() {
 
       <div className="border-t border-hairline">
         <div className="container-page flex flex-col items-start justify-between gap-3 py-6 text-xs text-muted-foreground md:flex-row md:items-center">
-          <p>© {new Date().getFullYear()} Itel Energy. Powering independence.</p>
+          <p>© {new Date().getFullYear()} ItelNigeria. Powering independence.</p>
           <p>NGN pricing · Free delivery in Lagos · Pay with Paystack & Flutterwave</p>
         </div>
       </div>

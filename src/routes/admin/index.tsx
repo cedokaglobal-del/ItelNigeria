@@ -17,7 +17,7 @@ export const Route = createFileRoute("/admin/")({
     if (typeof window !== "undefined" && !isAdminAuthenticated())
       throw redirect({ to: "/admin/login" });
   },
-  head: () => ({ meta: [{ title: "Admin Dashboard — Itel Energy" }] }),
+  head: () => ({ meta: [{ title: "Admin Dashboard — ItelNigeria" }] }),
   component: AdminDashboard,
 });
 
@@ -45,7 +45,7 @@ function AdminDashboard() {
     <AdminLayout>
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Dashboard</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Overview of your Itel Energy store</p>
+        <p className="mt-1 text-sm text-muted-foreground">Overview of your ItelNigeria store</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
