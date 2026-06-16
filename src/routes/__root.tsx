@@ -38,7 +38,6 @@ function NotFoundComponent() {
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
-
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
       <div className="max-w-md text-center">
@@ -48,20 +47,12 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
-            onClick={() => {
-              reset();
-              window.location.reload();
-            }}
+            onClick={() => { reset(); window.location.reload(); }}
             className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
           >
             Try again
           </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-full border border-hairline px-5 py-2.5 text-sm"
-          >
-            Go home
-          </a>
+          <a href="/" className="inline-flex items-center justify-center rounded-full border border-hairline px-5 py-2.5 text-sm">Go home</a>
         </div>
       </div>
     </div>
@@ -74,18 +65,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Itel Energy — Power Independence Starts Here" },
-      {
-        name: "description",
-        content:
-          "Premium solar panels, inverters, batteries and complete kits. Size your system in 60 seconds with Itel Energy's smart solar calculator.",
-      },
+      { name: "description", content: "Premium solar panels, inverters, batteries and complete kits. Size your system in 60 seconds with Itel Energy's smart solar calculator." },
       { name: "author", content: "Itel Energy" },
       { name: "theme-color", content: "#FFFFFF" },
       { property: "og:title", content: "Itel Energy — Solar OS for homes & business" },
-      {
-        property: "og:description",
-        content: "Premium solar equipment and intelligent sizing. Nigeria-built, world-class.",
-      },
+      { property: "og:description", content: "Premium solar equipment and intelligent sizing. Nigeria-built, world-class." },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://itelenergy.com" },
       { property: "og:site_name", content: "Itel Energy" },
@@ -93,84 +77,51 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@itelenergy" },
       { name: "twitter:title", content: "Itel Energy — Power Independence Starts Here" },
-      {
-        name: "twitter:description",
-        content:
-          "Premium solar panels, inverters, batteries and complete kits. Size your system in 60 seconds.",
-      },
+      { name: "twitter:description", content: "Premium solar panels, inverters, batteries and complete kits. Size your system in 60 seconds." },
       { name: "robots", content: "index, follow" },
       { name: "googlebot", content: "index, follow" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "canonical", href: "https://itelenergy.com" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
+      { href: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap", rel: "stylesheet" },
     ],
     scripts: [
       {
         type: "application/ld+json",
         children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: "Itel Energy",
-          url: "https://itelenergy.com",
-          description:
-            "Premium solar equipment and intelligent sizing for homes and businesses across Nigeria.",
+          "@context": "https://schema.org", "@type": "Organization",
+          name: "Itel Energy", url: "https://itelenergy.com",
+          description: "Premium solar equipment and intelligent sizing for homes and businesses across Nigeria.",
           foundingDate: "2024",
-          contactPoint: {
-            "@type": "ContactPoint",
-            telephone: "+234-800-ITEL",
-            contactType: "customer service",
-            availableLanguage: ["English"],
-          },
+          contactPoint: { "@type": "ContactPoint", telephone: "+234-800-ITEL", contactType: "customer service", availableLanguage: ["English"] },
           sameAs: ["https://twitter.com/itelenergy"],
         }),
       },
       {
         type: "application/ld+json",
         children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "Itel Energy",
-          url: "https://itelenergy.com",
-          description:
-            "Premium solar panels, inverters, batteries and complete kits engineered for Nigeria. Size your system in 60 seconds.",
-          potentialAction: {
-            "@type": "SearchAction",
-            target: "https://itelenergy.com/shop?q={search_term_string}",
-            "query-input": "required name=search_term_string",
-          },
+          "@context": "https://schema.org", "@type": "WebSite",
+          name: "Itel Energy", url: "https://itelenergy.com",
+          description: "Premium solar panels, inverters, batteries and complete kits engineered for Nigeria. Size your system in 60 seconds.",
+          potentialAction: { "@type": "SearchAction", target: "https://itelenergy.com/shop?q={search_term_string}", "query-input": "required name=search_term_string" },
         }),
       },
     ],
   }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
-
-function RootShell({ children }: { children: ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
-        />
-      </head>
-      <body>{children}</body>
-    </html>
-  );
-}
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
+      <HeadContent />
       <CartProvider>
         <div className="flex min-h-dvh flex-col">
           <Nav />
