@@ -9,6 +9,7 @@ import {
 } from "react";
 import { getProduct, type Product } from "./products";
 import { useProducts } from "./admin-data";
+import type { SolarSystem } from "./solar-systems";
 
 export type CartItem = { slug: string; qty: number };
 
@@ -68,11 +69,38 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clear = useCallback(() => setItems([]), []);
 
   const value = useMemo<CartCtx>(() => {
+    const solarSystems: SolarSystem[] = (() => {
+      try {
+        const raw = localStorage.getItem("itel.admin.solarsystems");
+        if (raw) return JSON.parse(raw);
+      } catch {}
+      return [];
+    })();
     const detailed = items
       .map((i) => {
         const product = getProduct(i.slug) ?? adminProducts.find((p) => p.slug === i.slug);
-        if (!product) return null;
-        return { product, qty: i.qty, lineTotal: product.price * i.qty };
+        if (product) return { product, qty: i.qty, lineTotal: product.price * i.qty };
+        const sys = solarSystems.find((s) => s.slug === i.slug);
+        if (sys) {
+          const virtual: Product = {
+            slug: sys.slug,
+            name: sys.name,
+            brand: "ItelNigeria",
+            category: "kits",
+            price: sys.price,
+            images: sys.images,
+            rating: sys.rating,
+            reviews: sys.reviews,
+            tagline: sys.tagline,
+            spec: `${sys.totalPanels}\u00d7${sys.panelWattage}W \u00b7 ${sys.inverterKVA}kVA`,
+            highlights: [],
+            description: sys.description || "",
+            warranty: "Component-wise",
+            inStock: true,
+          };
+          return { product: virtual, qty: i.qty, lineTotal: sys.price * i.qty };
+        }
+        return null;
       })
       .filter(Boolean) as CartCtx["detailed"];
     const count = detailed.reduce((s, i) => s + i.qty, 0);
