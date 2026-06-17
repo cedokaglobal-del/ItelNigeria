@@ -20,7 +20,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
       </span>
       {!compact && (
         <span className="text-[15px] font-semibold tracking-tight">
-          Itel<span className="text-muted-foreground"> Energy</span>
+          Itel<span className="text-muted-foreground">Nigeria</span>
         </span>
       )}
     </Link>
