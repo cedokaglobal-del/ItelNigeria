@@ -15,17 +15,29 @@ export const Route = createFileRoute("/products/$slug")({
     if (!product) throw notFound();
     return { product };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData.product.name} — ItelNigeria` },
-      { name: "description", content: loaderData.product.tagline },
-      ...(loaderData.product.tags?.length
-        ? [{ name: "keywords", content: loaderData.product.tags.join(", ") }]
-        : []),
-      { property: "og:title", content: `${loaderData.product.name} — ItelNigeria` },
-      { property: "og:description", content: loaderData.product.tagline },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const p = loaderData.product;
+    const href = "https://itelenergy.com/products/" + p.slug;
+    return {
+      meta: [
+        { title: `${p.name} — ItelNigeria` },
+        { name: "description", content: p.tagline },
+        ...(p.tags?.length ? [{ name: "keywords", content: p.tags.join(", ") }] : []),
+        { property: "og:title", content: `${p.name} — ItelNigeria` },
+        { property: "og:description", content: p.tagline },
+        { property: "og:type", content: "product" },
+        { property: "og:url", content: href },
+        { property: "og:site_name", content: "ItelNigeria" },
+        { property: "og:locale", content: "en_NG" },
+        { property: "product:price:amount", content: String(p.price) },
+        { property: "product:price:currency", content: "NGN" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: `${p.name} — ItelNigeria` },
+        { name: "twitter:description", content: p.tagline },
+      ],
+      links: [{ rel: "canonical", href }],
+    };
+  },
   component: ProductPage,
 });
 

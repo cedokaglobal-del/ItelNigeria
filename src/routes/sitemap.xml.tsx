@@ -1,16 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PRODUCTS } from "@/lib/products";
+import { seedSolarSystems } from "@/lib/solar-systems";
+
+const SS = seedSolarSystems();
 
 const PAGES = [
   { loc: "/", priority: "1.0", changefreq: "weekly" },
   { loc: "/shop", priority: "0.9", changefreq: "daily" },
   { loc: "/calculator", priority: "0.9", changefreq: "weekly" },
   { loc: "/solar-systems", priority: "0.9", changefreq: "daily" },
-  { loc: "/cart", priority: "0.5", changefreq: "monthly" },
-  { loc: "/checkout", priority: "0.5", changefreq: "monthly" },
   ...PRODUCTS.map((p) => ({
     loc: `/products/${p.slug}` as const,
     priority: "0.7",
+    changefreq: "weekly" as const,
+  })),
+  ...SS.map((s) => ({
+    loc: `/solar-systems/${s.slug}` as const,
+    priority: "0.8",
     changefreq: "weekly" as const,
   })),
 ];

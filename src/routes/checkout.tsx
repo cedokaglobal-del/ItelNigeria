@@ -6,7 +6,14 @@ import { useCart } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({ meta: [{ title: "Checkout — ItelNigeria" }] }),
+  head: () => ({
+    meta: [
+      { title: "Checkout — ItelNigeria" },
+      { name: "description", content: "Complete your solar equipment order. Secure checkout with Paystack or Flutterwave." },
+      { name: "robots", content: "noindex, nofollow" },
+      { name: "googlebot", content: "noindex, nofollow" },
+    ],
+  }),
   component: CheckoutPage,
 });
 

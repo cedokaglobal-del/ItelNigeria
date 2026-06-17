@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { Star, ShoppingBag, Eye } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
 import { useSolarSystems } from "@/lib/solar-systems";
@@ -17,7 +17,17 @@ export const Route = createFileRoute("/solar-systems")({
         content:
           "Pre-engineered solar systems for homes and businesses. Complete combos with panels, inverters, batteries, and installation accessories.",
       },
+      { property: "og:title", content: "Solar Systems — ItelNigeria" },
+      { property: "og:description", content: "Complete pre-engineered solar systems for Nigerian homes and businesses. Panels, inverters, batteries, and all accessories included." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://itelenergy.com/solar-systems" },
+      { property: "og:site_name", content: "ItelNigeria" },
+      { property: "og:locale", content: "en_NG" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Solar Systems — ItelNigeria" },
+      { name: "twitter:description", content: "Complete pre-engineered solar combos — panels, inverter, battery, and accessories. Designed for Nigeria." },
     ],
+    links: [{ rel: "canonical", href: "https://itelenergy.com/solar-systems" }],
   }),
   component: SolarSystemsPage,
 });
@@ -25,11 +35,16 @@ export const Route = createFileRoute("/solar-systems")({
 const PER_PAGE = 8;
 
 function SolarSystemsPage() {
+  const gridRef = useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
   const isListing = pathname === "/solar-systems";
   const [systems] = useSolarSystems();
   const [filterVoltage, setFilterVoltage] = useState<string>("all");
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [page]);
 
   const filtered = useMemo(() => {
     if (!isListing) return [];
@@ -82,7 +97,7 @@ function SolarSystemsPage() {
           </p>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div ref={gridRef} className="grid min-h-[400px] gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {paged.map((sys) => (
             <SolarSystemCard key={sys.slug} system={sys} />
           ))}

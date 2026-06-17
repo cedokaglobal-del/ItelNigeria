@@ -31,7 +31,17 @@ export const Route = createFileRoute("/calculator")({
     meta: [
       { title: "Solar Calculator — ItelNigeria" },
       { name: "description", content: "Size your solar system in 60 seconds. Add appliances, get panel, inverter, battery and cost estimates with payback period." },
+      { property: "og:title", content: "Solar Calculator — ItelNigeria" },
+      { property: "og:description", content: "Size your solar system in 60 seconds. Add your appliances and get instant panel, inverter, battery, and cost estimates with payback period." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://itelenergy.com/calculator" },
+      { property: "og:site_name", content: "ItelNigeria" },
+      { property: "og:locale", content: "en_NG" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Solar Calculator — ItelNigeria" },
+      { name: "twitter:description", content: "Size your solar system in 60 seconds. Free solar sizing tool for Nigerian homes and businesses." },
     ],
+    links: [{ rel: "canonical", href: "https://itelenergy.com/calculator" }],
   }),
   component: CalculatorPage,
 });

@@ -6,7 +6,12 @@ import { formatNGN } from "@/lib/format";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
-    meta: [{ title: "Cart — ItelNigeria" }],
+    meta: [
+      { title: "Cart — ItelNigeria" },
+      { name: "description", content: "Review your solar equipment selections before checkout." },
+      { name: "robots", content: "noindex, nofollow" },
+      { name: "googlebot", content: "noindex, nofollow" },
+    ],
   }),
   component: CartPage,
 });

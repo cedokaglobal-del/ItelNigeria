@@ -218,7 +218,7 @@ export function generateDescription(system: SolarSystem): string {
   return t.join("\n\n");
 }
 
-function seedSolarSystems(): SolarSystem[] {
+export function seedSolarSystems(): SolarSystem[] {
   return [
     {
       slug: "solar-starter-3kva",

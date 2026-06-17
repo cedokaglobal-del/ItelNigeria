@@ -39,13 +39,27 @@ export const Route = createFileRoute("/solar-systems/$slug")({
     }
     return { slug };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      {
-        title: `${loaderData.slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())} — ItelNigeria`,
-      },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const slug = loaderData.slug;
+    const name = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+    const href = "https://itelenergy.com/solar-systems/" + slug;
+    return {
+      meta: [
+        { title: name + " — ItelNigeria" },
+        { name: "description", content: "The " + name + " — a complete pre-engineered solar system for Nigerian homes. See full specs, price, components, and what it powers." },
+        { property: "og:title", content: name + " — ItelNigeria" },
+        { property: "og:description", content: "Complete " + name + " with panels, inverter, battery, and installation accessories. Engineered for Nigeria." },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: href },
+        { property: "og:site_name", content: "ItelNigeria" },
+        { property: "og:locale", content: "en_NG" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: name + " — ItelNigeria" },
+        { name: "twitter:description", content: "Pre-engineered " + name + " — solar panels, hybrid inverter, and battery bank for Nigerian homes." },
+      ],
+      links: [{ rel: "canonical", href }],
+    };
+  },
   component: SolarSystemDetail,
 });
 

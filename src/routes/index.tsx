@@ -24,12 +24,17 @@ export const Route = createFileRoute("/")({
         content:
           "Premium solar panels, inverters, batteries and complete kits engineered for Nigeria. Size your system in 60 seconds.",
       },
-      { property: "og:title", content: "ItelNigeria — Power Independence" },
-      {
-        property: "og:description",
-        content: "Premium solar equipment + intelligent sizing. Built for African sun.",
-      },
+      { property: "og:title", content: "ItelNigeria — Power Independence Starts Here" },
+      { property: "og:description", content: "Premium solar equipment and intelligent sizing for Nigerian homes and businesses. Built for African sun." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://itelenergy.com" },
+      { property: "og:site_name", content: "ItelNigeria" },
+      { property: "og:locale", content: "en_NG" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "ItelNigeria — Power Independence Starts Here" },
+      { name: "twitter:description", content: "Premium solar panels, inverters, batteries and complete kits. Size your system in 60 seconds." },
     ],
+    links: [{ rel: "canonical", href: "https://itelenergy.com" }],
   }),
   component: Home,
 });

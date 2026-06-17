@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Package, Sun, Cpu, BatteryCharging, Zap, Wrench, type LucideIcon } from "lucide-react";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Pagination } from "@/components/site/Pagination";
@@ -15,7 +15,15 @@ export const Route = createFileRoute("/shop")({
         content:
           "Solar panels, inverters, lithium batteries, MPPT controllers, mounts and complete kits. Premium components for African conditions.",
       },
+      { property: "og:title", content: "Shop — ItelNigeria" },
+      { property: "og:description", content: "Premium solar equipment for African homes and businesses. Panels, inverters, batteries, controllers, and turnkey kits." },
+      { property: "og:type", content: "website" },
       { property: "og:url", content: "https://itelenergy.com/shop" },
+      { property: "og:site_name", content: "ItelNigeria" },
+      { property: "og:locale", content: "en_NG" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Shop — ItelNigeria" },
+      { name: "twitter:description", content: "Solar panels, inverters, lithium batteries, and complete solar kits for Nigerian homes and businesses." },
     ],
     links: [{ rel: "canonical", href: "https://itelenergy.com/shop" }],
   }),
@@ -36,10 +44,15 @@ const CAT_ICONS: Record<ProductCategory, LucideIcon> = {
 const PER_PAGE = 8;
 
 function Shop() {
+  const gridRef = useRef<HTMLDivElement>(null);
   const [adminProducts] = useProducts();
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<"featured" | "low" | "high" | "rating">("featured");
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [page]);
 
   const products = useMemo(() => {
     const source = adminProducts.length > 0 ? adminProducts : getProducts();
@@ -124,7 +137,7 @@ function Shop() {
         </p>
 
         {/* ── Grid ── */}
-        <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-5">
+        <div ref={gridRef} className="grid min-h-[400px] grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-5">
           {paged.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}
