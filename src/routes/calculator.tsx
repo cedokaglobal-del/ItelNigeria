@@ -13,6 +13,10 @@ import {
   TrendingDown,
   Wrench,
   Zap,
+  Gauge,
+  Clock,
+  CheckCircle2,
+  Info,
 } from "lucide-react";
 import {
   APPLIANCE_PRESETS,
@@ -123,13 +127,13 @@ function CalculatorPage() {
 
               <div className="mt-4 space-y-2 md:mt-5 md:space-y-1.5">
                 {appliances.map((a) => (
-                  <div key={a.id} className="rounded-xl border bg-surface px-2.5 py-2 transition-colors has-[input:focus]:border-primary/40 md:flex md:items-center md:gap-2 md:px-3 md:py-2">
+                  <div key={a.id} className="group rounded-xl border bg-surface px-2.5 py-2 transition-colors has-[input:focus]:border-primary/40 md:flex md:items-center md:gap-2 md:px-3 md:py-2">
                     <div className="flex items-center gap-2 md:flex-1 md:gap-0">
                       <input
                         type="text"
                         value={a.name}
                         onChange={(e) => updateAppliance(a.id, { name: e.target.value })}
-                        className="min-w-0 flex-1 rounded bg-transparent px-1 py-1 text-sm focus:outline-none"
+                        className="min-w-0 flex-1 rounded-lg border bg-background/40 px-2 py-1.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:bg-transparent md:py-1"
                       />
                       <button type="button" onClick={() => removeAppliance(a.id)}
                         className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
@@ -143,30 +147,30 @@ function CalculatorPage() {
                           type="number"
                           value={a.watts}
                           onChange={(e) => { const c = clamp(e.target.value, 1, 5000); if (c !== null) updateAppliance(a.id, { watts: c }); }}
-                          className="w-14 rounded-md bg-background/60 px-2 py-1.5 text-right text-xs font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-primary md:w-16 md:px-1.5 md:py-1"
+                          className="w-14 rounded-lg border bg-background/60 px-2 py-1.5 text-right text-xs font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:w-16 md:px-1.5 md:py-1"
                           min={1} max={5000}
                         />
-                        <span className="ml-0.5 text-[10px] text-muted-foreground md:ml-0 md:text-[10px]">W</span>
+                        <span className="ml-1 text-[10px] font-medium text-muted-foreground">W</span>
                       </div>
                       <div className="flex items-center">
                         <input
                           type="number"
                           value={a.qty}
                           onChange={(e) => { const c = clamp(e.target.value, 0, 50); if (c !== null) updateAppliance(a.id, { qty: c }); }}
-                          className="w-10 rounded-md bg-background/60 px-1.5 py-1.5 text-right text-xs font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-primary md:w-12 md:px-1.5 md:py-1"
+                          className="w-10 rounded-lg border bg-background/60 px-1.5 py-1.5 text-right text-xs font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:w-12 md:px-1.5 md:py-1"
                           min={0} max={50}
                         />
-                        <span className="ml-0.5 text-[10px] text-muted-foreground md:ml-0 md:text-[10px]">×</span>
+                        <span className="ml-1 text-[10px] font-medium text-muted-foreground">×</span>
                       </div>
                       <div className="flex items-center">
                         <input
                           type="number"
                           value={a.hours}
                           onChange={(e) => { const c = clamp(e.target.value, 0, 24); if (c !== null) updateAppliance(a.id, { hours: c }); }}
-                          className="w-10 rounded-md bg-background/60 px-1.5 py-1.5 text-right text-xs font-mono tabular-nums focus:outline-none focus:ring-1 focus:ring-primary md:w-12 md:px-1.5 md:py-1"
+                          className="w-10 rounded-lg border bg-background/60 px-1.5 py-1.5 text-right text-xs font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:w-12 md:px-1.5 md:py-1"
                           min={0} max={24} step={0.5}
                         />
-                        <span className="ml-0.5 text-[10px] text-muted-foreground md:ml-0 md:text-[10px]">h/d</span>
+                        <span className="ml-1 text-[10px] font-medium text-muted-foreground">h/d</span>
                       </div>
                     </div>
                   </div>
@@ -178,12 +182,12 @@ function CalculatorPage() {
                 <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto">
                   {APPLIANCE_PRESETS.map((p) => (
                     <button key={p.name} type="button" onClick={() => addAppliance(p)}
-                      className="inline-flex shrink-0 items-center gap-1 rounded-full border bg-surface px-2.5 py-1.5 text-[11px] text-foreground/80 transition-colors hover:bg-accent hover:text-foreground active:scale-[0.97]">
+                      className="inline-flex shrink-0 items-center gap-1 rounded-full border bg-surface px-2.5 py-1.5 text-[11px] text-foreground/80 transition-all hover:border-primary/40 hover:bg-primary/5 hover:text-foreground active:scale-[0.97]">
                       <Plus className="h-3 w-3" /> {p.name}
                     </button>
                   ))}
                   <button type="button" onClick={() => setShowCustom(true)}
-                    className="inline-flex shrink-0 items-center gap-1 rounded-full border-2 border-dashed border-primary/30 bg-primary/[0.03] px-2.5 py-1.5 text-[11px] font-medium text-primary transition-colors hover:bg-primary/10 active:scale-[0.97]">
+                    className="inline-flex shrink-0 items-center gap-1 rounded-full border-2 border-dashed border-primary/30 bg-primary/[0.03] px-2.5 py-1.5 text-[11px] font-medium text-primary transition-all hover:bg-primary/10 active:scale-[0.97]">
                     <Wrench className="h-3 w-3" /> Custom
                   </button>
                 </div>
@@ -199,11 +203,19 @@ function CalculatorPage() {
                   <p className="text-[11px] text-muted-foreground md:text-xs">Fine-tune for your location and equipment</p>
                 </div>
               </div>
-              <div className="mt-4 grid gap-4 md:mt-5 md:gap-5 sm:grid-cols-2">
-                <RangeField label="Peak sun hours" value={sunHours} onChange={setSunHours} min={3.5} max={6} step={0.1} unit="hrs" hint="Nigeria averages 5.0 hrs/day" />
-                <RangeField label="Battery autonomy" value={autonomyDays} onChange={setAutonomyDays} min={0.5} max={3} step={0.5} unit="days" hint="Backup without sun" />
-                <Segmented label="Battery type" value={battery} onChange={(v) => setBattery(v as "lithium" | "tubular")} options={[{ value: "lithium", label: "LiFePO₄" }, { value: "tubular", label: "Tubular" }]} />
-                <Segmented label="System voltage" value={String(systemVoltage)} onChange={(v) => setSystemVoltage(Number(v) as 24 | 48)} options={[{ value: "24", label: "24 V" }, { value: "48", label: "48 V" }]} />
+              <div className="mt-4 grid gap-4 md:gap-5 sm:grid-cols-2">
+                <SliderField label="Peak sun hours" value={sunHours} onChange={setSunHours} min={3.5} max={6} step={0.1} unit="hrs" hint="Nigeria averages 5.0 hrs/day" icon={Sun} />
+                <SliderField label="Battery autonomy" value={autonomyDays} onChange={setAutonomyDays} min={0.5} max={3} step={0.5} unit="days" hint="Backup without sun" icon={Clock} />
+                <ToggleCard label="Battery type" value={battery} onChange={(v) => setBattery(v as "lithium" | "tubular")}
+                  options={[
+                    { value: "lithium", label: "Lithium", sub: "LiFePO₄", desc: "Lightweight, deep discharge, longer life" },
+                    { value: "tubular", label: "Tubular", sub: "Lead-acid", desc: "Budget-friendly, proven, heavier" },
+                  ]} />
+                <ToggleCard label="System voltage" value={String(systemVoltage)} onChange={(v) => setSystemVoltage(Number(v) as 24 | 48)}
+                  options={[
+                    { value: "24", label: "24 V", sub: "Small", desc: "Good for loads under 3 kW" },
+                    { value: "48", label: "48 V", sub: "Standard", desc: "Better for larger loads, higher efficiency" },
+                  ]} />
               </div>
             </div>
           </div>
@@ -323,34 +335,51 @@ function CalculatorPage() {
   );
 }
 
-function RangeField({ label, value, onChange, min, max, step, unit, hint }: {
-  label: string; value: number; onChange: (v: number) => void; min: number; max: number; step: number; unit: string; hint?: string;
+function SliderField({ label, value, onChange, min, max, step, unit, hint, icon: Icon }: {
+  label: string; value: number; onChange: (v: number) => void; min: number; max: number; step: number; unit: string; hint?: string; icon: React.ComponentType<{ className?: string }>;
 }) {
+  const pct = ((value - min) / (max - min)) * 100;
   return (
-    <div>
-      <div className="flex items-baseline justify-between">
-        <label className="text-sm font-medium">{label}</label>
-        <span className="font-mono text-xs font-semibold text-primary tabular-nums">{value.toFixed(step < 1 ? 1 : 0)} {unit}</span>
+    <div className="rounded-xl border bg-surface p-3.5 md:p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Icon className="h-3.5 w-3.5 text-primary" />
+          <label className="text-sm font-medium">{label}</label>
+        </div>
+        <span className="font-mono text-sm font-semibold text-primary tabular-nums">{value.toFixed(step < 1 ? 1 : 0)} <span className="text-[10px] font-normal text-muted-foreground">{unit}</span></span>
       </div>
-      <input type="range" value={value} onChange={(e) => onChange(parseFloat(e.target.value))} min={min} max={max} step={step} className="range-slider mt-1.5 w-full md:mt-2" />
-      {hint && <p className="mt-0.5 text-[11px] text-muted-foreground md:mt-1">{hint}</p>}
+      <div className="relative mt-3">
+        <div className="relative before:pointer-events-none before:absolute before:inset-0 before:z-10 before:rounded-full before:shadow-[inset_0_1px_2px_rgba(0,0,0,0.08)]">
+          <input type="range" value={value} onChange={(e) => onChange(parseFloat(e.target.value))} min={min} max={max} step={step}
+            className="range-slider relative z-0 w-full"
+            style={{ "--pct": pct + "%" } as React.CSSProperties} />
+        </div>
+      </div>
+      {hint && <p className="mt-1.5 flex items-center gap-1 text-[10px] text-muted-foreground"><Info className="h-3 w-3" />{hint}</p>}
     </div>
   );
 }
 
-function Segmented({ label, value, onChange, options }: {
-  label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[];
+function ToggleCard({ label, value, onChange, options }: {
+  label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string; sub: string; desc: string }[];
 }) {
   return (
-    <div>
-      <p className="mb-1.5 text-sm font-medium md:mb-2">{label}</p>
-      <div className="inline-flex w-full rounded-xl border bg-surface p-0.5">
+    <div className="rounded-xl border bg-surface p-3.5 md:p-4">
+      <p className="mb-2.5 text-sm font-medium">{label}</p>
+      <div className="flex gap-2">
         {options.map((opt) => {
           const active = opt.value === value;
           return (
             <button key={opt.value} type="button" onClick={() => onChange(opt.value)}
-              className={"flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-all md:px-3 md:py-2 md:text-sm " + (active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
-              {opt.label}
+              className={`flex flex-1 flex-col items-center gap-1 rounded-xl border p-3 text-center text-xs transition-all ${
+                active
+                  ? "border-primary bg-primary/5 text-primary shadow-sm"
+                  : "border-hairline bg-background text-muted-foreground hover:border-foreground/20 hover:text-foreground"
+              }`}>
+              <span className="text-sm font-semibold">{opt.label}</span>
+              <span className="text-[10px] opacity-70">{opt.sub}</span>
+              <span className="mt-0.5 text-[9px] leading-tight opacity-60">{opt.desc}</span>
+              {active && <CheckCircle2 className="mt-1 h-3 w-3" />}
             </button>
           );
         })}
