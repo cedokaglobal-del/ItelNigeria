@@ -124,7 +124,7 @@ function Shop() {
         </p>
 
         {/* ── Grid ── */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-5">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-5">
           {paged.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}

@@ -1,16 +1,26 @@
 import { Link } from "@tanstack/react-router";
 import { memo } from "react";
 import { Star, ShoppingBag } from "lucide-react";
+import { toast } from "sonner";
 import { formatNGN } from "@/lib/format";
+import { useCart } from "@/lib/cart";
 import type { Product } from "@/lib/products";
 import { PanelArt } from "./ProductArt";
 
 export const ProductCard = memo(function ProductCard({ product }: { product: Product }) {
+  const { add } = useCart();
   const hasImage = product.images?.length > 0 && product.images[0].startsWith("data:");
   const discountPct =
     product.originalPrice && product.originalPrice > product.price
       ? Math.round((1 - product.price / product.originalPrice) * 100)
       : 0;
+
+  function handleAddToCart(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    add(product.slug, 1);
+    toast.success(`Added ${product.name} to cart`);
+  }
 
   return (
     <Link
@@ -70,9 +80,13 @@ export const ProductCard = memo(function ProductCard({ product }: { product: Pro
               </p>
             )}
           </div>
-          <span className="inline-flex items-center gap-1 rounded-full border border-hairline px-2 py-1 text-[9px] font-medium transition-all md:px-4 md:py-2 md:text-xs group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground active:scale-95">
-            <ShoppingBag className="h-2 w-2 md:h-3 md:w-3" /> Buy
-          </span>
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="inline-flex items-center gap-1 rounded-full border border-hairline px-2 py-1 text-[9px] font-medium transition-all md:px-4 md:py-2 md:text-xs hover:border-primary hover:bg-primary hover:text-primary-foreground active:scale-95"
+          >
+            <ShoppingBag className="h-2 w-2 md:h-3 md:w-3" /> Add
+          </button>
         </div>
       </div>
     </Link>

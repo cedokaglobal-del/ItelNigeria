@@ -11,19 +11,19 @@ export type Product = {
   name: string;
   brand: string;
   category: ProductCategory;
-  price: number; // NGN (current/sale price)
-  originalPrice?: number; // higher price for discount display
+  price: number;
+  originalPrice?: number;
   images: string[];
   rating: number;
   reviews: number;
   tagline: string;
   badge?: string;
-  /** Key spec for badges (e.g. "550W", "5kVA / 48V") */
   spec: string;
   highlights: string[];
   description: string;
   warranty: string;
   inStock: boolean;
+  tags?: string[];
 };
 
 function productImg(slug: string, name: string, cat: ProductCategory, spec: string): string {

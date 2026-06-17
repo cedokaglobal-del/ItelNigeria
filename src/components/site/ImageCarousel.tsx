@@ -19,7 +19,7 @@ export function ImageCarousel({
     if (images.length > 1) {
       timerRef.current = setInterval(() => {
         setIdx((prev) => (prev + 1) % images.length);
-      }, 3000);
+      }, 4000);
     }
   }, [images.length]);
 

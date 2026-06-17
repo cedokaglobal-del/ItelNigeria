@@ -19,6 +19,9 @@ export const Route = createFileRoute("/products/$slug")({
     meta: [
       { title: `${loaderData.product.name} — ItelNigeria` },
       { name: "description", content: loaderData.product.tagline },
+      ...(loaderData.product.tags?.length
+        ? [{ name: "keywords", content: loaderData.product.tags.join(", ") }]
+        : []),
       { property: "og:title", content: `${loaderData.product.name} — ItelNigeria` },
       { property: "og:description", content: loaderData.product.tagline },
     ],

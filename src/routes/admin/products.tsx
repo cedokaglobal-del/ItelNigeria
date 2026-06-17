@@ -50,6 +50,7 @@ type ProductForm = {
   inStock: boolean;
   highlights: string[];
   badge: string;
+  tags: string;
   // Solar system config
   solarEnabled: boolean;
   solarVoltage: string;
@@ -78,6 +79,7 @@ const emptyForm: ProductForm = {
   inStock: true,
   highlights: [""],
   badge: "",
+  tags: "",
   solarEnabled: false,
   solarVoltage: "48V",
   solarPanels: 4,
@@ -106,6 +108,7 @@ function productToForm(p: Product): ProductForm {
     inStock: p.inStock,
     highlights: p.highlights,
     badge: p.badge || "",
+    tags: p.tags?.join(", ") ?? "",
     solarEnabled: false,
     solarVoltage: "48V",
     solarPanels: 4,
@@ -197,6 +200,12 @@ function AdminProducts() {
       }
     }
 
+    const tags = form.tags
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .slice(0, 5);
+
     const product: Product = {
       slug,
       name: form.name,
@@ -214,6 +223,7 @@ function AdminProducts() {
       inStock: form.inStock,
       highlights,
       badge: form.badge || undefined,
+      tags: tags.length ? tags : undefined,
     };
 
     if (editingSlug) {
@@ -592,6 +602,14 @@ function AdminProducts() {
                       label="Highlights (one per line)"
                       values={form.highlights}
                       onChange={(v) => setForm({ ...form, highlights: v })}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <PField
+                      label="SEO tags (comma-separated, max 5 — not displayed to users)"
+                      value={form.tags}
+                      onChange={(v) => setForm({ ...form, tags: v })}
+                      placeholder="e.g. solar panel, 550W, mono PERC, Nigeria"
                     />
                   </div>
 
