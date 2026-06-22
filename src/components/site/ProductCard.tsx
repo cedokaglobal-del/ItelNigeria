@@ -28,31 +28,30 @@ export const ProductCard = memo(function ProductCard({ product }: { product: Pro
       params={{ slug: product.slug }}
       className="card-cmp group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-card transition-all duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[var(--shadow-elevated)]"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-surface-2">
+      <div className="relative aspect-[4/5] overflow-hidden bg-surface-2 md:aspect-[3/4]">
         {hasImage ? (
           <img
             src={product.images[0]}
             alt={product.name}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105 md:p-4"
           />
         ) : (
           <PanelArt category={product.category} spec={product.spec} />
         )}
         {discountPct > 0 && (
-          <span className="absolute left-1.5 top-1.5 z-10 rounded-full bg-red-500 px-2 py-0.5 text-[9px] font-bold text-white shadow-sm md:left-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px]">
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm md:left-3 md:top-3 md:px-3 md:py-1 md:text-xs">
             -{discountPct}%
           </span>
         )}
         {product.badge && !discountPct && (
-          <span className="absolute left-1.5 top-1.5 z-10 rounded-full bg-primary px-2 py-0.5 text-[8px] font-semibold uppercase tracking-wider text-primary-foreground shadow-sm md:left-3 md:top-3 md:px-3 md:py-1 md:text-[10px]">
+          <span className="absolute left-2 top-2 z-10 rounded-full bg-primary px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider text-primary-foreground shadow-sm md:left-3 md:top-3 md:px-3 md:py-1 md:text-[10px]">
             {product.badge}
           </span>
         )}
-        <span className="absolute right-1.5 top-1.5 z-10 rounded-md border border-hairline bg-background/70 px-1.5 py-0.5 text-[8px] font-semibold text-foreground backdrop-blur-sm md:right-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px]">
+        <span className="absolute right-2 top-2 z-10 rounded-md border border-hairline bg-background/80 px-2 py-1 text-[9px] font-semibold text-foreground backdrop-blur-sm md:right-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px]">
           {product.spec}
         </span>
-        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent" />
       </div>
 
       <div className="flex flex-1 flex-col gap-1 p-2 md:gap-1.5 md:p-5">
