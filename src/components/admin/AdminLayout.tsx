@@ -1,11 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { BarChart3, Box, LayoutDashboard, LogOut, ShoppingCart, Sun } from "lucide-react";
+import { BarChart3, Box, Layers, LayoutDashboard, LogOut, ShoppingCart, Sun } from "lucide-react";
 import { logoutAdmin } from "@/lib/admin-auth";
 import { useRouter } from "@tanstack/react-router";
 
 const nav = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/products", label: "Products", icon: Box },
+  { to: "/admin/categories", label: "Categories", icon: Layers },
   { to: "/admin/solar-systems", label: "Systems", icon: Sun },
   { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
@@ -24,13 +25,12 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-dvh bg-surface">
       {/* Desktop sidebar */}
       <aside className="hidden w-64 shrink-0 border-r bg-card p-6 shadow-[4px_0_24px_rgba(0,0,0,0.02)] lg:flex lg:flex-col z-10">
-        <Link to="/admin" className="flex items-center gap-2.5">
+        <Link to="/admin" aria-label="Itel Admin Dashboard">
           <img
             src="/Image/logo/itellogonigera.png"
             alt="ItelNigeria Logo"
-            className="h-8 w-auto object-contain"
+            className="h-9 w-auto object-contain"
           />
-          <span className="text-sm font-semibold sr-only">Itel Admin</span>
         </Link>
 
         <nav className="mt-8 flex flex-col gap-1">
@@ -77,13 +77,12 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         {/* Mobile top bar */}
         <header className="sticky top-0 z-40 border-b bg-card/80 backdrop-blur lg:hidden">
           <div className="flex h-14 items-center justify-between px-4">
-            <Link to="/admin" className="flex items-center gap-2">
+            <Link to="/admin" aria-label="Itel Admin Dashboard">
               <img
                 src="/Image/logo/itellogonigera.png"
                 alt="ItelNigeria Logo"
-                className="h-7 w-auto object-contain"
+                className="h-8 w-auto object-contain"
               />
-              <span className="text-sm font-semibold sr-only">Itel Admin</span>
             </Link>
             <button
               type="button"

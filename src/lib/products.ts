@@ -1,12 +1,7 @@
 import { supabase } from "./supabase";
 
-export type ProductCategory =
-  | "panels"
-  | "inverters"
-  | "batteries"
-  | "controllers"
-  | "kits"
-  | "accessories";
+export type ProductCategory = string;
+export { CATEGORIES } from "./categories";
 
 export type Product = {
   slug: string;
@@ -29,7 +24,7 @@ export type Product = {
 };
 
 function productImg(slug: string, name: string, cat: ProductCategory, spec: string): string {
-  const gradients: Record<ProductCategory, [string, string, string]> = {
+  const gradients: Record<string, [string, string, string]> = {
     panels: ["#0f766e", "#0d9488", "#14b8a6"],
     inverters: ["#1e40af", "#2563eb", "#3b82f6"],
     batteries: ["#6d28d9", "#7c3aed", "#8b5cf6"],
@@ -37,8 +32,8 @@ function productImg(slug: string, name: string, cat: ProductCategory, spec: stri
     kits: ["#9a3412", "#c2410c", "#ea580c"],
     accessories: ["#4b5563", "#6b7280", "#9ca3af"],
   };
-  const [c1, c2, c3] = gradients[cat];
-  const icons: Record<ProductCategory, string> = {
+  const [c1 = "#4b5563", c2 = "#6b7280", c3 = "#9ca3af"] = gradients[cat] ?? [];
+  const icons: Record<string, string> = {
     panels: `<g transform="translate(200,80)"><rect x="-70" y="-50" width="140" height="65" rx="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><rect x="-60" y="-40" width="120" height="45" rx="3" fill="rgba(255,255,255,0.06)"/><line x1="-60" y1="-17.5" x2="60" y2="-17.5" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="0" y1="-40" x2="0" y2="5" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><rect x="-25" y="-35" width="15" height="10" rx="2" fill="rgba(255,255,255,0.2)"/><rect x="10" y="-35" width="15" height="10" rx="2" fill="rgba(255,255,255,0.2)"/></g>`,
     inverters: `<g transform="translate(200,80)"><rect x="-55" y="-45" width="110" height="90" rx="8" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><rect x="-40" y="-30" width="30" height="20" rx="3" fill="rgba(255,255,255,0.2)"/><rect x="10" y="-30" width="30" height="20" rx="3" fill="rgba(255,255,255,0.2)"/><rect x="-40" y="0" width="30" height="20" rx="3" fill="rgba(255,255,255,0.2)"/><rect x="10" y="0" width="30" height="20" rx="3" fill="rgba(255,255,255,0.2)"/><circle cx="0" cy="35" r="6" fill="rgba(255,255,255,0.3)"/></g>`,
     batteries: `<g transform="translate(200,75)"><rect x="-35" y="-55" width="70" height="110" rx="10" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/><rect x="-20" y="-40" width="40" height="20" rx="4" fill="rgba(255,255,255,0.2)"/><rect x="-20" y="-10" width="40" height="20" rx="4" fill="rgba(255,255,255,0.2)"/><rect x="-20" y="20" width="40" height="20" rx="4" fill="rgba(255,255,255,0.2)"/><line x1="-5" y1="-55" x2="-5" y2="-65" stroke="rgba(255,255,255,0.4)" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="-55" x2="5" y2="-65" stroke="rgba(255,255,255,0.4)" stroke-width="3" stroke-linecap="round"/><rect x="-15" y="-62" width="8" height="8" rx="1" fill="rgba(255,0,0,0.4)"/><rect x="7" y="-62" width="8" height="8" rx="1" fill="rgba(255,0,0,0.4)"/></g>`,
@@ -65,14 +60,7 @@ export function seedProductImages(
   return [productImg(slug, name, cat, spec)];
 }
 
-export const CATEGORIES: { id: ProductCategory; label: string; blurb: string }[] = [
-  { id: "panels", label: "Solar Panels", blurb: "Mono PERC & N-Type panels" },
-  { id: "inverters", label: "Inverters", blurb: "Hybrid, off-grid, on-grid" },
-  { id: "batteries", label: "Batteries", blurb: "LiFePO4 & tubular" },
-  { id: "controllers", label: "Charge Controllers", blurb: "MPPT controllers" },
-  { id: "kits", label: "Complete Kits", blurb: "Plug-and-play systems" },
-  { id: "accessories", label: "Accessories", blurb: "Cables, breakers, mounts" },
-];
+
 
 function imgFor(slug: string, name: string, cat: ProductCategory, spec: string): string[] {
   return seedProductImages(slug, name, cat, spec);

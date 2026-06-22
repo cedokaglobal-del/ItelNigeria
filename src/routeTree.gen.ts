@@ -24,6 +24,7 @@ import { Route as AdminSolarSystemsRouteImport } from './routes/admin/solar-syst
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as AdminCategoriesRouteImport } from './routes/admin/categories'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
 
 const SolarSystemsRoute = SolarSystemsRouteImport.update({
@@ -101,6 +102,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCategoriesRoute = AdminCategoriesRouteImport.update({
+  id: '/admin/categories',
+  path: '/admin/categories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
   id: '/admin/analytics',
   path: '/admin/analytics',
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/solar-systems': typeof SolarSystemsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/solar-systems': typeof SolarSystemsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
@@ -152,6 +160,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/solar-systems': typeof SolarSystemsRouteWithChildren
   '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/categories': typeof AdminCategoriesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/solar-systems'
     | '/admin/analytics'
+    | '/admin/categories'
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/solar-systems'
     | '/admin/analytics'
+    | '/admin/categories'
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/solar-systems'
     | '/admin/analytics'
+    | '/admin/categories'
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
@@ -227,6 +239,7 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   SolarSystemsRoute: typeof SolarSystemsRouteWithChildren
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminCategoriesRoute: typeof AdminCategoriesRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
@@ -344,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/categories': {
+      id: '/admin/categories'
+      path: '/admin/categories'
+      fullPath: '/admin/categories'
+      preLoaderRoute: typeof AdminCategoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/analytics': {
       id: '/admin/analytics'
       path: '/admin/analytics'
@@ -374,6 +394,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   SolarSystemsRoute: SolarSystemsRouteWithChildren,
   AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminCategoriesRoute: AdminCategoriesRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
