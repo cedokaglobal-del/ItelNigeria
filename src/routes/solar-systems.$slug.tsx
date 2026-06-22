@@ -20,6 +20,7 @@ import { useCart } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
 import { fetchSystem, generateDescription } from "@/lib/solar-systems";
 import { ImageCarousel } from "@/components/site/ImageCarousel";
+import { SystemShowcase } from "@/components/site/SystemShowcase";
 
 export const Route = createFileRoute("/solar-systems/$slug")({
   loader: async ({ params }) => {
@@ -144,13 +145,9 @@ function SolarSystemDetail() {
         <div className="mt-4 grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:gap-12">
           {/* Main content */}
           <div className="space-y-10">
-            {/* Hero */}
+            {/* Hero — composite showcase */}
             <div>
-              <ImageCarousel
-                images={system.images}
-                alt={system.name}
-                className="aspect-[16/9] md:aspect-[8/5]"
-              />
+              <SystemShowcase system={system} />
               <div className="mt-5 flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
