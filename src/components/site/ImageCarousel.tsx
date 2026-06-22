@@ -1,27 +1,31 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function ImageCarousel({
   images,
   alt,
   className = "",
+  hero,
 }: {
   images: string[];
   alt: string;
   className?: string;
+  /** Renders a React node as the first slide — useful for composite product showcases */
+  hero?: ReactNode;
 }) {
+  const total = images.length + (hero ? 1 : 0);
   const [idx, setIdx] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const touchX = useRef(0);
 
   const startTimer = useCallback(() => {
     stopTimer();
-    if (images.length > 1) {
+    if (total > 1) {
       timerRef.current = setInterval(() => {
-        setIdx((prev) => (prev + 1) % images.length);
+        setIdx((prev) => (prev + 1) % total);
       }, 4000);
     }
-  }, [images.length]);
+  }, [total]);
 
   const stopTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -33,7 +37,7 @@ export function ImageCarousel({
   }, [startTimer, stopTimer]);
 
   function go(i: number) {
-    setIdx(((i % images.length) + images.length) % images.length);
+    setIdx(((i % total) + total) % total);
     startTimer();
   }
 
@@ -50,26 +54,41 @@ export function ImageCarousel({
 
   return (
     <div
-      className={`group relative aspect-[8/5] w-full overflow-hidden rounded-xl bg-accent ${className}`}
+      className={`group relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-accent md:aspect-[8/5] ${className}`}
       onMouseEnter={stopTimer}
       onMouseLeave={startTimer}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {images.map((src, i) => (
-        <img
-          key={i}
-          src={src}
-          alt={`${alt} — ${i + 1}`}
-          loading={i === 0 ? "eager" : "lazy"}
-          draggable={false}
-          className={`pointer-events-none absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-500 ${
-            i === idx ? "opacity-100" : "opacity-0"
+      {/* Hero slide (index 0) */}
+      {hero && (
+        <div
+          className={`pointer-events-none absolute inset-0 select-none transition-opacity duration-500 ${
+            idx === 0 ? "opacity-100" : "opacity-0"
           }`}
-        />
-      ))}
+        >
+          {hero}
+        </div>
+      )}
 
-      {images.length > 1 && (
+      {/* Image slides (index 1..n when hero exists, 0..n when no hero) */}
+      {images.map((src, i) => {
+        const slideIdx = hero ? i + 1 : i;
+        return (
+          <img
+            key={i}
+            src={src}
+            alt={`${alt} — ${i + 1}`}
+            loading={i === 0 && !hero ? "eager" : "lazy"}
+            draggable={false}
+            className={`pointer-events-none absolute inset-0 h-full w-full select-none object-cover transition-opacity duration-500 ${
+              slideIdx === idx ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        );
+      })}
+
+      {total > 1 && (
         <>
           <button
             type="button"
@@ -97,7 +116,7 @@ export function ImageCarousel({
           </button>
 
           <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
-            {images.map((_, i) => (
+            {Array.from({ length: total }).map((_, i) => (
               <button
                 key={i}
                 type="button"

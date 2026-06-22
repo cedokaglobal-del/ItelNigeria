@@ -145,9 +145,13 @@ function SolarSystemDetail() {
         <div className="mt-4 grid gap-8 lg:grid-cols-[1.3fr_1fr] lg:gap-12">
           {/* Main content */}
           <div className="space-y-10">
-            {/* Hero — composite showcase */}
+            {/* Hero */}
             <div>
-              <SystemShowcase system={system} />
+              <ImageCarousel
+                images={system.images}
+                alt={system.name}
+                hero={<SystemShowcase system={system} />}
+              />
               <div className="mt-5 flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
