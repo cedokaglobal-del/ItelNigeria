@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PRODUCTS, seedProductImages, type Product } from "./products";
+import { supabase } from "./supabase";
 
 export type OrderStatus =
   | "pending"
@@ -453,37 +454,40 @@ function seedProducts(): Product[] {
 }
 
 export function useProducts() {
-  const [list, setList] = useLocalStorage<Product[]>("itel.admin.products", seedProducts);
+  const [list, setList] = useState<Product[]>([]);
 
-  const updateStock = useCallback(
-    (slug: string, inStock: boolean) => {
-      setList((prev) => prev.map((p) => (p.slug === slug ? { ...p, inStock } : p)));
-    },
-    [setList],
-  );
+  useEffect(() => {
+    supabase
+      .from("products")
+      .select("*")
+      .then(({ data, error }) => {
+        if (error || !data || data.length === 0) {
+          setList(seedProducts());
+        } else {
+          setList(data as Product[]);
+        }
+      });
+  }, []);
 
-  const addProduct = useCallback(
-    (product: Product) => {
-      setList((prev) => [...prev, migrateProduct(product)]);
-    },
-    [setList],
-  );
+  const updateStock = useCallback((slug: string, inStock: boolean) => {
+    setList((prev) => prev.map((p) => (p.slug === slug ? { ...p, inStock } : p)));
+    supabase.from("products").update({ inStock }).eq("slug", slug).then();
+  }, []);
 
-  const updateProduct = useCallback(
-    (slug: string, updates: Partial<Omit<Product, "slug">>) => {
-      setList((prev) =>
-        prev.map((p) => (p.slug === slug ? migrateProduct({ ...p, ...updates }) : p)),
-      );
-    },
-    [setList],
-  );
+  const addProduct = useCallback((product: Product) => {
+    setList((prev) => [...prev, migrateProduct(product)]);
+    supabase.from("products").insert(product).then();
+  }, []);
 
-  const deleteProduct = useCallback(
-    (slug: string) => {
-      setList((prev) => prev.filter((p) => p.slug !== slug));
-    },
-    [setList],
-  );
+  const updateProduct = useCallback((slug: string, updates: Partial<Omit<Product, "slug">>) => {
+    setList((prev) => prev.map((p) => (p.slug === slug ? migrateProduct({ ...p, ...updates }) : p)));
+    supabase.from("products").update(updates).eq("slug", slug).then();
+  }, []);
+
+  const deleteProduct = useCallback((slug: string) => {
+    setList((prev) => prev.filter((p) => p.slug !== slug));
+    supabase.from("products").delete().eq("slug", slug).then();
+  }, []);
 
   return [list, updateStock, addProduct, updateProduct, deleteProduct] as const;
 }

@@ -78,7 +78,7 @@ function AdminDashboard() {
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border bg-card p-6 shadow-sm">
+        <div className="rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Recent orders</h2>
             <Link
@@ -114,7 +114,7 @@ function AdminDashboard() {
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-card p-6 shadow-sm">
+        <div className="rounded-2xl border bg-card p-6 shadow-sm transition-all hover:shadow-md">
           <h2 className="text-sm font-semibold">Calculator insights</h2>
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div className="rounded-xl border bg-surface px-4 py-5">
@@ -180,7 +180,7 @@ function StatCard({
   tone?: "accent";
 }) {
   return (
-    <div className="rounded-2xl border bg-card p-5 shadow-sm">
+    <div className="rounded-2xl border bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex items-center gap-3">
         <span
           className={`grid h-10 w-10 place-items-center rounded-xl ${tone === "accent" ? "bg-primary/10 text-primary" : "bg-surface text-muted-foreground"}`}

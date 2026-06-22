@@ -1,3 +1,5 @@
+import { supabase } from "./supabase";
+
 export type ProductCategory =
   | "panels"
   | "inverters"
@@ -125,6 +127,32 @@ export const PRODUCTS: Product[] = [
     inStock: true,
   },
   {
+    slug: "itel-hybrid-3kva",
+    name: "Itel Hybrid Inverter 3kVA / 24V",
+    brand: "ItelNigeria",
+    category: "inverters",
+    price: 450000,
+    originalPrice: 520000,
+    images: imgFor(
+      "itel-hybrid-3kva",
+      "Itel Hybrid Inverter 3kVA / 24V",
+      "inverters",
+      "3kVA · 24V",
+    ),
+    rating: 4.8,
+    reviews: 215,
+    tagline: "Reliable pure sine wave hybrid.",
+    spec: "3kVA · 24V",
+    highlights: [
+      "3000W continuous",
+      "MPPT 60A",
+      "Smart battery management",
+    ],
+    description: "A pure sine wave hybrid inverter perfect for essential home backup loads.",
+    warranty: "5 years",
+    inStock: true,
+  },
+  {
     slug: "itel-hybrid-5kva",
     name: "Itel Hybrid Inverter 5kVA / 48V",
     brand: "ItelNigeria",
@@ -177,6 +205,32 @@ export const PRODUCTS: Product[] = [
     ],
     description:
       "10kVA hybrid inverter for larger homes, SMEs, and commercial loads. Dual MPPT trackers maximize harvest across multiple roof orientations.",
+    warranty: "5 years",
+    inStock: true,
+  },
+  {
+    slug: "itel-hybrid-15kva",
+    name: "Itel Hybrid Inverter 15kVA / 48V",
+    brand: "ItelNigeria",
+    category: "inverters",
+    price: 2800000,
+    images: imgFor(
+      "itel-hybrid-15kva",
+      "Itel Hybrid Inverter 15kVA / 48V",
+      "inverters",
+      "15kVA · 48V",
+    ),
+    rating: 4.95,
+    reviews: 89,
+    tagline: "Enterprise-grade power.",
+    spec: "15kVA · 48V",
+    highlights: [
+      "Triple MPPT trackers",
+      "Heavy load support",
+      "Automatic changeover",
+    ],
+    description:
+      "15kVA pure sine wave hybrid inverter for whole-property backup. Designed to handle large inductive loads.",
     warranty: "5 years",
     inStock: true,
   },
@@ -396,6 +450,26 @@ export const PRODUCTS: Product[] = [
     inStock: true,
   },
 ];
+
+export async function fetchProducts(): Promise<Product[]> {
+  try {
+    const { data, error } = await supabase.from("products").select("*");
+    if (error || !data || data.length === 0) return PRODUCTS;
+    return data as Product[];
+  } catch {
+    return PRODUCTS;
+  }
+}
+
+export async function fetchProduct(slug: string): Promise<Product | undefined> {
+  try {
+    const { data, error } = await supabase.from("products").select("*").eq("slug", slug).single();
+    if (error || !data) return getProduct(slug);
+    return data as Product;
+  } catch {
+    return getProduct(slug);
+  }
+}
 
 export function getProduct(slug: string): Product | undefined {
   try {

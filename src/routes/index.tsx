@@ -13,9 +13,10 @@ import {
 } from "lucide-react";
 import { memo } from "react";
 import { ProductCard } from "@/components/site/ProductCard";
-import { PRODUCTS, CATEGORIES, type ProductCategory } from "@/lib/products";
+import { fetchProducts, CATEGORIES, type ProductCategory } from "@/lib/products";
 
 export const Route = createFileRoute("/")({
+  loader: () => fetchProducts(),
   head: () => ({
     meta: [
       { title: "ItelNigeria — Power Independence Starts Here" },
@@ -52,9 +53,10 @@ const CATEGORY_META: Record<
 };
 
 function Home() {
-  const featured = PRODUCTS.filter((p) => p.badge).slice(0, 6);
-  const deals = PRODUCTS.filter((p) => p.originalPrice && p.originalPrice > p.price).slice(0, 4);
-  const newArrivals = PRODUCTS.filter((p) => p.badge === "New").slice(0, 6);
+  const products = Route.useLoaderData();
+  const featured = products.filter((p) => p.badge).slice(0, 6);
+  const deals = products.filter((p) => p.originalPrice && p.originalPrice > p.price).slice(0, 4);
+  const newArrivals = products.filter((p) => p.badge === "New").slice(0, 6);
 
   return (
     <div>

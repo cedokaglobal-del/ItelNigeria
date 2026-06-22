@@ -1,7 +1,10 @@
 /**
  * ItelNigeria solar sizing engine.
  * Conservative, transparent assumptions tuned for Nigeria.
+ * All hardware prices are pulled LIVE from the product catalog.
  */
+
+import { PRODUCTS } from "./products";
 
 /** Generate a unique ID with a polyfill-safe fallback */
 export function uid(): string {
@@ -72,15 +75,11 @@ export type CalcResult = {
   co2SavedKgPerYear: number;
   treesEquivalent: number;
   breakdown: { label: string; value: string; tone?: "solar" | "tech" | "muted" }[];
+  costBreakdown: { label: string; amount: number }[];
 };
 
 const PANEL_W = 550;
-const PANEL_COST = 165000;
-const LITHIUM_COST_PER_KWH = 283000; // 1450000 / 5.12
-const TUBULAR_COST_PER_KWH = 92000;
-const INVERTER_COST_PER_KVA = 137000;
-const CONTROLLER_COST_PER_AMP = 2400;
-const BOS_FACTOR = 0.18; // balance of system + install
+const BOS_FACTOR = 0.18; // balance of system + install overhead
 
 const LITHIUM_DOD = 0.9;
 const TUBULAR_DOD = 0.5;
@@ -90,6 +89,51 @@ const PANEL_DERATE = 0.8; // dust/temp/wiring
 
 /** Diesel-generator avoided cost per kWh in Nigeria (rough). */
 const GEN_COST_PER_KWH = 850;
+
+// ── Pull prices from the live product catalog ──────────────────────────────
+function catalogPrice(category: string, minKVA?: number): number {
+  const matches = PRODUCTS.filter((p) => p.category === category);
+  if (matches.length === 0) return 0;
+
+  if (category === "inverters" && minKVA) {
+    // Find the cheapest inverter whose spec contains a kVA >= minKVA
+    const suitable = matches
+      .filter((p) => {
+        const m = p.spec.match(/(\d+(?:\.\d+)?)\s*kVA/i);
+        return m ? parseFloat(m[1]) >= minKVA : false;
+      })
+      .sort((a, b) => a.price - b.price);
+    if (suitable.length > 0) return suitable[0].price;
+    // Fall back to highest kVA available
+    return matches.sort((a, b) => b.price - a.price)[0].price;
+  }
+
+  if (category === "batteries") {
+    // Return price per kWh based on cheapest battery in catalog
+    const cheapest = matches.sort((a, b) => a.price - b.price)[0];
+    const m = cheapest.spec.match(/(\d+(?:\.\d+)?)\s*kWh/i);
+    const kwh = m ? parseFloat(m[1]) : 5.12;
+    return cheapest.price / kwh; // price per kWh
+  }
+
+  if (category === "controllers") {
+    const cheapest = matches.sort((a, b) => a.price - b.price)[0];
+    const m = cheapest.spec.match(/(\d+)\s*A/i);
+    const amps = m ? parseInt(m[1]) : 60;
+    return cheapest.price / amps; // price per amp
+  }
+
+  // panels: return price per panel (cheapest 550W)
+  if (category === "panels") {
+    const panel550 = matches
+      .filter((p) => p.spec.includes("550"))
+      .sort((a, b) => a.price - b.price);
+    if (panel550.length > 0) return panel550[0].price;
+    return matches.sort((a, b) => a.price - b.price)[0].price;
+  }
+
+  return matches.sort((a, b) => a.price - b.price)[0].price;
+}
 
 export function calculate(input: CalcInput): CalcResult {
   const { appliances, sunHours, autonomyDays, battery, systemVoltage } = input;
@@ -113,22 +157,35 @@ export function calculate(input: CalcInput): CalcResult {
   // Controller current
   const controllerAmps = Math.ceil((panelCountW550 * PANEL_W) / systemVoltage / 0.9);
 
-  // Costs
-  const panelsCost = panelCountW550 * PANEL_COST;
-  const batteryCost =
-    batteryCapacityKWh * (battery === "lithium" ? LITHIUM_COST_PER_KWH : TUBULAR_COST_PER_KWH);
-  const inverterCost = inverterKVA * INVERTER_COST_PER_KVA;
-  const controllerCost = controllerAmps * CONTROLLER_COST_PER_AMP;
+  // ── Prices from product catalog ──
+  const panelUnitPrice = catalogPrice("panels");
+  const batteryPricePerKWh = catalogPrice("batteries");
+  const inverterUnitPrice = catalogPrice("inverters", inverterKVA);
+  const controllerPricePerAmp = catalogPrice("controllers") || 2400;
+
+  const panelsCost = panelCountW550 * panelUnitPrice;
+  const batteryCost = batteryCapacityKWh * batteryPricePerKWh;
+  const inverterCost = inverterUnitPrice; // one inverter unit
+  const controllerCost = controllerAmps * controllerPricePerAmp;
   const hardware = panelsCost + batteryCost + inverterCost + controllerCost;
-  const estimatedCostNGN = Math.round(hardware * (1 + BOS_FACTOR));
+  const bosCost = Math.round(hardware * BOS_FACTOR);
+  const estimatedCostNGN = hardware + bosCost;
 
   // ROI vs generator
   const monthlyGenSavingsNGN = Math.round(dailyEnergyKWh * 30 * GEN_COST_PER_KWH);
   const paybackMonths = monthlyGenSavingsNGN > 0 ? estimatedCostNGN / monthlyGenSavingsNGN : 0;
 
-  // Environmental impact (0.7 kg CO2 per kWh avoided from diesel/grid)
+  // Environmental impact
   const co2SavedKgPerYear = Math.round(dailyEnergyKWh * 365 * 0.7);
   const treesEquivalent = Math.round(co2SavedKgPerYear / 21);
+
+  const costBreakdown: CalcResult["costBreakdown"] = [
+    { label: `Solar panels (${panelCountW550} × 550W)`, amount: panelsCost },
+    { label: `Inverter (${inverterKVA} kVA hybrid)`, amount: inverterCost },
+    { label: `Battery bank (${batteryCapacityKWh.toFixed(1)} kWh)`, amount: Math.round(batteryCost) },
+    { label: `Charge controller (${controllerAmps} A)`, amount: Math.round(controllerCost) },
+    { label: "Balance of system + installation (18%)", amount: bosCost },
+  ];
 
   const breakdown: CalcResult["breakdown"] = [
     { label: "Daily energy need", value: `${dailyEnergyKWh.toFixed(1)} kWh`, tone: "solar" },
@@ -162,5 +219,6 @@ export function calculate(input: CalcInput): CalcResult {
     co2SavedKgPerYear,
     treesEquivalent,
     breakdown,
+    costBreakdown,
   };
 }

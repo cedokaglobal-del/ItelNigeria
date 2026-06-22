@@ -3,10 +3,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Package, Sun, Cpu, BatteryCharging, Zap, Wrench, type LucideIcon } from "lucide-react";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Pagination } from "@/components/site/Pagination";
-import { CATEGORIES, getProducts, type ProductCategory } from "@/lib/products";
-import { useProducts } from "@/lib/admin-data";
+import { CATEGORIES, fetchProducts, type ProductCategory } from "@/lib/products";
 
 export const Route = createFileRoute("/shop")({
+  loader: () => fetchProducts(),
   head: () => ({
     meta: [
       { title: "Shop — ItelNigeria" },
@@ -44,8 +44,8 @@ const CAT_ICONS: Record<ProductCategory, LucideIcon> = {
 const PER_PAGE = 8;
 
 function Shop() {
+  const loaderData = Route.useLoaderData();
   const gridRef = useRef<HTMLDivElement>(null);
-  const [adminProducts] = useProducts();
   const [filter, setFilter] = useState<Filter>("all");
   const [sort, setSort] = useState<"featured" | "low" | "high" | "rating">("featured");
   const [page, setPage] = useState(1);
@@ -55,14 +55,14 @@ function Shop() {
   }, [page]);
 
   const products = useMemo(() => {
-    const source = adminProducts.length > 0 ? adminProducts : getProducts();
+    const source = loaderData;
     let list = filter === "all" ? source : source.filter((p) => p.category === filter);
     list = [...list];
     if (sort === "low") list.sort((a, b) => a.price - b.price);
     if (sort === "high") list.sort((a, b) => b.price - a.price);
     if (sort === "rating") list.sort((a, b) => b.rating - a.rating);
     return list;
-  }, [filter, sort, adminProducts]);
+  }, [filter, sort, loaderData]);
 
   const totalPages = Math.ceil(products.length / PER_PAGE);
   const paged = products.slice((page - 1) * PER_PAGE, page * PER_PAGE);

@@ -8,6 +8,7 @@ import { Edit3, Eye, ImagePlus, Plus, Search, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { AdminSolarSystemsContent } from "./solar-systems";
+import { uploadImage } from "@/lib/supabase";
 
 export const Route = createFileRoute("/admin/products")({
   beforeLoad: () => {
@@ -144,22 +145,17 @@ function AdminProducts() {
     return list;
   }, [products, search, filter]);
 
-  function handleImagesFromFiles(files: FileList | null) {
+  async function handleImagesFromFiles(files: FileList | null) {
     if (!files) return;
-    const readers: Promise<string>[] = [];
+    toast.info(`Uploading ${files.length} images to Supabase...`);
+    const urls: string[] = [];
     for (let i = 0; i < files.length; i++) {
-      readers.push(
-        new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(files[i]);
-        }),
-      );
+      const url = await uploadImage(files[i]);
+      if (url) urls.push(url);
     }
-    Promise.all(readers).then((urls) => {
-      const existing = form?.images ? form.images.split("\n").filter(Boolean) : [];
-      setForm((prev) => (prev ? { ...prev, images: [...existing, ...urls].join("\n") } : prev));
-    });
+    const existing = form?.images ? form.images.split("\n").filter(Boolean) : [];
+    setForm((prev) => (prev ? { ...prev, images: [...existing, ...urls].join("\n") } : prev));
+    toast.success(`Uploaded ${urls.length} images`);
   }
 
   function handleSaveProduct() {

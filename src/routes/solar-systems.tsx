@@ -3,12 +3,13 @@ import { Star, ShoppingBag, Eye } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
-import { useSolarSystems } from "@/lib/solar-systems";
+import { fetchSolarSystems } from "@/lib/solar-systems";
 import { formatNGN } from "@/lib/format";
 import { ImageCarousel } from "@/components/site/ImageCarousel";
 import { Pagination } from "@/components/site/Pagination";
 
 export const Route = createFileRoute("/solar-systems")({
+  loader: () => fetchSolarSystems(),
   head: () => ({
     meta: [
       { title: "Solar Systems — ItelNigeria" },
@@ -38,7 +39,7 @@ function SolarSystemsPage() {
   const gridRef = useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
   const isListing = pathname === "/solar-systems";
-  const [systems] = useSolarSystems();
+  const systems = Route.useLoaderData();
   const [filterVoltage, setFilterVoltage] = useState<string>("all");
   const [page, setPage] = useState(1);
 
@@ -135,6 +136,7 @@ function SolarSystemCard({
     rating: number;
     reviews: number;
     price: number;
+    originalPrice?: number;
   };
 }) {
   const { add } = useCart();
@@ -163,6 +165,11 @@ function SolarSystemCard({
             {sys.badge}
           </span>
         )}
+        {!sys.badge && sys.originalPrice && sys.originalPrice > sys.price && (
+          <span className="absolute left-3 top-3 z-10 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
+            -{Math.round((1 - sys.price / sys.originalPrice) * 100)}% OFF
+          </span>
+        )}
         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent" />
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-4">
@@ -182,6 +189,11 @@ function SolarSystemCard({
 
         <div className="mt-auto flex items-end justify-between gap-2 pt-3">
           <div>
+            {sys.originalPrice && sys.originalPrice > sys.price && (
+              <p className="font-mono text-xs text-muted-foreground line-through">
+                {formatNGN(sys.originalPrice)}
+              </p>
+            )}
             <p className="font-mono text-base font-bold tracking-tight text-primary">
               {formatNGN(sys.price)}
             </p>

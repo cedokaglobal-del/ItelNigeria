@@ -7,13 +7,14 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { ImageCarousel } from "@/components/site/ImageCarousel";
 import { useCart } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
-import { getProduct, getProducts } from "@/lib/products";
+import { fetchProduct, fetchProducts } from "@/lib/products";
 
 export const Route = createFileRoute("/products/$slug")({
-  loader: ({ params }) => {
-    const product = getProduct(params.slug);
+  loader: async ({ params }) => {
+    const product = await fetchProduct(params.slug);
     if (!product) throw notFound();
-    return { product };
+    const related = await fetchProducts();
+    return { product, related: related.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4) };
   },
   head: ({ loaderData }) => {
     const p = loaderData.product;
@@ -42,17 +43,9 @@ export const Route = createFileRoute("/products/$slug")({
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { product, related } = Route.useLoaderData();
   const { add } = useCart();
   const [qty, setQty] = useState(1);
-
-  const related = useMemo(
-    () =>
-      getProducts()
-        .filter((p) => p.category === product.category && p.slug !== product.slug)
-        .slice(0, 4),
-    [product.category, product.slug],
-  );
 
   const hasImages = product.images?.length > 0 && product.images[0].startsWith("data:");
   const discountPct =
