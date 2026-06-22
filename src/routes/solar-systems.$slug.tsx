@@ -18,29 +18,17 @@ import { Fragment, useState } from "react";
 import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
-import { getSystem, useSolarSystems, generateDescription } from "@/lib/solar-systems";
+import { fetchSystem, generateDescription } from "@/lib/solar-systems";
 import { ImageCarousel } from "@/components/site/ImageCarousel";
 
 export const Route = createFileRoute("/solar-systems/$slug")({
-  loader: ({ params }) => {
-    const { slug } = params;
-    if (typeof window !== "undefined") {
-      const raw = localStorage.getItem("itel.admin.solarsystems");
-      if (raw) {
-        try {
-          const systems = JSON.parse(raw) as { slug: string }[];
-          if (!systems.some((s) => s.slug === slug)) {
-            throw notFound();
-          }
-        } catch {
-          if (!raw.includes(`"slug":"${slug}"`)) throw notFound();
-        }
-      }
-    }
-    return { slug };
+  loader: async ({ params }) => {
+    const system = await fetchSystem(params.slug);
+    if (!system) throw notFound();
+    return { system };
   },
   head: ({ loaderData }) => {
-    const slug = loaderData.slug;
+    const slug = loaderData.system.slug;
     const name = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
     const href = "https://itelenergy.com/solar-systems/" + slug;
     return {
@@ -64,9 +52,7 @@ export const Route = createFileRoute("/solar-systems/$slug")({
 });
 
 function SolarSystemDetail() {
-  const { slug } = Route.useLoaderData();
-  const [systems] = useSolarSystems();
-  const system = getSystem(slug, systems);
+  const { system } = Route.useLoaderData();
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const [showAccessories, setShowAccessories] = useState(true);
@@ -100,6 +86,14 @@ function SolarSystemDetail() {
       <div className="gpu fixed inset-x-0 bottom-0 z-50 border-t bg-background/95 backdrop-blur-xl md:hidden">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
           <div className="min-w-0 flex-1">
+            {system.originalPrice && system.originalPrice > system.price && (
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-[12px] text-muted-foreground line-through">{formatNGN(system.originalPrice)}</span>
+                <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                  -{Math.round((1 - system.price / system.originalPrice) * 100)}%
+                </span>
+              </div>
+            )}
             <p className="text-lg font-bold tracking-tight text-primary">
               {formatNGN(system.price)}
             </p>
@@ -357,7 +351,17 @@ function SolarSystemDetail() {
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                   Complete system price
                 </p>
-                <p className="mt-2 text-4xl font-bold tracking-tight text-primary">
+                {system.originalPrice && system.originalPrice > system.price && (
+                  <div className="mt-1 flex items-center gap-2 justify-center lg:justify-start">
+                    <span className="font-mono text-sm text-muted-foreground line-through">
+                      {formatNGN(system.originalPrice)}
+                    </span>
+                    <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                      -{Math.round((1 - system.price / system.originalPrice) * 100)}% OFF
+                    </span>
+                  </div>
+                )}
+                <p className="mt-1 text-4xl font-bold tracking-tight text-primary">
                   {formatNGN(system.price)}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">

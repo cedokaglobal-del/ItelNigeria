@@ -278,6 +278,37 @@ function CalculatorPage() {
               </div>
             </div>
 
+            {/* Cost breakdown */}
+            {r.costBreakdown.length > 0 && (
+              <div className="rounded-2xl border bg-card p-4 shadow-sm md:p-7">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground md:text-xs flex items-center gap-1.5">
+                  <TrendingDown className="h-3 w-3 text-primary" /> Cost breakdown
+                </p>
+                <p className="mt-0.5 text-[10px] text-muted-foreground md:text-[11px]">Live prices from our catalog</p>
+                <div className="mt-3 space-y-2 md:mt-4 md:space-y-2.5">
+                  {r.costBreakdown.map((row) => {
+                    const pct = r.estimatedCostNGN > 0 ? Math.round((row.amount / r.estimatedCostNGN) * 100) : 0;
+                    return (
+                      <div key={row.label}>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground">{row.label}</span>
+                          <span className="font-mono font-semibold tabular-nums">{formatNGN(row.amount)}</span>
+                        </div>
+                        <div className="mt-0.5 h-1.5 overflow-hidden rounded-full bg-accent md:h-2">
+                          <div className="h-full rounded-full bg-primary" style={{ width: Math.max(pct, 2) + "%" }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mt-3 flex items-center justify-between border-t border-hairline pt-3 text-xs font-semibold">
+                  <span>Estimated total</span>
+                  <span className="font-mono text-sm text-primary">{formatNGN(r.estimatedCostNGN)}</span>
+                </div>
+                <p className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground"><Info className="h-3 w-3" /> Hardware + balance of system + installation</p>
+              </div>
+            )}
+
             {/* Specification breakdown */}
             <div className="rounded-2xl border bg-card p-4 shadow-sm md:p-7">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground md:text-xs">Specifications</p>

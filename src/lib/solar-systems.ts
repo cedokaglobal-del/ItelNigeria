@@ -1,4 +1,27 @@
 import { useCallback, useEffect, useState } from "react";
+import { getProducts } from "./products";
+import { supabase } from "./supabase";
+
+export function calculateSystemPrice(components: SolarComponent[]): number {
+  const products = getProducts();
+  let total = 0;
+  for (const comp of components) {
+    const p = products.find((p) => p.name.includes(comp.name) || comp.name.includes(p.name));
+    if (p) {
+      total += p.price * comp.qty;
+    } else {
+      let fallbackPrice = 50000;
+      if (comp.name.includes("32A") || comp.name.includes("63A")) fallbackPrice = 25000;
+      else if (comp.name.includes("Combiner")) fallbackPrice = 65000;
+      else if (comp.name.includes("100A") || comp.name.includes("160A")) fallbackPrice = 85000;
+      else if (comp.name.includes("Surge")) fallbackPrice = 40000;
+      else if (comp.name.includes("Meter")) fallbackPrice = 120000;
+      else if (comp.name.includes("Gateway")) fallbackPrice = 90000;
+      total += fallbackPrice * comp.qty;
+    }
+  }
+  return Math.round((total * 1.15) / 1000) * 1000;
+}
 
 export type SolarComponent = {
   type: "panel" | "inverter" | "battery" | "accessory";
@@ -23,6 +46,8 @@ export type SolarSystem = {
   batteryCapacityKWh: number;
   batteryType: "LiFePO4" | "Tubular";
   price: number;
+  /** Full price before discount — if set, a discount badge is shown to customers */
+  originalPrice?: number;
   whatItPowers: string;
   components: SolarComponent[];
   installationAccessories: string[];
@@ -219,7 +244,7 @@ export function generateDescription(system: SolarSystem): string {
 }
 
 export function seedSolarSystems(): SolarSystem[] {
-  return [
+  const systems: SolarSystem[] = [
     {
       slug: "solar-starter-3kva",
       name: "Itel Essential Home 3kVA",
@@ -479,6 +504,7 @@ export function seedSolarSystems(): SolarSystem[] {
       ],
     },
   ];
+  return systems.map((s) => ({ ...s, price: calculateSystemPrice(s.components) }));
 }
 
 const KEY = "itel.admin.solarsystems";
@@ -488,6 +514,7 @@ function migrateSystem(s: SolarSystem): SolarSystem {
     ...s,
     images: Array.isArray(s.images) && s.images.length > 0 ? s.images : seedImages(s.slug),
     whatItPowers: s.whatItPowers || "",
+    price: s.components ? calculateSystemPrice(s.components) : s.price,
   };
 }
 
@@ -497,30 +524,24 @@ export function useSolarSystems(): [
   (system: SolarSystem) => void,
   (slug: string) => void,
 ] {
-  const [systems, setSystems] = useState<SolarSystem[]>(() => {
-    if (typeof window === "undefined") return seedSolarSystems();
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as SolarSystem[];
-        if (Array.isArray(parsed)) return parsed.map(migrateSystem);
-      }
-    } catch {
-      console.warn("SolarSystems: failed to parse saved data");
-    }
-    return seedSolarSystems();
-  });
+  const [systems, setSystems] = useState<SolarSystem[]>([]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(KEY, JSON.stringify(systems));
-    } catch {
-      console.warn("SolarSystems: failed to persist");
-    }
-  }, [systems]);
+    supabase
+      .from("solar_systems")
+      .select("*")
+      .then(({ data, error }) => {
+        if (error || !data || data.length === 0) {
+          setSystems(seedSolarSystems());
+        } else {
+          setSystems((data as SolarSystem[]).map(migrateSystem));
+        }
+      });
+  }, []);
 
   const updatePrice = useCallback((slug: string, price: number) => {
     setSystems((prev) => prev.map((s) => (s.slug === slug ? { ...s, price } : s)));
+    supabase.from("solar_systems").update({ price }).eq("slug", slug).then();
   }, []);
 
   const addSystem = useCallback((system: SolarSystem) => {
@@ -528,10 +549,12 @@ export function useSolarSystems(): [
       ...prev,
       { ...system, images: system.images?.length ? system.images : seedImages(system.slug) },
     ]);
+    supabase.from("solar_systems").insert(system).then();
   }, []);
 
   const deleteSystem = useCallback((slug: string) => {
     setSystems((prev) => prev.filter((s) => s.slug !== slug));
+    supabase.from("solar_systems").delete().eq("slug", slug).then();
   }, []);
 
   return [systems, updatePrice, addSystem, deleteSystem];
@@ -539,4 +562,28 @@ export function useSolarSystems(): [
 
 export function getSystem(slug: string, systems: SolarSystem[]): SolarSystem | undefined {
   return systems.find((s) => s.slug === slug);
+}
+
+export async function fetchSolarSystems(): Promise<SolarSystem[]> {
+  try {
+    const { data, error } = await supabase.from("solar_systems").select("*");
+    if (error || !data || data.length === 0) return seedSolarSystems();
+    return data as SolarSystem[];
+  } catch {
+    return seedSolarSystems();
+  }
+}
+
+export async function fetchSystem(slug: string): Promise<SolarSystem | undefined> {
+  try {
+    const { data, error } = await supabase.from("solar_systems").select("*").eq("slug", slug).single();
+    if (error || !data) {
+      const fallback = seedSolarSystems();
+      return getSystem(slug, fallback);
+    }
+    return data as SolarSystem;
+  } catch {
+    const fallback = seedSolarSystems();
+    return getSystem(slug, fallback);
+  }
 }
