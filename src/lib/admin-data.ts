@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { PRODUCTS, seedProductImages, type Product } from "./products";
+import { seedProductImages, type Product } from "./products";
+import { SEED_PRODUCTS } from "./seed-products";
 import { supabase } from "./supabase";
 
 export type OrderStatus =
@@ -450,7 +451,7 @@ function migrateProduct(p: Product): Product {
 }
 
 function seedProducts(): Product[] {
-  return PRODUCTS.map(migrateProduct);
+  return SEED_PRODUCTS.map(migrateProduct);
 }
 
 export function useProducts() {
@@ -504,7 +505,7 @@ export function getDashboardStats(orders: Order[], sessions: CalculatorSession[]
       ? Math.round(sessions.reduce((s, c) => s + c.estimatedCost, 0) / sessions.length)
       : 0;
   return {
-    totalProducts: PRODUCTS.length,
+    totalProducts: SEED_PRODUCTS.length,
     totalOrders: orders.length,
     totalRevenue,
     pendingOrders,

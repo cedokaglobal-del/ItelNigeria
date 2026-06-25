@@ -29,7 +29,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <img
             src="/Image/logo/itellogonigera.png"
             alt="ItelNigeria Logo"
-            className="h-9 w-auto object-contain"
+            className="h-11 w-auto object-contain"
           />
         </Link>
 
@@ -81,7 +81,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               <img
                 src="/Image/logo/itellogonigera.png"
                 alt="ItelNigeria Logo"
-                className="h-8 w-auto object-contain"
+                className="h-9 w-auto object-contain"
               />
             </Link>
             <button

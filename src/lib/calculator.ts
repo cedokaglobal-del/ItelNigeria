@@ -4,7 +4,7 @@
  * All hardware prices are pulled LIVE from the product catalog.
  */
 
-import { PRODUCTS } from "./products";
+import type { Product } from "./products";
 
 /** Generate a unique ID with a polyfill-safe fallback */
 export function uid(): string {
@@ -91,8 +91,8 @@ const PANEL_DERATE = 0.8; // dust/temp/wiring
 const GEN_COST_PER_KWH = 850;
 
 // ── Pull prices from the live product catalog ──────────────────────────────
-function catalogPrice(category: string, minKVA?: number): number {
-  const matches = PRODUCTS.filter((p) => p.category === category);
+function catalogPrice(products: Product[], category: string, minKVA?: number): number {
+  const matches = products.filter((p) => p.category === category);
   if (matches.length === 0) return 0;
 
   if (category === "inverters" && minKVA) {
@@ -135,7 +135,7 @@ function catalogPrice(category: string, minKVA?: number): number {
   return matches.sort((a, b) => a.price - b.price)[0].price;
 }
 
-export function calculate(input: CalcInput): CalcResult {
+export function calculate(input: CalcInput, products: Product[]): CalcResult {
   const { appliances, sunHours, autonomyDays, battery, systemVoltage } = input;
 
   const dailyEnergyWh = appliances.reduce((s, a) => s + a.watts * a.qty * a.hours, 0);
@@ -158,10 +158,10 @@ export function calculate(input: CalcInput): CalcResult {
   const controllerAmps = Math.ceil((panelCountW550 * PANEL_W) / systemVoltage / 0.9);
 
   // ── Prices from product catalog ──
-  const panelUnitPrice = catalogPrice("panels");
-  const batteryPricePerKWh = catalogPrice("batteries");
-  const inverterUnitPrice = catalogPrice("inverters", inverterKVA);
-  const controllerPricePerAmp = catalogPrice("controllers") || 2400;
+  const panelUnitPrice = catalogPrice(products, "panels");
+  const batteryPricePerKWh = catalogPrice(products, "batteries");
+  const inverterUnitPrice = catalogPrice(products, "inverters", inverterKVA);
+  const controllerPricePerAmp = catalogPrice(products, "controllers") || 2400;
 
   const panelsCost = panelCountW550 * panelUnitPrice;
   const batteryCost = batteryCapacityKWh * batteryPricePerKWh;

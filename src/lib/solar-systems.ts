@@ -1,9 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { getProducts } from "./products";
+import { SEED_PRODUCTS } from "./seed-products";
 import { supabase } from "./supabase";
 
+function _adminProducts() {
+  try {
+    const raw = typeof window !== "undefined" ? localStorage.getItem("itel.admin.products") : null;
+    if (raw) {
+      const p = JSON.parse(raw);
+      if (Array.isArray(p) && p.length > 0) return p;
+    }
+  } catch {}
+  return null;
+}
+
 export function calculateSystemPrice(components: SolarComponent[]): number {
-  const products = getProducts();
+  const products = _adminProducts() ?? SEED_PRODUCTS;
   let total = 0;
   for (const comp of components) {
     const p = products.find((p) => p.name.includes(comp.name) || comp.name.includes(p.name));
@@ -54,162 +66,18 @@ export type SolarSystem = {
   highlights: string[];
 };
 
+/** Tiny placeholder SVG — ~200 bytes instead of ~6KB */
 function genImg(slug: string, i: number): string {
-  const gradients = [
-    ["#f97316", "#ea580c", "#c2410c"],
-    ["#2563eb", "#1d40e0", "#1e3bbd"],
-    ["#059669", "#047857", "#065f46"],
-    ["#d97706", "#b45309", "#92400e"],
-    ["#7c3aed", "#6d28d9", "#5b21b6"],
-  ];
-  const [c1, c2, c3] = gradients[i % gradients.length];
+  const palette = ["#f97316", "#2563eb", "#059669", "#d97706", "#7c3aed"];
+  const c = palette[i % palette.length];
   const name = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
-
-  const icons = [
-    // 0 — Hero card: large sun + system name + decorative elements
-    `<g transform="translate(200,75)">
-      <circle cx="0" cy="0" r="65" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <circle cx="0" cy="0" r="45" fill="rgba(255,255,255,0.12)"/>
-      <circle cx="0" cy="0" r="25" fill="rgba(255,255,255,0.25)"/>
-      <g transform="translate(0,0)" stroke="rgba(255,255,255,0.3)" stroke-width="2.5" stroke-linecap="round">
-        <line x1="0" y1="-70" x2="0" y2="-85"/><line x1="0" y1="70" x2="0" y2="85"/>
-        <line x1="-70" y1="0" x2="-85" y2="0"/><line x1="70" y1="0" x2="85" y2="0"/>
-        <line x1="-49" y1="-49" x2="-60" y2="-60"/><line x1="49" y1="-49" x2="60" y2="-60"/>
-        <line x1="-49" y1="49" x2="-60" y2="60"/><line x1="49" y1="49" x2="60" y2="60"/>
-      </g>
-    </g>
-    <g transform="translate(200,210)">
-      <text text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="15" font-weight="700" opacity="0.95">${name}</text>
-      <text y="18" text-anchor="middle" fill="rgba(255,255,255,0.65)" font-family="system-ui,sans-serif" font-size="10">Complete Solar Energy System</text>
-    </g>
-    <rect x="24" y="24" width="352" height="202" rx="10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>`,
-    // 1 — Solar Array: panel grid on roof
-    `<g transform="translate(60,55)">
-      <path d="M0 120 L40 30 L240 30 L280 120 Z" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <g transform="translate(45,35)">
-        <rect x="0" y="0" width="45" height="35" rx="3" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
-        <rect x="5" y="5" width="35" height="25" rx="1.5" fill="rgba(255,255,255,0.08)"/>
-        <line x1="22.5" y1="5" x2="22.5" y2="30" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
-        <line x1="5" y1="17.5" x2="40" y2="17.5" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
-        <rect x="5" y="5" width="8" height="8" rx="1" fill="rgba(255,255,255,0.3)" opacity="0.4"/>
-      </g>
-      <g transform="translate(97,35)">
-        <rect x="0" y="0" width="45" height="35" rx="3" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
-        <rect x="5" y="5" width="35" height="25" rx="1.5" fill="rgba(255,255,255,0.08)"/>
-        <line x1="22.5" y1="5" x2="22.5" y2="30" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
-        <line x1="5" y1="17.5" x2="40" y2="17.5" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
-      </g>
-      <g transform="translate(149,35)">
-        <rect x="0" y="0" width="45" height="35" rx="3" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
-        <rect x="5" y="5" width="35" height="25" rx="1.5" fill="rgba(255,255,255,0.08)"/>
-        <line x1="22.5" y1="5" x2="22.5" y2="30" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
-        <line x1="5" y1="17.5" x2="40" y2="17.5" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>
-      </g>
-      <path d="M67.5 70 L67.5 85" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-      <path d="M120 70 L120 85" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-      <path d="M172 70 L172 85" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
-      <rect x="55" y="85" width="130" height="6" rx="3" fill="rgba(255,255,255,0.1)"/>
-    </g>
-    <g transform="translate(200,190)">
-      <text text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="12" font-weight="600" opacity="0.9">Solar Array</text>
-      <text y="16" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="system-ui,sans-serif" font-size="9">High-Efficiency Panels</text>
-    </g>`,
-    // 2 — Inverter & Battery: stacked battery + inverter unit
-    `<g transform="translate(130,45)">
-      <rect x="0" y="0" width="140" height="55" rx="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <rect x="10" y="8" width="25" height="15" rx="3" fill="rgba(255,255,255,0.25)"/>
-      <rect x="10" y="30" width="25" height="15" rx="3" fill="rgba(255,255,255,0.25)"/>
-      <rect x="42" y="8" width="25" height="15" rx="3" fill="rgba(255,255,255,0.25)"/>
-      <rect x="42" y="30" width="25" height="15" rx="3" fill="rgba(255,255,255,0.25)"/>
-      <rect x="74" y="8" width="25" height="15" rx="3" fill="rgba(255,255,255,0.25)"/>
-      <rect x="74" y="30" width="25" height="15" rx="3" fill="rgba(255,255,255,0.25)"/>
-      <rect x="106" y="8" width="25" height="15" rx="3" fill="rgba(255,255,255,0.25)"/>
-      <rect x="106" y="30" width="25" height="15" rx="3" fill="rgba(255,255,255,0.25)"/>
-      <rect x="0" y="55" width="140" height="30" rx="6" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
-      <rect x="50" y="62" width="40" height="16" rx="4" fill="rgba(255,255,255,0.25)"/>
-      <circle cx="70" cy="70" r="3" fill="rgba(255,255,255,0.5)"/>
-    </g>
-    <g transform="translate(200,195)">
-      <text text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="12" font-weight="600" opacity="0.9">Inverter & Battery Bank</text>
-      <text y="16" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="system-ui,sans-serif" font-size="9">Hybrid Inverter + LiFePO₄ Storage</text>
-    </g>`,
-    // 3 — Installation: roof + house schematic
-    `<g transform="translate(80,30)">
-      <path d="M120 45 L240 45 L200 10 L160 10 Z" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
-      <rect x="145" y="45" width="70" height="60" rx="3" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-      <rect x="170" y="70" width="20" height="35" rx="2" fill="rgba(255,255,255,0.15)"/>
-      <rect x="150" y="50" width="12" height="12" rx="1" fill="rgba(255,255,255,0.2)"/>
-      <rect x="198" y="50" width="12" height="12" rx="1" fill="rgba(255,255,255,0.2)"/>
-      <path d="M160 10 L160 -15" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-      <path d="M200 10 L200 -15" stroke="rgba(255,255,255,0.2)" stroke-width="2"/>
-      <rect x="148" y="-25" width="24" height="12" rx="2" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/>
-      <rect x="188" y="-25" width="24" height="12" rx="2" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/>
-      <line x1="148" y1="-19" x2="172" y2="-19" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
-      <line x1="148" y1="-15" x2="172" y2="-15" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
-      <line x1="188" y1="-19" x2="212" y2="-19" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
-      <line x1="188" y1="-15" x2="212" y2="-15" stroke="rgba(255,255,255,0.3)" stroke-width="0.5"/>
-      <path d="M220 60 L240 60 L240 110 L180 110" stroke="rgba(255,255,255,0.08)" stroke-width="1" fill="none"/>
-    </g>
-    <g transform="translate(200,200)">
-      <text text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="12" font-weight="600" opacity="0.9">Installation Preview</text>
-      <text y="16" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="system-ui,sans-serif" font-size="9">Turnkey Mounting & Wiring</text>
-    </g>`,
-    // 4 — System Overview: circular flow diagram
-    `<g transform="translate(200,85)">
-      <circle cx="0" cy="0" r="75" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4,4"/>
-      <circle cx="0" cy="0" r="50" fill="rgba(255,255,255,0.06)"/>
-      <circle cx="0" cy="0" r="25" fill="rgba(255,255,255,0.15)"/>
-      <g opacity="0.4" stroke="rgba(255,255,255,0.3)" stroke-width="1.5">
-        <circle cx="0" cy="-55" r="10" fill="none"/><circle cx="0" cy="-55" r="4" fill="rgba(255,255,255,0.4)"/>
-        <circle cx="55" cy="0" r="10" fill="none"/><circle cx="55" cy="0" r="4" fill="rgba(255,255,255,0.4)"/>
-        <circle cx="-55" cy="0" r="10" fill="none"/><circle cx="-55" cy="0" r="4" fill="rgba(255,255,255,0.4)"/>
-        <circle cx="0" cy="55" r="10" fill="none"/><circle cx="0" cy="55" r="4" fill="rgba(255,255,255,0.4)"/>
-      </g>
-      <line x1="12" y1="-48" x2="38" y2="-12" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <line x1="48" y1="-12" x2="38" y2="12" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <line x1="-12" y1="-48" x2="-38" y2="-12" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <line x1="-48" y1="12" x2="-12" y2="48" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <line x1="12" y1="48" x2="38" y2="12" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-    </g>
-    <g transform="translate(200,200)">
-      <text text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="12" font-weight="600" opacity="0.9">System Overview</text>
-      <text y="16" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-family="system-ui,sans-serif" font-size="9">End-to-End Energy Flow</text>
-    </g>`,
-  ];
-  const icon = icons[i % 5] || icons[0];
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 400 250">
-    <defs>
-      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style="stop-color:${c1}"/>
-        <stop offset="50%" style="stop-color:${c2}"/>
-        <stop offset="100%" style="stop-color:${c3}"/>
-      </linearGradient>
-      <radialGradient id="glow" cx="50%" cy="40%" r="60%">
-        <stop offset="0%" style="stop-color:rgba(255,255,255,0.08)"/>
-        <stop offset="100%" style="stop-color:rgba(255,255,255,0)"/>
-      </radialGradient>
-    </defs>
-    <rect width="400" height="250" fill="url(#g)" rx="12"/>
-    <rect width="400" height="250" fill="url(#glow)" rx="12"/>
-    <g opacity="0.06">
-      <line x1="0" y1="25" x2="400" y2="25" stroke="white" stroke-width="0.5"/>
-      <line x1="0" y1="50" x2="400" y2="50" stroke="white" stroke-width="0.5"/>
-      <line x1="0" y1="75" x2="400" y2="75" stroke="white" stroke-width="0.5"/>
-      <line x1="0" y1="100" x2="400" y2="100" stroke="white" stroke-width="0.5"/>
-      <line x1="0" y1="125" x2="400" y2="125" stroke="white" stroke-width="0.5"/>
-      <line x1="0" y1="150" x2="400" y2="150" stroke="white" stroke-width="0.5"/>
-      <line x1="0" y1="175" x2="400" y2="175" stroke="white" stroke-width="0.5"/>
-      <line x1="0" y1="200" x2="400" y2="200" stroke="white" stroke-width="0.5"/>
-      <line x1="0" y1="225" x2="400" y2="225" stroke="white" stroke-width="0.5"/>
-      <line x1="50" y1="0" x2="50" y2="250" stroke="white" stroke-width="0.5"/>
-      <line x1="100" y1="0" x2="100" y2="250" stroke="white" stroke-width="0.5"/>
-      <line x1="150" y1="0" x2="150" y2="250" stroke="white" stroke-width="0.5"/>
-      <line x1="200" y1="0" x2="200" y2="250" stroke="white" stroke-width="0.5"/>
-      <line x1="250" y1="0" x2="250" y2="250" stroke="white" stroke-width="0.5"/>
-      <line x1="300" y1="0" x2="300" y2="250" stroke="white" stroke-width="0.5"/>
-      <line x1="350" y1="0" x2="350" y2="250" stroke="white" stroke-width="0.5"/>
-    </g>
-    ${icon}
+    <rect width="400" height="250" fill="${c}" rx="12"/>
+    <rect width="400" height="250" fill="url(#g)" rx="12" opacity="0.35"/>
+    <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.15"/><stop offset="1" stop-color="#000" stop-opacity="0.3"/></linearGradient></defs>
+    <text x="200" y="120" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-family="system-ui,sans-serif" font-size="20" font-weight="700">${name}</text>
+    <text x="200" y="145" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-family="system-ui,sans-serif" font-size="12">Complete Solar Energy System</text>
+    <text x="200" y="175" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-family="system-ui,sans-serif" font-size="10">Slide ${i + 1} of 5</text>
   </svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }

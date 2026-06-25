@@ -7,7 +7,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { getProduct, type Product } from "./products";
+import { type Product } from "./products";
+import { SEED_PRODUCTS } from "./seed-products";
 import { useProducts } from "./admin-data";
 import type { SolarSystem } from "./solar-systems";
 
@@ -78,7 +79,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     })();
     const detailed = items
       .map((i) => {
-        const product = getProduct(i.slug) ?? adminProducts.find((p) => p.slug === i.slug);
+        const product = SEED_PRODUCTS.find((p) => p.slug === i.slug) ?? adminProducts.find((p) => p.slug === i.slug);
         if (product) return { product, qty: i.qty, lineTotal: product.price * i.qty };
         const sys = solarSystems.find((s) => s.slug === i.slug);
         if (sys) {

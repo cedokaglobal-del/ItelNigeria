@@ -128,7 +128,9 @@ function AdminProducts() {
   const [filter, setFilter] = useState<ProductCategory | "all">("all");
   const [form, setForm] = useState<ProductForm | null>(null);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
   const fileRef = useRef<HTMLInputElement>(null);
+  const PAGE_SIZE = 20;
 
   const filtered = useMemo(() => {
     let list = products;
@@ -145,6 +147,12 @@ function AdminProducts() {
     return list;
   }, [products, search, filter]);
 
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginated = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [filtered, page]);
+
   async function handleImagesFromFiles(files: FileList | null) {
     if (!files) return;
     toast.info(`Uploading ${files.length} images to Supabase...`);
@@ -155,6 +163,8 @@ function AdminProducts() {
     }
     const existing = form?.images ? form.images.split("\n").filter(Boolean) : [];
     setForm((prev) => (prev ? { ...prev, images: [...existing, ...urls].join("\n") } : prev));
+    // Clear file input to allow re-uploading same file
+    if (fileRef.current) fileRef.current.value = "";
     toast.success(`Uploaded ${urls.length} images`);
   }
 
@@ -360,8 +370,8 @@ function AdminProducts() {
                     <th className="px-4 py-3 text-right md:px-6">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
-                  {filtered.map((p) => (
+              <tbody className="divide-y">
+                {paginated.map((p) => (
                     <tr key={p.slug} className="transition-colors hover:bg-surface/50">
                       <td className="px-4 py-3 md:px-6">
                         <div className="flex items-center gap-3">
@@ -426,7 +436,7 @@ function AdminProducts() {
                       </td>
                     </tr>
                   ))}
-                  {filtered.length === 0 && (
+                  {paginated.length === 0 && (
                     <tr>
                       <td
                         colSpan={6}
@@ -439,26 +449,53 @@ function AdminProducts() {
                 </tbody>
               </table>
             </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t bg-surface/30">
+                <p className="text-sm text-muted-foreground">
+                  Page {page} of {totalPages} · {filtered.length} products
+                </p>
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-accent"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:bg-accent"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
 
           {/* Product form modal */}
           {form && (
-            <div className="fixed inset-0 z-50 overflow-y-auto bg-black/30 px-4 py-10">
-              <div className="mx-auto max-w-2xl rounded-2xl border bg-card p-6 shadow-xl">
-                <div className="flex items-center justify-between">
+            <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4">
+              <div className="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl border bg-card shadow-xl overflow-hidden">
+                <div className="flex items-center justify-between border-b p-4 bg-card/50 backdrop-blur sticky top-0 z-10">
                   <h2 className="font-semibold">{editingSlug ? "Edit product" : "New product"}</h2>
                   <button
                     onClick={() => {
                       setForm(null);
                       setEditingSlug(null);
                     }}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="text-muted-foreground hover:text-foreground p-1"
+                    aria-label="Close"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-5 w-5" />
                   </button>
                 </div>
 
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+                  <div className="grid gap-4 sm:grid-cols-2">
                   <PField
                     label="Name"
                     value={form.name}
@@ -775,7 +812,7 @@ function AdminProducts() {
                   )}
                 </div>
 
-                <div className="mt-6 flex justify-end gap-2 border-t pt-4">
+                <div className="mt-6 flex justify-end gap-2 border-t pt-4 sticky bottom-0 bg-card/95 backdrop-blur z-10">
                   <button
                     onClick={() => {
                       setForm(null);
@@ -794,8 +831,9 @@ function AdminProducts() {
                 </div>
               </div>
             </div>
-          )}
-        </>
+          </div>
+        )}
+      </> 
       ) : (
         <AdminSolarSystemsContent
           onPublish={(sys) => {

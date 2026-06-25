@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { SolarSystem } from "@/lib/solar-systems";
-import { getProducts } from "@/lib/products";
+import { SEED_PRODUCTS } from "@/lib/seed-products";
 
 type LayoutItem = {
   src: string;
@@ -14,8 +14,7 @@ type LayoutItem = {
 };
 
 function productImage(type: string, name: string): string {
-  const products = getProducts();
-  const match = products.find(
+  const match = SEED_PRODUCTS.find(
     (p) =>
       (type === "panel" && p.category === "panels") ||
       (type === "inverter" && p.category === "inverters") ||

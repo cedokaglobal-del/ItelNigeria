@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useLoaderData } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   BatteryCharging,
@@ -24,9 +24,11 @@ import {
   uid,
   type Appliance,
 } from "@/lib/calculator";
+import { fetchProducts } from "@/lib/products";
 import { formatNGN, formatNumber } from "@/lib/format";
 
 export const Route = createFileRoute("/calculator")({
+  loader: () => fetchProducts(),
   head: () => ({
     meta: [
       { title: "Solar Calculator — ItelNigeria" },
@@ -56,6 +58,7 @@ const STARTER: Appliance[] = [
 ];
 
 function CalculatorPage() {
+  const products = useLoaderData({ from: "/calculator" });
   const [appliances, setAppliances] = useState<Appliance[]>(STARTER);
   const [sunHours, setSunHours] = useState(5);
   const [autonomyDays, setAutonomyDays] = useState(1);
@@ -65,7 +68,7 @@ function CalculatorPage() {
   const [customName, setCustomName] = useState("");
   const [customWatts, setCustomWatts] = useState(200);
 
-  const r = calculate({ appliances, sunHours, autonomyDays, battery, systemVoltage });
+  const r = calculate({ appliances, sunHours, autonomyDays, battery, systemVoltage }, products);
 
   function addAppliance(p?: { name: string; watts: number }) {
     const preset = p ?? APPLIANCE_PRESETS[0];
