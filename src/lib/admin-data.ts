@@ -462,10 +462,11 @@ export function useProducts() {
       .from("products")
       .select("*")
       .then(({ data, error }) => {
-        if (error || !data || data.length === 0) {
-          setList(seedProducts());
+        if (error) {
+          console.error("Failed to load products:", error);
+          setList([]);
         } else {
-          setList(data as Product[]);
+          setList((data as Product[]) || []);
         }
       });
   }, []);

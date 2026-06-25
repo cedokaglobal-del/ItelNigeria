@@ -64,24 +64,23 @@ async function loadSeed(): Promise<Product[]> {
 export async function fetchProducts(): Promise<Product[]> {
   try {
     const { data, error } = await supabase.from("products").select("*");
-    if (error || !data || data.length === 0) return loadSeed();
-    return data as Product[];
+    if (error) {
+      console.error("Failed to fetch products:", error);
+      return [];
+    }
+    return (data as Product[]) || [];
   } catch {
-    return loadSeed();
+    return [];
   }
 }
 
 export async function fetchProduct(slug: string): Promise<Product | undefined> {
   try {
     const { data, error } = await supabase.from("products").select("*").eq("slug", slug).single();
-    if (error || !data) {
-      const seed = await loadSeed();
-      return seed.find((p) => p.slug === slug);
-    }
+    if (error || !data) return undefined;
     return data as Product;
   } catch {
-    const seed = await loadSeed();
-    return seed.find((p) => p.slug === slug);
+    return undefined;
   }
 }
 
@@ -98,8 +97,7 @@ export async function getProduct(slug: string): Promise<Product | undefined> {
   } catch {
     /* ignore */
   }
-  const seed = await loadSeed();
-  return seed.find((p) => p.slug === slug);
+  return undefined;
 }
 
 export async function getProducts(): Promise<Product[]> {
@@ -114,5 +112,5 @@ export async function getProducts(): Promise<Product[]> {
   } catch {
     /* ignore */
   }
-  return loadSeed();
+  return [];
 }
