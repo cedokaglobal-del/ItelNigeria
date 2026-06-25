@@ -556,19 +556,30 @@ function AdminProducts() {
 
                   {/* Images */}
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-medium text-muted-foreground mb-1">
-                      Images
+                    <label className="block text-xs font-medium text-muted-foreground mb-2">
+                      Product Images
                     </label>
-                    <div className="flex flex-wrap gap-2 mb-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 mb-3">
                       {form.images
                         .split("\n")
                         .filter(Boolean)
                         .map((url, i) => (
                           <div
                             key={url}
-                            className="relative h-16 w-16 shrink-0 rounded-lg border bg-surface overflow-hidden group/image"
+                            className="relative aspect-square rounded-lg border bg-surface overflow-hidden group/image"
                           >
-                            <img src={url} alt="" className="h-full w-full object-cover" />
+                            <img
+                              src={url}
+                              alt={`Image ${i + 1}`}
+                              className="h-full w-full object-cover transition-transform duration-200 group-hover/image:scale-105"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                                e.currentTarget.nextElementSibling.style.display = "flex";
+                              }}
+                            />
+                            <div className="hidden absolute inset-0 flex items-center justify-center bg-red-500/90 text-white text-xs">
+                              Failed to load
+                            </div>
                             <button
                               type="button"
                               onClick={() => {
@@ -576,39 +587,37 @@ function AdminProducts() {
                                 list.splice(i, 1);
                                 setForm({ ...form, images: list.join("\n") });
                               }}
-                              className="absolute right-0.5 top-0.5 hidden h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs group-hover/image:flex"
+                              className="absolute right-1 top-1 h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white text-xs opacity-0 group-hover/image:opacity-100 transition-opacity"
+                              aria-label="Remove image"
                             >
                               <X className="h-3 w-3" />
                             </button>
                           </div>
                         ))}
+                      {form.images.split("\n").filter(Boolean).length < 10 && (
+                        <label
+                          className="relative aspect-square rounded-lg border-2 border-dashed border-border bg-surface/50 flex items-center justify-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-colors"
+                        >
+                          <input
+                            ref={fileRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                            onChange={(e) => handleImagesFromFiles(e.target.files)}
+                          />
+                          <div className="flex flex-col items-center gap-1 text-xs text-muted-foreground pointer-events-none">
+                            <ImagePlus className="h-5 w-5" />
+                            <span>Add</span>
+                          </div>
+                        </label>
+                      )}
                     </div>
-                    <div className="flex gap-2">
-                      <textarea
-                        value={form.images}
-                        onChange={(e) => setForm({ ...form, images: e.target.value })}
-                        className="flex-1 rounded-xl border bg-surface px-4 py-2.5 text-sm"
-                        rows={3}
-                        placeholder="Image URLs (one per line)"
-                      />
-                    </div>
-                    <div className="mt-2">
-                      <input
-                        ref={fileRef}
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="hidden"
-                        onChange={(e) => handleImagesFromFiles(e.target.files)}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => fileRef.current?.click()}
-                        className="inline-flex items-center gap-1.5 rounded-lg border bg-surface px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent"
-                      >
-                        <ImagePlus className="h-3.5 w-3.5" /> Upload from device
-                      </button>
-                    </div>
+                    {form.images.split("\n").filter(Boolean).length > 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        {form.images.split("\n").filter(Boolean).length} image(s) uploaded
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-3 sm:col-span-2">
@@ -623,27 +632,53 @@ function AdminProducts() {
                     </label>
                   </div>
                   <div className="sm:col-span-2">
-                    <PField
-                      label="Description"
-                      value={form.description}
-                      onChange={(v) => setForm({ ...form, description: v })}
-                      textarea
-                    />
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">
+                      Description
+                    </label>
+                    <div className="relative">
+                      <textarea
+                        value={form.description}
+                        onChange={(e) => setForm({ ...form, description: e.target.value })}
+                        className="w-full rounded-xl border bg-surface px-4 py-3 text-sm min-h-[120px] resize-y focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        placeholder="Describe the product features, benefits, and specifications..."
+                      />
+                      <div className="absolute bottom-2 right-2 text-xs text-muted-foreground/60">
+                        {form.description.length} characters
+                      </div>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Markdown supported. This appears on the product detail page.
+                    </p>
                   </div>
                   <div className="sm:col-span-2">
-                    <PListEditor
-                      label="Highlights (one per line)"
-                      values={form.highlights}
-                      onChange={(v) => setForm({ ...form, highlights: v })}
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">
+                      Highlights (one per line, shown as bullet points)
+                    </label>
+                    <textarea
+                      value={form.highlights.join("\n")}
+                      onChange={(e) => setForm({ ...form, highlights: e.target.value.split("\n") })}
+                      className="w-full rounded-xl border bg-surface px-4 py-3 text-sm min-h-[100px] resize-y focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      placeholder="High efficiency mono PERC cells&#10;25-year linear power warranty&#10;Anti-PID &amp; salt mist resistant"
+                      rows={4}
                     />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Each line becomes a bullet point on the product page.
+                    </p>
                   </div>
                   <div className="sm:col-span-2">
-                    <PField
-                      label="SEO tags (comma-separated, max 5 — not displayed to users)"
+                    <label className="block text-xs font-medium text-muted-foreground mb-1">
+                      SEO Tags (comma-separated, max 5 — not displayed to users)
+                    </label>
+                    <input
+                      type="text"
                       value={form.tags}
-                      onChange={(v) => setForm({ ...form, tags: v })}
-                      placeholder="e.g. solar panel, 550W, mono PERC, Nigeria"
+                      onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                      className="w-full rounded-xl border bg-surface px-4 py-2.5 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      placeholder="solar panel, 550W, mono PERC, Nigeria"
                     />
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Helps search engines find this product. Not shown to customers.
+                    </p>
                   </div>
 
                   {/* Solar system toggle */}
