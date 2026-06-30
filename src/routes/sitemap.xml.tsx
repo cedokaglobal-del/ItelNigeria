@@ -1,29 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SEED_PRODUCTS } from "@/lib/seed-products";
-import { seedSolarSystems } from "@/lib/solar-systems";
-
-const SS = seedSolarSystems();
-
-const PAGES = [
-  { loc: "/", priority: "1.0", changefreq: "weekly" },
-  { loc: "/shop", priority: "0.9", changefreq: "daily" },
-  { loc: "/calculator", priority: "0.9", changefreq: "weekly" },
-  { loc: "/solar-systems", priority: "0.9", changefreq: "daily" },
-  ...SEED_PRODUCTS.map((p) => ({
-    loc: `/products/${p.slug}` as const,
-    priority: "0.7",
-    changefreq: "weekly" as const,
-  })),
-  ...SS.map((s) => ({
-    loc: `/solar-systems/${s.slug}` as const,
-    priority: "0.8",
-    changefreq: "weekly" as const,
-  })),
-];
+import { fetchProducts } from "@/lib/products";
+import { fetchSolarSystems } from "@/lib/solar-systems";
 
 export const Route = createFileRoute("/sitemap/xml")({
   component: () => null,
-  loader: () => {
+  loader: async () => {
+    const products = await fetchProducts();
+    const systems = await fetchSolarSystems();
+
+    const PAGES = [
+      { loc: "/", priority: "1.0", changefreq: "weekly" },
+      { loc: "/shop", priority: "0.9", changefreq: "daily" },
+      { loc: "/calculator", priority: "0.9", changefreq: "weekly" },
+      { loc: "/solar-systems", priority: "0.9", changefreq: "daily" },
+      ...products.map((p) => ({
+        loc: `/products/${p.slug}`,
+        priority: "0.7",
+        changefreq: "weekly",
+      })),
+      ...systems.map((s) => ({
+        loc: `/solar-systems/${s.slug}`,
+        priority: "0.8",
+        changefreq: "weekly",
+      })),
+    ];
+
     const urlset = PAGES.map(
       (p) => `  <url>
     <loc>https://itelenergy.com${p.loc}</loc>

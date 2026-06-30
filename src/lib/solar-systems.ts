@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { SEED_PRODUCTS } from "./seed-products";
 import { supabase } from "./supabase";
 
-export function calculateSystemPrice(components: SolarComponent[]): number {
-  const products = SEED_PRODUCTS;
+export function calculateSystemPrice(components: SolarComponent[], products: { name: string; price: number }[]): number {
   let total = 0;
   for (const comp of components) {
     const p = products.find((p) => p.name.includes(comp.name) || comp.name.includes(p.name));
@@ -417,7 +415,7 @@ export function seedSolarSystems(): SolarSystem[] {
     return {
       ...s,
       ...specs,
-      price: calculateSystemPrice(s.components),
+      price: calculateSystemPrice(s.components, []),
     } as SolarSystem;
   });
 }
@@ -427,10 +425,10 @@ const KEY = "itel.admin.solarsystems";
 function migrateSystem(s: SolarSystem): SolarSystem {
   return {
     ...s,
-    images: Array.isArray(s.images) && s.images.length > 0 ? s.images : seedImages(s.slug),
+    images: Array.isArray(s.images) && s.images.length > 0 ? s.images : [],
     whatItPowers: s.whatItPowers || "",
     // Preserve the stored price — don't recalculate from components
-    price: s.price > 0 ? s.price : calculateSystemPrice(s.components ?? []),
+    price: s.price > 0 ? s.price : 0,
   };
 }
 
@@ -449,7 +447,7 @@ export function useSolarSystems(): [
       .select("*")
       .then(({ data, error }) => {
         if (error || !data || data.length === 0) {
-          setSystems(seedSolarSystems());
+          setSystems([]);
         } else {
           setSystems((data as SolarSystem[]).map(migrateSystem));
         }
@@ -464,7 +462,7 @@ export function useSolarSystems(): [
   const addSystem = useCallback((system: SolarSystem) => {
     setSystems((prev) => [
       ...prev,
-      { ...system, images: system.images?.length ? system.images : seedImages(system.slug) },
+      { ...system, images: system.images?.length ? system.images : [] },
     ]);
     supabase.from("solar_systems").insert(system).then();
   }, []);
@@ -476,7 +474,7 @@ export function useSolarSystems(): [
 
   const updateSystem = useCallback((slug: string, system: SolarSystem) => {
     setSystems((prev) =>
-      prev.map((s) => (s.slug === slug ? { ...system, images: system.images?.length ? system.images : seedImages(system.slug) } : s))
+      prev.map((s) => (s.slug === slug ? { ...system, images: system.images?.length ? system.images : [] } : s))
     );
     // Use upsert to avoid delete+insert race condition
     supabase
@@ -495,10 +493,10 @@ export function getSystem(slug: string, systems: SolarSystem[]): SolarSystem | u
 export async function fetchSolarSystems(): Promise<SolarSystem[]> {
   try {
     const { data, error } = await supabase.from("solar_systems").select("*");
-    if (error || !data || data.length === 0) return seedSolarSystems();
-    return data as SolarSystem[];
+    if (error || !data || data.length === 0) return [];
+    return (data as SolarSystem[]).map(migrateSystem);
   } catch {
-    return seedSolarSystems();
+    return [];
   }
 }
 

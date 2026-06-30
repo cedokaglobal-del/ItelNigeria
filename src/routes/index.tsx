@@ -13,10 +13,17 @@ import {
 } from "lucide-react";
 import { memo } from "react";
 import { ProductCard } from "@/components/site/ProductCard";
-import { fetchProducts, CATEGORIES, type ProductCategory } from "@/lib/products";
+import { fetchProducts, type ProductCategory } from "@/lib/products";
+import { fetchCategories } from "@/lib/categories";
 
 export const Route = createFileRoute("/")({
-  loader: () => fetchProducts(),
+  loader: async () => {
+    const [products, categories] = await Promise.all([
+      fetchProducts(),
+      fetchCategories()
+    ]);
+    return { products, categories };
+  },
   head: () => ({
     meta: [
       { title: "ItelNigeria — Power Independence Starts Here" },
@@ -53,7 +60,7 @@ const CATEGORY_META: Record<
 };
 
 function Home() {
-  const products = Route.useLoaderData();
+  const { products, categories } = Route.useLoaderData();
   const featured = products.filter((p) => p.badge).slice(0, 6);
   const deals = products.filter((p) => p.originalPrice && p.originalPrice > p.price).slice(0, 4);
   const newArrivals = products.filter((p) => p.badge === "New").slice(0, 6);
@@ -123,8 +130,8 @@ function Home() {
           <Link to="/shop" className="text-xs text-muted-foreground hover:text-foreground">View all <ArrowRight className="inline h-3 w-3" /></Link>
         </div>
         <div className="mt-3 flex snap-x snap-mandatory gap-2 overflow-x-auto scrollbar-hide pb-2">
-          {CATEGORIES.map((c) => {
-            const meta = CATEGORY_META[c.id];
+          {categories.map((c) => {
+            const meta = CATEGORY_META[c.id] || CATEGORY_META["accessories"];
             const Icon = meta.icon;
             return (
               <Link

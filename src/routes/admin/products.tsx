@@ -1,7 +1,8 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { CATEGORIES, type Product, type ProductCategory } from "@/lib/products";
+import { type Product, type ProductCategory } from "@/lib/products";
+import { useCategories } from "@/lib/categories";
 import { useProducts } from "@/lib/admin-data";
 import { formatNGN } from "@/lib/format";
 import { Edit3, Eye, ImagePlus, Plus, Search, Trash2, X } from "lucide-react";
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
 });
 
-type Tab = "products" | "solar-systems";
+type Tab = "products" | "solar-systems" | "categories";
 
 type SolarComp = {
   _key: string;
@@ -123,6 +124,7 @@ function productToForm(p: Product): ProductForm {
 
 function AdminProducts() {
   const [tab, setTab] = useState<Tab>("products");
+  const [categories] = useCategories();
   const [products, updateStock, addProduct, updateProduct, deleteProduct] = useProducts();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<ProductCategory | "all">("all");
@@ -316,20 +318,39 @@ function AdminProducts() {
 
       {/* Tabs */}
       <div className="mb-6 flex gap-1 rounded-xl border bg-surface p-1">
-        {(["products", "solar-systems"] as const).map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setTab(t)}
-            className={`flex-1 rounded-lg py-2 text-sm font-medium transition-all ${
-              tab === t
-                ? "bg-card shadow-sm text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t === "products" ? "Products" : "Solar Systems"}
-          </button>
-        ))}
+        <button
+          type="button"
+          onClick={() => setTab("products")}
+          className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors md:flex-none ${
+            tab === "products"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-surface hover:text-foreground"
+          }`}
+        >
+          Products
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("solar-systems")}
+          className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors md:flex-none ${
+            tab === "solar-systems"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-surface hover:text-foreground"
+          }`}
+        >
+          Solar Systems
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("categories")}
+          className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors md:flex-none ${
+            tab === "categories"
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:bg-surface hover:text-foreground"
+          }`}
+        >
+          Categories
+        </button>
       </div>
 
       {tab === "products" ? (
@@ -349,7 +370,7 @@ function AdminProducts() {
               <FilterChip active={filter === "all"} onClick={() => setFilter("all")}>
                 All
               </FilterChip>
-              {CATEGORIES.map((c) => (
+              {categories.map((c) => (
                 <FilterChip key={c.id} active={filter === c.id} onClick={() => setFilter(c.id)}>
                   {c.label}
                 </FilterChip>
@@ -514,7 +535,7 @@ function AdminProducts() {
                   <PSelect
                     label="Category"
                     value={form.category}
-                    options={CATEGORIES.map((c) => ({ value: c.id, label: c.label }))}
+                    options={categories.map((c) => ({ value: c.id, label: c.label }))}
                     onChange={(v) => setForm({ ...form, category: v as ProductCategory })}
                   />
                   <PField
@@ -869,8 +890,8 @@ function AdminProducts() {
             </div>
           </div>
         )}
-      </> 
-      ) : (
+        </> 
+      ) : tab === "solar-systems" ? (
         <AdminSolarSystemsContent
           onPublish={(sys) => {
             const arrayKw = ((sys.totalPanels * sys.panelWattage) / 1000).toFixed(2);
@@ -929,6 +950,10 @@ function AdminProducts() {
             );
           }}
         />
+      ) : (
+        <div className="mt-6">
+          <AdminCategoriesContent />
+        </div>
       )}
     </AdminLayout>
   );
@@ -1040,5 +1065,138 @@ function FilterChip({
     >
       {children}
     </button>
+  );
+}
+
+function AdminCategoriesContent() {
+  const [categories, addCat, removeCat, updateCat] = useCategories();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<{ id: string; label: string; blurb: string } | null>(null);
+
+  function handleSave() {
+    if (!form || !form.id.trim() || !form.label.trim()) {
+      toast.error("ID and Label are required");
+      return;
+    }
+    const safeId = form.id.replace(/\s+/g, "-").toLowerCase();
+    
+    if (editingId) {
+      updateCat(editingId, { id: safeId, label: form.label, blurb: form.blurb });
+      toast.success("Category updated");
+    } else {
+      if (categories.find(c => c.id === safeId)) {
+        toast.error("Category with this ID already exists");
+        return;
+      }
+      addCat({ id: safeId, label: form.label, blurb: form.blurb });
+      toast.success("Category created");
+    }
+    setForm(null);
+    setEditingId(null);
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold tracking-tight">Categories</h2>
+          <p className="text-sm text-muted-foreground">Manage product categories for the shop.</p>
+        </div>
+        <button
+          onClick={() => {
+            setEditingId(null);
+            setForm({ id: "", label: "", blurb: "" });
+          }}
+          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-transform active:scale-95"
+        >
+          <Plus className="h-4 w-4" /> New Category
+        </button>
+      </div>
+
+      {form && (
+        <div className="rounded-2xl border bg-card p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">{editingId ? "Edit Category" : "New Category"}</h3>
+            <button onClick={() => setForm(null)} className="rounded-full p-2 hover:bg-surface text-muted-foreground hover:text-foreground">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <PField label="Category ID (slug)" value={form.id} onChange={(v) => setForm({ ...form, id: v })} placeholder="e.g. inverters" />
+            <PField label="Display Label" value={form.label} onChange={(v) => setForm({ ...form, label: v })} placeholder="e.g. Solar Inverters" />
+            <div className="md:col-span-2">
+              <PField label="Blurb / Description" value={form.blurb} onChange={(v) => setForm({ ...form, blurb: v })} placeholder="Short description for the category" />
+            </div>
+          </div>
+          <div className="mt-6 flex justify-end gap-3">
+            <button
+              onClick={() => setForm(null)}
+              className="rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-surface"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm"
+            >
+              Save Category
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b bg-surface text-left text-xs font-medium text-muted-foreground">
+              <th className="px-6 py-3">ID / Slug</th>
+              <th className="px-6 py-3">Label</th>
+              <th className="px-6 py-3">Blurb</th>
+              <th className="px-6 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y">
+            {categories.map((c) => (
+              <tr key={c.id} className="transition-colors hover:bg-surface/50">
+                <td className="px-6 py-4 font-mono text-xs">{c.id}</td>
+                <td className="px-6 py-4 font-semibold">{c.label}</td>
+                <td className="px-6 py-4 text-muted-foreground">{c.blurb}</td>
+                <td className="px-6 py-4 text-right">
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingId(c.id);
+                        setForm({ ...c });
+                      }}
+                      className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
+                    >
+                      <Edit3 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (confirm(`Delete category ${c.label}?`)) {
+                          removeCat(c.id);
+                          toast.success("Category deleted");
+                        }
+                      }}
+                      className="rounded-lg p-2 text-red-500 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {categories.length === 0 && (
+              <tr>
+                <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
+                  No categories found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }

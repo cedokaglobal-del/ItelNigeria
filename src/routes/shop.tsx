@@ -3,8 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Package, Sun, Cpu, BatteryCharging, Zap, Wrench, type LucideIcon } from "lucide-react";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Pagination } from "@/components/site/Pagination";
-import { CATEGORIES, fetchProducts, type ProductCategory } from "@/lib/products";
-
+import { fetchProducts, type ProductCategory } from "@/lib/products";
+import { useCategories } from "@/lib/categories";
 export const Route = createFileRoute("/shop")({
   loader: () => fetchProducts(),
   pendingComponent: ShopSkeleton,
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/shop")({
 
 type Filter = ProductCategory | "all";
 
-const CAT_ICONS: Record<ProductCategory, LucideIcon> = {
+const CAT_ICONS: Record<string, LucideIcon> = {
   panels: Sun,
   inverters: Cpu,
   batteries: BatteryCharging,
@@ -47,7 +47,9 @@ const PER_PAGE = 8;
 function Shop() {
   const loaderData = Route.useLoaderData();
   const gridRef = useRef<HTMLDivElement>(null);
+  const [categories] = useCategories();
   const [filter, setFilter] = useState<Filter>("all");
+  const [activeTag, setActiveTag] = useState<string | null>(null);
   const [sort, setSort] = useState<"featured" | "low" | "high" | "rating">("featured");
   const [page, setPage] = useState(1);
 
@@ -55,21 +57,33 @@ function Shop() {
     gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [page]);
 
+  const allTags = useMemo(() => {
+    const tags = new Set<string>();
+    for (const p of loaderData) {
+      if (p.tags) p.tags.forEach((t) => tags.add(t));
+    }
+    return Array.from(tags).sort();
+  }, [loaderData]);
+
   const products = useMemo(() => {
     const source = loaderData;
     let list = filter === "all" ? source : source.filter((p) => p.category === filter);
+    if (activeTag) {
+      list = list.filter((p) => p.tags && p.tags.includes(activeTag));
+    }
     list = [...list];
     if (sort === "low") list.sort((a, b) => a.price - b.price);
     if (sort === "high") list.sort((a, b) => b.price - a.price);
     if (sort === "rating") list.sort((a, b) => b.rating - a.rating);
     return list;
-  }, [filter, sort, loaderData]);
+  }, [filter, activeTag, sort, loaderData]);
 
   const totalPages = Math.ceil(products.length / PER_PAGE);
   const paged = products.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   function handleFilter(f: Filter) {
     setFilter(f);
+    setActiveTag(null);
     setPage(1);
   }
 
@@ -102,8 +116,8 @@ function Shop() {
             <FilterChip active={filter === "all"} onClick={() => handleFilter("all")}>
               <Package className="h-3 w-3" /> All
             </FilterChip>
-            {CATEGORIES.map((c) => {
-              const Icon = CAT_ICONS[c.id];
+            {categories.map((c) => {
+              const Icon = CAT_ICONS[c.id] || Package;
               return (
                 <FilterChip key={c.id} active={filter === c.id} onClick={() => handleFilter(c.id)}>
                   <Icon className="h-3 w-3" /> {c.label}
@@ -130,12 +144,33 @@ function Shop() {
           </div>
         </div>
 
-        {/* ── Results count ── */}
-        <p className="pb-4 text-xs text-muted-foreground">
-          {products.length} product{products.length !== 1 ? "s" : ""}
-          {filter !== "all" &&
-            ` in ${CATEGORIES.find((c) => c.id === filter)?.label.toLowerCase() || filter}`}
-        </p>
+        {/* ── Tags & Results count ── */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
+          <div className="flex flex-wrap gap-2">
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => {
+                  setActiveTag(activeTag === tag ? null : tag);
+                  setPage(1);
+                }}
+                className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider transition-colors ${
+                  activeTag === tag
+                    ? "bg-[var(--solar)] text-white shadow-sm"
+                    : "bg-surface text-muted-foreground hover:bg-accent hover:text-foreground border border-hairline"
+                }`}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground whitespace-nowrap">
+            {products.length} product{products.length !== 1 ? "s" : ""}
+            {filter !== "all" &&
+              ` in ${categories.find((c) => c.id === filter)?.label.toLowerCase() || filter}`}
+            {activeTag && ` tagged "${activeTag}"`}
+          </p>
+        </div>
 
         {/* ── Grid ── */}
         <div ref={gridRef} className="grid min-h-[400px] grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-5">

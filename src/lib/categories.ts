@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { supabase } from "./supabase";
+import { toast } from "sonner";
 
 export type Category = {
   id: string;
@@ -6,7 +8,8 @@ export type Category = {
   blurb: string;
 };
 
-const KEY = "itel.admin.categories";
+// We still keep an array of fallback categories just in case the DB is totally empty on first load.
+// But we no longer use localStorage.
 const DEFAULTS: Category[] = [
   { id: "panels", label: "Solar Panels", blurb: "Mono PERC & N-Type panels" },
   { id: "inverters", label: "Inverters", blurb: "Hybrid, off-grid, on-grid" },
@@ -16,56 +19,52 @@ const DEFAULTS: Category[] = [
   { id: "accessories", label: "Accessories", blurb: "Cables, breakers, mounts" },
 ];
 
-/** Static snapshot for synchronous use (e.g. route loaders) */
-export const CATEGORIES: Category[] = DEFAULTS;
+let _cachedCategories: Category[] | null = null;
 
-export function seedCategories(): Category[] {
-  return DEFAULTS;
+export async function fetchCategories(): Promise<Category[]> {
+  try {
+    const { data, error } = await supabase.from("categories").select("*");
+    if (error || !data || data.length === 0) {
+      // If table is missing/empty, return defaults but don't persist them
+      return DEFAULTS;
+    }
+    _cachedCategories = data as Category[];
+    return _cachedCategories;
+  } catch {
+    return DEFAULTS;
+  }
 }
 
 export function useCategories(): [Category[], (cat: Category) => void, (id: string) => void, (id: string, updates: Partial<Category>) => void] {
-  const [list, setList] = useState<Category[]>(() => {
-    if (typeof window === "undefined") return DEFAULTS;
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Category[];
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-    } catch {}
-    return DEFAULTS;
-  });
+  const [list, setList] = useState<Category[]>(DEFAULTS);
 
   useEffect(() => {
-    try { localStorage.setItem(KEY, JSON.stringify(list)); } catch {}
-  }, [list]);
+    fetchCategories().then(setList);
+  }, []);
 
   const add = useCallback((cat: Category) => {
     setList((prev) => {
       if (prev.find((c) => c.id === cat.id)) return prev;
       return [...prev, cat];
     });
+    supabase.from("categories").insert(cat).then(({ error }) => {
+      if (error) toast.error("Failed to add category");
+    });
   }, []);
 
   const remove = useCallback((id: string) => {
     setList((prev) => prev.filter((c) => c.id !== id));
+    supabase.from("categories").delete().eq("id", id).then(({ error }) => {
+      if (error) toast.error("Failed to delete category");
+    });
   }, []);
 
   const update = useCallback((id: string, updates: Partial<Category>) => {
     setList((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
+    supabase.from("categories").update(updates).eq("id", id).then(({ error }) => {
+      if (error) toast.error("Failed to update category");
+    });
   }, []);
 
   return [list, add, remove, update];
-}
-
-export function getCategories(): Category[] {
-  if (typeof window === "undefined") return DEFAULTS;
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Category[];
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {}
-  return DEFAULTS;
 }

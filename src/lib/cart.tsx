@@ -8,9 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { type Product } from "./products";
-import { SEED_PRODUCTS } from "./seed-products";
 import { useProducts } from "./admin-data";
-import type { SolarSystem } from "./solar-systems";
+import { type SolarSystem, useSolarSystems } from "./solar-systems";
 
 export type CartItem = { slug: string; qty: number };
 
@@ -31,6 +30,7 @@ const KEY = "itel.cart.v1";
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [adminProducts] = useProducts();
+  const [solarSystems] = useSolarSystems();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -70,16 +70,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clear = useCallback(() => setItems([]), []);
 
   const value = useMemo<CartCtx>(() => {
-    const solarSystems: SolarSystem[] = (() => {
-      try {
-        const raw = localStorage.getItem("itel.admin.solarsystems");
-        if (raw) return JSON.parse(raw);
-      } catch {}
-      return [];
-    })();
     const detailed = items
       .map((i) => {
-        const product = SEED_PRODUCTS.find((p) => p.slug === i.slug) ?? adminProducts.find((p) => p.slug === i.slug);
+        const product = adminProducts.find((p) => p.slug === i.slug);
         if (product) return { product, qty: i.qty, lineTotal: product.price * i.qty };
         const sys = solarSystems.find((s) => s.slug === i.slug);
         if (sys) {
@@ -107,7 +100,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const count = detailed.reduce((s, i) => s + i.qty, 0);
     const subtotal = detailed.reduce((s, i) => s + i.lineTotal, 0);
     return { items, detailed, count, subtotal, add, remove, setQty, clear };
-  }, [items, add, remove, setQty, clear, adminProducts]);
+  }, [items, add, remove, setQty, clear, adminProducts, solarSystems]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

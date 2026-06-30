@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { seedProductImages, type Product } from "./products";
-import { SEED_PRODUCTS } from "./seed-products";
+import { type Product } from "./products";
+
 import { supabase } from "./supabase";
 import { toast } from "sonner";
 
@@ -198,16 +198,9 @@ export function useCalculatorSessions(): CalculatorSession[] {
 function migrateProduct(p: Product): Product {
   return {
     ...p,
-    images:
-      Array.isArray(p.images) && p.images.length > 0
-        ? p.images
-        : seedProductImages(p.slug, p.name, p.category, p.spec),
+    images: Array.isArray(p.images) && p.images.length > 0 ? p.images : [],
     originalPrice: "originalPrice" in p ? p.originalPrice : undefined,
   };
-}
-
-function seedProducts(): Product[] {
-  return SEED_PRODUCTS.map(migrateProduct);
 }
 
 export function useProducts() {
@@ -223,9 +216,9 @@ export function useProducts() {
         if (error) {
           console.error("Failed to load products:", error);
           toast.error("Could not load products from database");
-          setList(seedProducts());
+          setList([]);
         } else if (!data || data.length === 0) {
-          setList(seedProducts());
+          setList([]);
         } else {
           setList((data as Product[]).map(migrateProduct));
         }

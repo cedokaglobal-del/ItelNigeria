@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import type { SolarSystem } from "@/lib/solar-systems";
-import { SEED_PRODUCTS } from "@/lib/seed-products";
 
 type LayoutItem = {
   src: string;
@@ -14,15 +13,18 @@ type LayoutItem = {
 };
 
 function productImage(type: string, name: string): string {
-  const match = SEED_PRODUCTS.find(
-    (p) =>
-      (type === "panel" && p.category === "panels") ||
-      (type === "inverter" && p.category === "inverters") ||
-      (type === "battery" && p.category === "batteries") ||
-      (type === "accessory" && p.category === "accessories" && p.name.includes(name)),
-  );
-  if (match?.images?.length && match.images[0].startsWith("data:")) return match.images[0];
-  return "";
+  const colors: Record<string, string> = {
+    panel: "#0d9488", inverter: "#2563eb", battery: "#7c3aed", accessory: "#6b7280",
+  };
+  const c = colors[type] ?? "#6b7280";
+  const label = name.length > 20 ? name.slice(0, 17) + "…" : name;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 400 250">
+    <rect width="400" height="250" fill="${c}" rx="12"/>
+    <rect width="400" height="250" fill="url(#g)" rx="12" opacity="0.4"/>
+    <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.15"/><stop offset="1" stop-color="#000" stop-opacity="0.3"/></linearGradient></defs>
+    <text x="200" y="125" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-family="system-ui,sans-serif" font-size="22" font-weight="700">${label}</text>
+  </svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
 export function SystemShowcase({ system }: { system: SolarSystem }) {

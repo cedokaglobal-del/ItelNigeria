@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 
 export type ProductCategory = string;
-export { CATEGORIES } from "./categories";
+
 
 export type Product = {
   slug: string;
@@ -50,27 +50,18 @@ export function seedProductImages(
   return [productImg(slug, name, cat, spec)];
 }
 
-import { SEED_PRODUCTS } from "./seed-products";
 
-let _seedProducts: Product[] | null = null;
-
-async function loadSeed(): Promise<Product[]> {
-  if (_seedProducts) return _seedProducts;
-  _seedProducts = SEED_PRODUCTS;
-  return _seedProducts;
-}
 
 export async function fetchProducts(): Promise<Product[]> {
   try {
     const { data, error } = await supabase.from("products").select("*");
     if (error) {
       console.error("Failed to fetch products:", error);
-      return loadSeed();
+      return [];
     }
-    if (!data || data.length === 0) return loadSeed();
-    return data as Product[];
+    return (data || []) as Product[];
   } catch {
-    return loadSeed();
+    return [];
   }
 }
 

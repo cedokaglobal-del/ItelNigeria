@@ -2,6 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import React, { useState, useMemo } from "react";
 import { Edit3, Plus, Trash2, X, Tag, AlertCircle, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import { useProducts } from "@/lib/admin-data";
 import { formatNGN } from "@/lib/format";
 import {
   useSolarSystems,
@@ -100,11 +101,13 @@ export function AdminSolarSystemsContent({
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const fileRef = React.useRef<HTMLInputElement>(null);
 
+  const [products] = useProducts();
+
   /** Computed cost from component catalog prices — live preview in the admin form */
   const computedPrice = useMemo(() => {
-    if (!form) return 0;
-    return calculateSystemPrice(form.components.filter((c) => c.name));
-  }, [form?.components]);
+    if (!form || !products) return 0;
+    return calculateSystemPrice(form.components.filter((c) => c.name), products);
+  }, [form?.components, products]);
 
   /** Final selling price (computed minus discount) */
   const sellingPrice = useMemo(() => {
