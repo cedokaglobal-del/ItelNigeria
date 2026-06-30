@@ -43,7 +43,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight">Something tripped a breaker</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Refresh to try again, or head back home.
+          Something went wrong. This is usually a temporary issue. Try again or refresh the page.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button

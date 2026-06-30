@@ -234,51 +234,56 @@ function AdminProducts() {
       tags: tags.length ? tags : undefined,
     };
 
-    if (editingSlug) {
-      updateProduct(editingSlug, product);
-      toast.success("Product updated");
-    } else {
-      addProduct(product);
-      // If solar system, also create component products in their categories
-      if (form.solarEnabled) {
-        let created = 0;
-        for (const comp of form.solarComponents) {
-          if (!comp.name) continue;
-          const compSlug = `${slug}-${comp.type}-${created}`;
-          const cat =
-            comp.type === "panel"
-              ? ("panels" as const)
-              : comp.type === "inverter"
-                ? ("inverters" as const)
-                : comp.type === "battery"
-                  ? ("batteries" as const)
-                  : ("accessories" as const);
-          addProduct({
-            slug: compSlug,
-            name: comp.name,
-            brand: "ItelNigeria",
-            category: cat,
-            price: Math.round(
-              form.price /
-                form.solarComponents.filter((c) => c.name).length /
-                Math.max(comp.qty, 1),
-            ),
-            images: [],
-            rating: 0,
-            reviews: 0,
-            tagline: comp.spec,
-            spec: comp.spec,
-            highlights: [],
-            description: `Part of ${form.name}: ${comp.name} (${comp.spec})`,
-            warranty: "See system",
-            inStock: true,
-          });
-          created++;
-        }
-        toast.success(`Created "${form.name}" + ${created} components in catalog`);
+    try {
+      if (editingSlug) {
+        updateProduct(editingSlug, product);
+        toast.success("Product updated");
       } else {
-        toast.success("Product created");
+        addProduct(product);
+        // If solar system, also create component products in their categories
+        if (form.solarEnabled) {
+          let created = 0;
+          for (const comp of form.solarComponents) {
+            if (!comp.name) continue;
+            const compSlug = `${slug}-${comp.type}-${created}`;
+            const cat =
+              comp.type === "panel"
+                ? ("panels" as const)
+                : comp.type === "inverter"
+                  ? ("inverters" as const)
+                  : comp.type === "battery"
+                    ? ("batteries" as const)
+                    : ("accessories" as const);
+            addProduct({
+              slug: compSlug,
+              name: comp.name,
+              brand: "ItelNigeria",
+              category: cat,
+              price: Math.round(
+                form.price /
+                  form.solarComponents.filter((c) => c.name).length /
+                  Math.max(comp.qty, 1),
+              ),
+              images: [],
+              rating: 0,
+              reviews: 0,
+              tagline: comp.spec,
+              spec: comp.spec,
+              highlights: [],
+              description: `Part of ${form.name}: ${comp.name} (${comp.spec})`,
+              warranty: "See system",
+              inStock: true,
+            });
+            created++;
+          }
+          toast.success(`Created "${form.name}" + ${created} components in catalog`);
+        } else {
+          toast.success("Product created");
+        }
       }
+    } catch (error) {
+      console.error("Failed to save product:", error);
+      toast.error("Failed to save product. Please try again.");
     }
     setForm(null);
     setEditingSlug(null);
