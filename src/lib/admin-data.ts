@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { type Product } from "./products";
-
 import { supabase } from "./supabase";
 import { toast } from "sonner";
+import { withRetry, safeLogError } from "./utils";
 
 export type OrderStatus =
   | "pending"
@@ -208,13 +207,14 @@ export function useProducts() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     setLoading(true);
-    supabase
-      .from("products")
-      .select("*")
+    withRetry(() => supabase.from("products").select("*"))
       .then(({ data, error }) => {
+        if (!mounted) return;
         if (error) {
-          console.error("Failed to load products:", error);
+          safeLogError(error, "Failed to load products");
           toast.error("Could not load products from database");
           setList([]);
         } else if (!data || data.length === 0) {
@@ -223,7 +223,18 @@ export function useProducts() {
           setList((data as Product[]).map(migrateProduct));
         }
         setLoading(false);
+      })
+      .catch((error) => {
+        if (!mounted) return;
+        safeLogError(error, "Products loading failed");
+        toast.error("Could not load products from database");
+        setList([]);
+        setLoading(false);
       });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const updateStock = useCallback((slug: string, inStock: boolean) => {
