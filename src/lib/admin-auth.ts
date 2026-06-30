@@ -6,7 +6,7 @@ export function isAdminAuthenticated(): boolean {
 }
 
 export function loginAdmin(password: string): boolean {
-  const valid = password === (import.meta.env.VITE_ADMIN_PASSWORD || "@Password100");
+  const valid = password === (import.meta.env.VITE_ADMIN_PASSWORD || "AdminPassword1");
   if (valid) {
     localStorage.setItem(AUTH_KEY, "true");
     return true;
