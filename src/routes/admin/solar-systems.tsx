@@ -94,7 +94,7 @@ export function AdminSolarSystemsContent({
 }: {
   onPublish?: (system: SolarSystem) => void;
 }) {
-  const [systems, updatePrice, addSystem, deleteSystem] = useSolarSystems();
+  const [systems, updatePrice, addSystem, deleteSystem, updateSystem] = useSolarSystems();
   const [priceEdit, setPriceEdit] = useState<{ slug: string; price: number } | null>(null);
   const [form, setForm] = useState<FormState | null>(null);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
@@ -175,8 +175,7 @@ export function AdminSolarSystemsContent({
       components: form.components.filter((c) => c.name),
     };
     if (editingSlug) {
-      deleteSystem(editingSlug);
-      addSystem(system);
+      updateSystem(editingSlug, system);
       toast.success("Solar system updated");
     } else {
       addSystem(system);

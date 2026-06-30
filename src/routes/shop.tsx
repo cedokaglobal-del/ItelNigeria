@@ -7,6 +7,7 @@ import { CATEGORIES, fetchProducts, type ProductCategory } from "@/lib/products"
 
 export const Route = createFileRoute("/shop")({
   loader: () => fetchProducts(),
+  pendingComponent: ShopSkeleton,
   head: () => ({
     meta: [
       { title: "Shop — ItelNigeria" },
@@ -160,6 +161,40 @@ function Shop() {
         )}
 
         <Pagination page={page} totalPages={totalPages} onPage={setPage} />
+      </section>
+    </div>
+  );
+}
+
+function ShopSkeleton() {
+  return (
+    <div>
+      <section className="relative overflow-hidden border-b border-hairline">
+        <div className="absolute inset-0 -z-10" style={{ background: "var(--gradient-hero)" }} />
+        <div className="container-page py-14 md:py-20">
+          <div className="h-3 w-16 rounded-full bg-muted/60 animate-pulse" />
+          <div className="mt-3 h-10 w-72 rounded-xl bg-muted/60 animate-pulse" />
+          <div className="mt-3 h-4 w-96 rounded-full bg-muted/40 animate-pulse" />
+        </div>
+      </section>
+      <section className="container-page py-10">
+        <div className="flex flex-wrap gap-2 pb-6">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <div key={i} className="h-8 w-20 rounded-full bg-muted/40 animate-pulse" />
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-5">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="rounded-2xl border bg-card overflow-hidden">
+              <div className="aspect-square bg-muted/40 animate-pulse" />
+              <div className="p-3 space-y-2">
+                <div className="h-3 w-3/4 rounded bg-muted/40 animate-pulse" />
+                <div className="h-3 w-1/2 rounded bg-muted/30 animate-pulse" />
+                <div className="h-4 w-2/3 rounded bg-muted/50 animate-pulse mt-2" />
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );

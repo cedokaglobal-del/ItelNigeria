@@ -1,21 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { getProducts } from "./products";
 import { SEED_PRODUCTS } from "./seed-products";
 import { supabase } from "./supabase";
 
-function _adminProducts() {
-  try {
-    const raw = typeof window !== "undefined" ? localStorage.getItem("itel.admin.products") : null;
-    if (raw) {
-      const p = JSON.parse(raw);
-      if (Array.isArray(p) && p.length > 0) return p;
-    }
-  } catch {}
-  return null;
-}
-
 export function calculateSystemPrice(components: SolarComponent[]): number {
-  const products = _adminProducts() ?? SEED_PRODUCTS;
+  const products = SEED_PRODUCTS;
   let total = 0;
   for (const comp of components) {
     const p = products.find((p) => p.name.includes(comp.name) || comp.name.includes(p.name));
@@ -441,7 +429,8 @@ function migrateSystem(s: SolarSystem): SolarSystem {
     ...s,
     images: Array.isArray(s.images) && s.images.length > 0 ? s.images : seedImages(s.slug),
     whatItPowers: s.whatItPowers || "",
-    price: s.components ? calculateSystemPrice(s.components) : s.price,
+    // Preserve the stored price — don't recalculate from components
+    price: s.price > 0 ? s.price : calculateSystemPrice(s.components ?? []),
   };
 }
 
@@ -450,6 +439,7 @@ export function useSolarSystems(): [
   (slug: string, price: number) => void,
   (system: SolarSystem) => void,
   (slug: string) => void,
+  (slug: string, system: SolarSystem) => void,
 ] {
   const [systems, setSystems] = useState<SolarSystem[]>([]);
 
@@ -484,7 +474,18 @@ export function useSolarSystems(): [
     supabase.from("solar_systems").delete().eq("slug", slug).then();
   }, []);
 
-  return [systems, updatePrice, addSystem, deleteSystem];
+  const updateSystem = useCallback((slug: string, system: SolarSystem) => {
+    setSystems((prev) =>
+      prev.map((s) => (s.slug === slug ? { ...system, images: system.images?.length ? system.images : seedImages(system.slug) } : s))
+    );
+    // Use upsert to avoid delete+insert race condition
+    supabase
+      .from("solar_systems")
+      .upsert({ ...system, slug: system.slug })
+      .then();
+  }, []);
+
+  return [systems, updatePrice, addSystem, deleteSystem, updateSystem];
 }
 
 export function getSystem(slug: string, systems: SolarSystem[]): SolarSystem | undefined {

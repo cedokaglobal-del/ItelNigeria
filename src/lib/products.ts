@@ -50,15 +50,14 @@ export function seedProductImages(
   return [productImg(slug, name, cat, spec)];
 }
 
+import { SEED_PRODUCTS } from "./seed-products";
 
-
-let seedProducts: Product[] | null = null;
+let _seedProducts: Product[] | null = null;
 
 async function loadSeed(): Promise<Product[]> {
-  if (seedProducts) return seedProducts;
-  const mod = await import("./seed-products");
-  seedProducts = mod.SEED_PRODUCTS;
-  return seedProducts;
+  if (_seedProducts) return _seedProducts;
+  _seedProducts = SEED_PRODUCTS;
+  return _seedProducts;
 }
 
 export async function fetchProducts(): Promise<Product[]> {
@@ -66,11 +65,12 @@ export async function fetchProducts(): Promise<Product[]> {
     const { data, error } = await supabase.from("products").select("*");
     if (error) {
       console.error("Failed to fetch products:", error);
-      return [];
+      return loadSeed();
     }
-    return (data as Product[]) || [];
+    if (!data || data.length === 0) return loadSeed();
+    return data as Product[];
   } catch {
-    return [];
+    return loadSeed();
   }
 }
 
@@ -84,33 +84,12 @@ export async function fetchProduct(slug: string): Promise<Product | undefined> {
   }
 }
 
+/** Async — reads from Supabase (used for system price calculations) */
 export async function getProduct(slug: string): Promise<Product | undefined> {
-  try {
-    if (typeof window !== "undefined") {
-      const raw = localStorage.getItem("itel.admin.products");
-      if (raw) {
-        const adminProducts = JSON.parse(raw) as Product[];
-        const found = adminProducts.find((p) => p.slug === slug);
-        if (found) return found;
-      }
-    }
-  } catch {
-    /* ignore */
-  }
-  return undefined;
+  return fetchProduct(slug);
 }
 
+/** Async — reads from Supabase */
 export async function getProducts(): Promise<Product[]> {
-  try {
-    if (typeof window !== "undefined") {
-      const raw = localStorage.getItem("itel.admin.products");
-      if (raw) {
-        const adminProducts = JSON.parse(raw) as Product[];
-        if (adminProducts.length > 0) return adminProducts;
-      }
-    }
-  } catch {
-    /* ignore */
-  }
-  return [];
+  return fetchProducts();
 }

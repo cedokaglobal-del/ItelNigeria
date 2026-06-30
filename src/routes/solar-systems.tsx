@@ -10,6 +10,7 @@ import { Pagination } from "@/components/site/Pagination";
 
 export const Route = createFileRoute("/solar-systems")({
   loader: () => fetchSolarSystems(),
+  pendingComponent: SolarSystemsSkeleton,
   head: () => ({
     meta: [
       { title: "Solar Systems — ItelNigeria" },
@@ -242,5 +243,41 @@ function FilterChip({
     >
       {children}
     </button>
+  );
+}
+
+function SolarSystemsSkeleton() {
+  return (
+    <div>
+      <section className="relative overflow-hidden border-b bg-gradient-to-b from-primary/[0.04] to-transparent">
+        <div className="container-page py-12 md:py-16">
+          <div className="mx-auto max-w-2xl text-center space-y-3">
+            <div className="mx-auto h-9 w-64 rounded-xl bg-muted/50 animate-pulse" />
+            <div className="mx-auto h-4 w-96 rounded-full bg-muted/30 animate-pulse" />
+          </div>
+        </div>
+      </section>
+      <section className="container-page py-8">
+        <div className="flex gap-2 pb-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-8 w-24 rounded-full bg-muted/40 animate-pulse" />
+          ))}
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-2xl border bg-card overflow-hidden">
+              <div className="aspect-[7/5] bg-muted/40 animate-pulse" />
+              <div className="p-4 space-y-2">
+                <div className="h-3 w-1/2 rounded bg-muted/50 animate-pulse" />
+                <div className="h-4 w-3/4 rounded bg-muted/40 animate-pulse" />
+                <div className="h-3 w-full rounded bg-muted/30 animate-pulse" />
+                <div className="mt-3 h-7 w-full rounded-lg bg-muted/30 animate-pulse" />
+                <div className="mt-2 h-6 w-1/2 rounded bg-muted/50 animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }

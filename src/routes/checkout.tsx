@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
 import { PanelArt } from "@/components/site/ProductArt";
+import { insertOrder, type Order, type OrderItem } from "@/lib/admin-data";
+import { fetchProducts } from "@/lib/products";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -52,7 +54,7 @@ function CheckoutPage() {
           <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-green-500">
             <CheckCircle2 className="h-7 w-7 text-white" />
           </div>
-          <h1 className="mt-5 text-xl font-semibold tracking-tight md:text-2xl">Order confirmed</h1>
+          <h1 className="mt-5 text-xl font-semibold tracking-tight md:text-2xl">Order confirmed!</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Reference <span className="font-mono font-medium text-foreground">{done}</span>
             <br />We will send you next steps within 15 minutes.
@@ -65,14 +67,58 @@ function CheckoutPage() {
     );
   }
 
-  const onSubmit = async (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 900));
-    const id = "ITL-" + Math.random().toString(36).slice(2, 8).toUpperCase();
-    toast.success("Payment successful");
+
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const name = (data.get("name") as string) || "";
+    const email = (data.get("email") as string) || "";
+    const phone = (data.get("phone") as string) || "";
+    const address = (data.get("address") as string) || "";
+    const city = (data.get("city") as string) || "";
+    const state = (data.get("state") as string) || "";
+
+    // Fetch full product details for the order items
+    const products = await fetchProducts();
+    const items: OrderItem[] = detailed.map((d) => {
+      const product = products.find((p) => p.slug === d.product.slug) ?? d.product;
+      return {
+        slug: product.slug,
+        name: product.name,
+        price: product.price,
+        qty: d.qty,
+        spec: product.spec,
+      };
+    });
+
+    const orderId = "ITL-" + Math.random().toString(36).slice(2, 8).toUpperCase();
+    const order: Order = {
+      id: orderId,
+      date: new Date().toISOString(),
+      customer: { name, email, phone },
+      items,
+      subtotal,
+      shipping,
+      total,
+      status: "pending",
+      payment: method,
+      address: { line: address, city, state },
+    };
+
+    const { error } = await insertOrder(order);
+
+    if (error) {
+      // Still complete for the user even if DB write fails — log for retry
+      console.error("Order DB save failed:", error);
+      toast.warning("Order placed but couldn't sync to dashboard. Please contact support.");
+    } else {
+      toast.success("Order placed successfully!");
+    }
+
     clear();
-    setDone(id);
+    setDone(orderId);
     setSubmitting(false);
   };
 
@@ -118,7 +164,7 @@ function CheckoutPage() {
           <div className="flex flex-wrap gap-4 text-[11px] text-muted-foreground">
             <span className="inline-flex items-center gap-1"><Lock className="h-3 w-3" /> 256-bit SSL</span>
             <span className="inline-flex items-center gap-1"><Truck className="h-3 w-3" /> Free delivery in Lagos</span>
-            <span className="inline-flex items-center gap-1"><CreditCard className="h-3 w-3" /> Paystack & Flutterwave</span>
+            <span className="inline-flex items-center gap-1"><CreditCard className="h-3 w-3" /> Paystack &amp; Flutterwave</span>
           </div>
         </div>
 
@@ -161,8 +207,11 @@ function CheckoutPage() {
             </div>
           </dl>
 
-          <button type="submit" disabled={submitting}
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.98]">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 active:scale-[0.98]"
+          >
             {submitting ? (
               <><span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> Processing…</>
             ) : (
@@ -170,7 +219,7 @@ function CheckoutPage() {
             )}
           </button>
           <p className="mt-3 text-center text-[11px] text-muted-foreground">
-            By placing this order you agree to our terms & warranty policy.
+            By placing this order you agree to our terms &amp; warranty policy.
           </p>
         </aside>
       </form>
@@ -193,8 +242,13 @@ function Field({ label, name, type = "text", placeholder, required }: {
   return (
     <label className="block">
       <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <input type={type} name={name} required={required} placeholder={placeholder}
-        className="mt-1.5 w-full rounded-xl border bg-background/40 px-4 py-3 text-sm placeholder:text-muted-foreground/50 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30" />
+      <input
+        type={type}
+        name={name}
+        required={required}
+        placeholder={placeholder}
+        className="mt-1.5 w-full rounded-xl border bg-background/40 px-4 py-3 text-sm placeholder:text-muted-foreground/50 transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+      />
     </label>
   );
 }
@@ -203,10 +257,11 @@ function PayOption({ icon: Icon, label, sub, active, onClick }: {
   icon: React.ComponentType<{ className?: string }>; label: string; sub: string; active: boolean; onClick: () => void;
 }) {
   return (
-    <button type="button" onClick={onClick}
-      className={`flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all ${
-        active ? "border-primary bg-primary/5 shadow-sm" : "border-hairline hover:bg-accent"
-      }`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-all ${active ? "border-primary bg-primary/5 shadow-sm" : "border-hairline hover:bg-accent"}`}
+    >
       <Icon className={`h-5 w-5 ${active ? "text-primary" : "text-muted-foreground"}`} />
       <div>
         <p className="text-sm font-semibold">{label}</p>
@@ -215,4 +270,3 @@ function PayOption({ icon: Icon, label, sub, active, onClick }: {
     </button>
   );
 }
-

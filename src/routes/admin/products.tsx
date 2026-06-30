@@ -574,7 +574,8 @@ function AdminProducts() {
                               className="h-full w-full object-cover transition-transform duration-200 group-hover/image:scale-105"
                               onError={(e) => {
                                 e.currentTarget.style.display = "none";
-                                e.currentTarget.nextElementSibling.style.display = "flex";
+                                const sibling = e.currentTarget.nextElementSibling as HTMLElement | null;
+                                if (sibling) sibling.style.display = "flex";
                               }}
                             />
                             <div className="hidden absolute inset-0 flex items-center justify-center bg-red-500/90 text-white text-xs">
@@ -587,7 +588,7 @@ function AdminProducts() {
                                 list.splice(i, 1);
                                 setForm({ ...form, images: list.join("\n") });
                               }}
-                              className="absolute right-1 top-1 h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white text-xs opacity-0 group-hover/image:opacity-100 transition-opacity"
+                              className="absolute right-1 top-1 h-6 w-6 flex items-center justify-center rounded-full bg-red-500 text-white text-xs opacity-0 group-hover/image:opacity-100 transition-opacity"
                               aria-label="Remove image"
                             >
                               <X className="h-3 w-3" />
