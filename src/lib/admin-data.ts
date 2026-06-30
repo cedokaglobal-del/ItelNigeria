@@ -496,20 +496,26 @@ export function useProducts() {
 
 // ── Stateless helpers ─────────────────────────────────────
 
-export function getDashboardStats(orders: Order[], sessions: CalculatorSession[]) {
+export function getDashboardStats(
+  orders: Order[],
+  sessions: CalculatorSession[],
+  totalProducts: number = 0,
+) {
   const totalRevenue = orders.reduce((s, o) => s + o.total, 0);
   const pendingOrders = orders.filter(
     (o) => o.status === "pending" || o.status === "confirmed" || o.status === "processing",
   ).length;
+  const deliveredOrders = orders.filter((o) => o.status === "delivered").length;
   const avgSystemCost =
     sessions.length > 0
       ? Math.round(sessions.reduce((s, c) => s + c.estimatedCost, 0) / sessions.length)
       : 0;
   return {
-    totalProducts: SEED_PRODUCTS.length,
+    totalProducts,
     totalOrders: orders.length,
     totalRevenue,
     pendingOrders,
+    deliveredOrders,
     avgSystemCost,
     totalCalculatorSessions: sessions.length,
   };

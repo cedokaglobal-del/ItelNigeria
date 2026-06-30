@@ -42,6 +42,80 @@ export type SolarComponent = {
   qty: number;
 };
 
+export function parseComponentSpec(comp: SolarComponent): {
+  voltage?: number;
+  watts?: number;
+  kva?: number;
+  kwh?: number;
+} {
+  const spec = comp.spec.toLowerCase();
+  const result: { voltage?: number; watts?: number; kva?: number; kwh?: number } = {};
+
+  // Parse voltage (e.g., "48V", "24V")
+  const vMatch = spec.match(/(\d+(?:\.\d+)?)\s*v/);
+  if (vMatch) result.voltage = parseFloat(vMatch[1]);
+
+  // Parse watts (e.g., "550W", "600W")
+  const wMatch = spec.match(/(\d+(?:\.\d+)?)\s*w(?!h)/);
+  if (wMatch) result.watts = parseFloat(wMatch[1]);
+
+  // Parse kVA (e.g., "5kVA", "3 kVA")
+  const kvaMatch = spec.match(/(\d+(?:\.\d+)?)\s*kva/);
+  if (kvaMatch) result.kva = parseFloat(kvaMatch[1]);
+
+  // Parse kWh (e.g., "5.12kWh", "10 kWh")
+  const kwhMatch = spec.match(/(\d+(?:\.\d+)?)\s*kwh/);
+  if (kwhMatch) result.kwh = parseFloat(kwhMatch[1]);
+
+  return result;
+}
+
+export function calculateSystemSpecs(components: SolarComponent[]): {
+  voltage: "24V" | "48V";
+  totalPanels: number;
+  panelWattage: number;
+  totalArrayKW: number;
+  inverterKVA: number;
+  batteryCapacityKWh: number;
+  batteryType: "LiFePO4" | "Tubular";
+} {
+  let voltage: "24V" | "48V" = "48V";
+  let totalPanels = 0;
+  let panelWattage = 0;
+  let inverterKVA = 0;
+  let batteryCapacityKWh = 0;
+  let batteryType: "LiFePO4" | "Tubular" = "LiFePO4";
+
+  for (const comp of components) {
+    if (!comp.name) continue;
+    const parsed = parseComponentSpec(comp);
+    const qty = comp.qty || 1;
+
+    if (comp.type === "panel") {
+      totalPanels += qty;
+      if (parsed.watts) panelWattage = parsed.watts;
+    } else if (comp.type === "inverter") {
+      if (parsed.kva) inverterKVA = parsed.kva;
+      if (parsed.voltage) voltage = parsed.voltage === 24 ? "24V" : "48V";
+    } else if (comp.type === "battery") {
+      if (parsed.kwh) batteryCapacityKWh += parsed.kwh * qty;
+      if (comp.name.toLowerCase().includes("tubular")) batteryType = "Tubular";
+    }
+  }
+
+  const totalArrayKW = (totalPanels * panelWattage) / 1000;
+
+  return {
+    voltage,
+    totalPanels,
+    panelWattage,
+    totalArrayKW: Math.round(totalArrayKW * 100) / 100,
+    inverterKVA,
+    batteryCapacityKWh: Math.round(batteryCapacityKWh * 100) / 100,
+    batteryType,
+  };
+}
+
 export type SolarSystem = {
   slug: string;
   name: string;
@@ -57,6 +131,7 @@ export type SolarSystem = {
   inverterKVA: number;
   batteryCapacityKWh: number;
   batteryType: "LiFePO4" | "Tubular";
+  totalArrayKW: number;
   price: number;
   /** Full price before discount — if set, a discount badge is shown to customers */
   originalPrice?: number;
@@ -112,7 +187,7 @@ export function generateDescription(system: SolarSystem): string {
 }
 
 export function seedSolarSystems(): SolarSystem[] {
-  const systems: SolarSystem[] = [
+  const rawSystems: Omit<SolarSystem, "voltage" | "totalPanels" | "panelWattage" | "inverterKVA" | "batteryCapacityKWh" | "batteryType" | "totalArrayKW">[] = [
     {
       slug: "solar-starter-3kva",
       name: "Itel Essential Home 3kVA",
@@ -122,13 +197,7 @@ export function seedSolarSystems(): SolarSystem[] {
       badge: "Best for homes",
       rating: 4.9,
       reviews: 312,
-      voltage: "24V",
-      totalPanels: 4,
-      panelWattage: 550,
-      inverterKVA: 3,
-      batteryCapacityKWh: 5.12,
-      batteryType: "LiFePO4",
-      price: 2850000,
+      price: 0,
       whatItPowers:
         '8 LED bulbs (8 hrs), 2 ceiling fans (8 hrs), 43" LED TV (6 hrs), decoder (6 hrs), WiFi router (24 hrs), refrigerator (24 hrs), 2 phones/laptops (4 hrs). Total daily load: ~4.8 kWh',
       components: [
@@ -173,13 +242,7 @@ export function seedSolarSystems(): SolarSystem[] {
       badge: "Popular pick",
       rating: 4.92,
       reviews: 487,
-      voltage: "48V",
-      totalPanels: 6,
-      panelWattage: 550,
-      inverterKVA: 5,
-      batteryCapacityKWh: 10.24,
-      batteryType: "LiFePO4",
-      price: 5200000,
+      price: 0,
       whatItPowers:
         '12 LED bulbs (8 hrs), 3 ceiling fans (10 hrs), 55" LED TV (8 hrs), decoder (8 hrs), WiFi router (24 hrs), refrigerator (24 hrs), 1HP air conditioner (6 hrs), microwave (30 min/day), washing machine (2 hrs/day), 3 laptops (6 hrs). Total daily load: ~9.2 kWh',
       components: [
@@ -231,13 +294,7 @@ export function seedSolarSystems(): SolarSystem[] {
       badge: "For business",
       rating: 4.95,
       reviews: 218,
-      voltage: "48V",
-      totalPanels: 8,
-      panelWattage: 550,
-      inverterKVA: 10,
-      batteryCapacityKWh: 15.36,
-      batteryType: "LiFePO4",
-      price: 8950000,
+      price: 0,
       whatItPowers:
         '20 LED bulbs (10 hrs), 6 ceiling fans (10 hrs), 2 × 55" TVs (10 hrs), CCTV system (24 hrs), WiFi + router (24 hrs), 2 refrigerators (24 hrs), 1.5HP AC (8 hrs), 1HP AC (6 hrs), microwave (1 hr/day), water dispenser (24 hrs), 4 laptops (8 hrs), printer (2 hrs), POS system (12 hrs). Total daily load: ~18.5 kWh',
       components: [
@@ -296,13 +353,7 @@ export function seedSolarSystems(): SolarSystem[] {
       badge: "Premium",
       rating: 4.98,
       reviews: 96,
-      voltage: "48V",
-      totalPanels: 12,
-      panelWattage: 600,
-      inverterKVA: 15,
-      batteryCapacityKWh: 20.48,
-      batteryType: "LiFePO4",
-      price: 15800000,
+      price: 0,
       whatItPowers:
         '30 LED bulbs (12 hrs), 8 ceiling fans (12 hrs), 3 × 65" TVs (10 hrs), CCTV (24 hrs), whole-home WiFi mesh (24 hrs), 2 refrigerators (24 hrs), freezer (24 hrs), 1.5HP AC (10 hrs), 2 × 1HP AC (8 hrs), borehole pump 1HP (2 hrs/day), microwave (1 hr), oven (1 hr), washing machine (3 hrs), 6 laptops (8 hrs), home theatre (4 hrs), workshop tools (3 hrs). Total daily load: ~32 kWh',
       components: [
@@ -372,7 +423,15 @@ export function seedSolarSystems(): SolarSystem[] {
       ],
     },
   ];
-  return systems.map((s) => ({ ...s, price: calculateSystemPrice(s.components) }));
+
+  return rawSystems.map((s) => {
+    const specs = calculateSystemSpecs(s.components);
+    return {
+      ...s,
+      ...specs,
+      price: calculateSystemPrice(s.components),
+    } as SolarSystem;
+  });
 }
 
 const KEY = "itel.admin.solarsystems";

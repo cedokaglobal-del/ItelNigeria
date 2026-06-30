@@ -31,7 +31,7 @@ function AdminLogin() {
 
   return (
     <div className="flex min-h-dvh items-center justify-center bg-gradient-to-br from-surface to-accent px-4">
-      <div className="w-full max-w-sm">
+      <div className="w-full max-w-sm animate-scale-in">
         <div className="rounded-2xl border bg-card p-6 shadow-lg md:p-8">
           <div className="mb-6 flex justify-center">
             <Logo />
@@ -50,12 +50,12 @@ function AdminLogin() {
                   setPassword(e.target.value);
                   setError(false);
                 }}
-                className="mt-1 w-full rounded-xl border bg-surface px-4 py-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="mt-1 w-full rounded-xl border bg-surface px-4 py-3 text-sm transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                 autoFocus
               />
               {error && (
-                <p className="mt-1.5 flex items-center gap-1.5 text-xs text-red-500">
-                  <ShieldAlert className="h-3 w-3" /> Incorrect password — try again
+                <p className="mt-1.5 animate-fade-in flex items-center gap-1.5 text-xs text-red-500">
+                  <ShieldAlert className="h-3 w-3 shrink-0" /> Incorrect password — try again
                 </p>
               )}
             </div>
@@ -67,11 +67,11 @@ function AdminLogin() {
             </button>
           </form>
           <p className="mt-4 text-center text-[10px] text-muted-foreground/60">
-            Default password: <span className="font-mono text-muted-foreground">@Password100</span>
+            Default password: <span className="font-mono text-muted-foreground">AdminPassword1</span>
           </p>
           <p className="mt-6 text-center text-[10px] text-muted-foreground">
-            <a href="/" className="underline hover:text-foreground">
-              Back to site
+            <a href="/" className="underline transition-colors hover:text-foreground">
+              &larr; Back to site
             </a>
           </p>
         </div>
