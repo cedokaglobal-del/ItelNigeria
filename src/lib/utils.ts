@@ -32,12 +32,38 @@ export function generateSeoTags(name: string, description: string, category: str
   return unique.slice(0, 8).join(", ");
 }
 
-/** Simple object cache for expensive calculations */
-const cache = new Map<string, unknown>();
+/**
+ * Wraps a promise with retry logic and timeout.
+ * Prevents cascading failures that trigger error boundaries.
+ */
+export async function withRetry<T>(
+  promise: () => Promise<T>,
+  retries = 1,
+  timeout = 10000,
+): Promise<T> {
+  let lastError: unknown;
 
-export function withCache<T, K extends string | number>(key: K, fn: () => T): T {
-  if (cache.has(key)) return cache.get(key) as T;
-  const result = fn();
-  cache.set(key, result);
-  return result;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("Request timeout")), timeout);
+      });
+      const result = await Promise.race([promise(), timeoutPromise]);
+      return result;
+    } catch (error) {
+      lastError = error;
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, 500 * Math.pow(2, attempt)));
+      }
+    }
+  }
+
+  throw lastError;
+}
+
+/**
+ * Safely log errors without breaking the app
+ */
+export function safeLogError(error: unknown, context?: string): void {
+  console.error(context ? `[${context}]` : "Error", error);
 }

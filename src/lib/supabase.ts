@@ -33,17 +33,16 @@ export async function uploadImage(file: File): Promise<string | null> {
       });
       if (!error && data) {
         const { data: publicUrlData } = supabase.storage.from("images").getPublicUrl(fileName);
-        return publicUrlData.publicUrl;
+        if (publicUrlData.publicUrl) return publicUrlData.publicUrl;
+        console.error("Empty public URL from Supabase storage");
+      } else if (error) {
+        console.error("Supabase storage upload error:", error.message);
+        throw error;
       }
-      console.warn("Supabase upload failed, falling back to data URL:", error?.message);
     } catch (e) {
-      console.warn("Supabase upload exception, falling back to data URL:", e);
+      console.error("Supabase upload error:", e);
     }
   }
-  // Fallback: convert to data URL (works immediately, no storage needed)
-  try {
-    return await fileToDataUrl(file);
-  } catch {
-    return null;
-  }
+  // Fallback: convert to data URL
+  return await fileToDataUrl(file);
 }
