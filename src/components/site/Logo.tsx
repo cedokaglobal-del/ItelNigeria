@@ -7,6 +7,8 @@ export function Logo({ compact = false }: { compact?: boolean }) {
         src="/Image/logo/itellogonigera.png"
         alt="ItelNigeria"
         fetchPriority="high"
+        width="176"
+        height="44"
         className="h-11 w-auto object-contain transition-transform duration-300 hover:scale-105 md:h-14 lg:h-16"
       />
     </Link>

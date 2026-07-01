@@ -83,9 +83,9 @@ export const ProductCard = memo(function ProductCard({ product }: { product: Pro
           <button
             type="button"
             onClick={handleAddToCart}
-            className="inline-flex items-center gap-1 rounded-full border border-hairline px-2 py-1 text-[9px] font-medium transition-all md:px-4 md:py-2 md:text-xs hover:border-primary hover:bg-primary hover:text-primary-foreground active:scale-95"
+            className="inline-flex min-h-[32px] min-w-[56px] items-center justify-center gap-1 rounded-full border border-hairline px-3 py-1.5 text-[10px] font-medium transition-all md:px-4 md:py-2 md:text-xs hover:border-primary hover:bg-primary hover:text-primary-foreground active:scale-95"
           >
-            <ShoppingBag className="h-2 w-2 md:h-3 md:w-3" /> Add
+            <ShoppingBag className="h-3 w-3 md:h-3 md:w-3" /> Add
           </button>
         </div>
       </div>

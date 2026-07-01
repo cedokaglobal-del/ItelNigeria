@@ -168,13 +168,13 @@ function Home() {
               <Link
                 key={c.id}
                 to="/shop"
-                className="card-cmp relative flex w-[68px] shrink-0 snap-start flex-col items-center gap-1 overflow-hidden rounded-xl px-1.5 py-2.5 transition-all active:scale-[0.95] hover:-translate-y-0.5"
+                className="card-cmp relative flex w-20 shrink-0 snap-start flex-col items-center gap-1 overflow-hidden rounded-xl px-1.5 py-3 transition-all active:scale-[0.95] hover:-translate-y-0.5 md:w-[68px] md:py-2.5"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${meta.gradient} opacity-90`} />
-                <div className="relative grid h-6 w-6 place-items-center rounded-lg bg-white/20 text-white">
-                  <Icon className="h-3 w-3" />
+                <div className="relative grid h-7 w-7 place-items-center rounded-lg bg-white/20 text-white md:h-6 md:w-6">
+                  <Icon className="h-3.5 w-3.5 md:h-3 md:w-3" />
                 </div>
-                <span className="relative text-[8px] font-semibold text-white text-center leading-tight">{c.label}</span>
+                <span className="relative text-[10px] font-semibold text-white text-center leading-tight md:text-[8px]">{c.label}</span>
               </Link>
             );
           })}
@@ -182,7 +182,7 @@ function Home() {
       </section>
 
       {/* ── FEATURED PRODUCTS ── */}
-      <section className="container-page pb-6 md:pb-10 animate-fade-in-up animate-delay-2">
+      <section className="lazy-section container-page pb-6 md:pb-10 animate-fade-in-up animate-delay-2">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold md:text-2xl">Featured products</h2>
           <Link to="/shop" className="inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-[11px] font-medium transition-all hover:bg-accent hover:border-primary/30">
@@ -198,7 +198,7 @@ function Home() {
 
       {/* ── NEW ARRIVALS ── */}
       {newArrivals.length > 0 && (
-        <section className="container-page pb-6 md:pb-10 animate-fade-in-up animate-delay-3">
+        <section className="lazy-section container-page pb-6 md:pb-10 animate-fade-in-up animate-delay-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-[var(--solar)]" />
@@ -218,7 +218,7 @@ function Home() {
 
       {/* ── DISCOUNTED DEALS ── */}
       {deals.length > 0 && (
-        <section className="container-page pb-6 md:pb-10 animate-fade-in-up animate-delay-4">
+        <section className="lazy-section container-page pb-6 md:pb-10 animate-fade-in-up animate-delay-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Zap className="h-3.5 w-3.5 text-red-500" />
@@ -237,7 +237,7 @@ function Home() {
       )}
 
       {/* ── SOLAR SYSTEMS PROMO ── */}
-      <section className="container-page pb-6 md:pb-10 animate-fade-in-up animate-delay-5">
+      <section className="lazy-section container-page pb-6 md:pb-10 animate-fade-in-up animate-delay-5">
         <Link
           to="/solar-systems"
           className="relative block overflow-hidden rounded-xl border bg-gradient-to-r from-primary/5 via-transparent to-[var(--solar)]/5 p-4 active:scale-[0.99] transition-transform hover:shadow-md md:rounded-2xl md:p-8"
@@ -256,8 +256,8 @@ function Home() {
       </section>
 
       {/* ── TRUST STRIP ── */}
-      <section className="border-y bg-surface/40 animate-fade-in">
-        <div className="container-page grid grid-cols-4 gap-2 py-4 md:gap-6 md:py-8">
+      <section className="lazy-section border-y bg-surface/40 animate-fade-in">
+        <div className="container-page grid grid-cols-2 gap-2 py-4 md:gap-6 md:py-8 md:grid-cols-4">
           <Trust icon={ShieldCheck} title="Tier-1" sub="Certified" />
           <Trust icon={Truck} title="Delivery" sub="Free Lagos" />
           <Trust icon={BatteryCharging} title="10 yr" sub="Battery" />
@@ -266,7 +266,7 @@ function Home() {
       </section>
 
       {/* ── CALCULATOR CTA ── */}
-      <section className="container-page py-6 md:py-12 animate-fade-in-up">
+      <section className="lazy-section container-page py-6 md:py-12 animate-fade-in-up">
         <Link
           to="/calculator"
           className="relative block overflow-hidden rounded-xl border bg-card p-4 active:scale-[0.99] transition-all hover:shadow-md md:rounded-2xl md:p-10"

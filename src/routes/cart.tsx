@@ -47,7 +47,7 @@ function CartPage() {
   }
 
   return (
-    <div className="container-page py-6 md:py-12">
+    <div className="container-page py-6 md:py-12 animate-fade-in">
       <div className="flex items-baseline justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Cart</h1>
@@ -93,7 +93,7 @@ function CartPage() {
                       <Plus className="h-4 w-4" />
                     </button>
                   </div>
-                  <span className="hidden font-mono text-sm font-semibold md:block md:w-24 md:text-right">{formatNGN(lineTotal)}</span>
+                  <span className="font-mono text-sm font-semibold md:w-24 md:text-right">{formatNGN(lineTotal)}</span>
                   <button type="button" onClick={() => remove(product.slug)} aria-label={`Remove ${product.name}`}
                     className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-muted-foreground transition-colors hover:bg-destructive/15 hover:text-destructive">
                     <Trash2 className="h-4 w-4" />

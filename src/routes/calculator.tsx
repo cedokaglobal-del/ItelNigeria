@@ -177,7 +177,7 @@ function CalculatorPage() {
                           type="number"
                           value={a.watts}
                           onChange={(e) => { const c = clamp(e.target.value, 1, 5000); if (c !== null) updateAppliance(a.id, { watts: c }); }}
-                          className="w-14 rounded-lg border bg-background/60 px-2 py-1.5 text-right text-xs font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:w-16 md:px-1.5 md:py-1"
+                          className="w-14 rounded-lg border bg-background/60 px-2 py-1.5 text-right text-xs font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:w-16 md:px-1.5"
                           min={1} max={5000}
                         />
                         <span className="ml-1 text-[10px] font-medium text-muted-foreground">W</span>
@@ -187,7 +187,7 @@ function CalculatorPage() {
                           type="number"
                           value={a.qty}
                           onChange={(e) => { const c = clamp(e.target.value, 0, 50); if (c !== null) updateAppliance(a.id, { qty: c }); }}
-                          className="w-10 rounded-lg border bg-background/60 px-1.5 py-1.5 text-right text-xs font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:w-12 md:px-1.5 md:py-1"
+                          className="w-12 rounded-lg border bg-background/60 px-1.5 py-1.5 text-right text-xs font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:w-12"
                           min={0} max={50}
                         />
                         <span className="ml-1 text-[10px] font-medium text-muted-foreground">×</span>
@@ -197,7 +197,7 @@ function CalculatorPage() {
                           type="number"
                           value={a.hours}
                           onChange={(e) => { const c = clamp(e.target.value, 0, 24); if (c !== null) updateAppliance(a.id, { hours: c }); }}
-                          className="w-10 rounded-lg border bg-background/60 px-1.5 py-1.5 text-right text-xs font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:w-12 md:px-1.5 md:py-1"
+                          className="w-12 rounded-lg border bg-background/60 px-1.5 py-1.5 text-right text-xs font-mono tabular-nums focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 md:w-12"
                           min={0} max={24} step={0.5}
                         />
                         <span className="ml-1 text-[10px] font-medium text-muted-foreground">h/d</span>

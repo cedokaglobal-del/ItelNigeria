@@ -22,12 +22,34 @@ import { fetchSystem, generateDescription } from "@/lib/solar-systems";
 import { ImageCarousel } from "@/components/site/ImageCarousel";
 import { SystemShowcase } from "@/components/site/SystemShowcase";
 
+function SystemDetailSkeleton() {
+  return (
+    <div className="container-page py-8">
+      <div className="mb-6 h-4 w-32 animate-shimmer rounded" />
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div className="aspect-[16/9] animate-shimmer rounded-2xl" />
+        <div className="space-y-4">
+          <div className="h-6 w-3/4 animate-shimmer rounded" />
+          <div className="h-4 w-1/2 animate-shimmer rounded" />
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-16 animate-shimmer rounded-xl" />
+            ))}
+          </div>
+          <div className="h-10 w-40 animate-shimmer rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/solar-systems/$slug")({
   loader: async ({ params }) => {
     const system = await fetchSystem(params.slug);
     if (!system) throw notFound();
     return { system };
   },
+  pendingComponent: SystemDetailSkeleton,
   head: ({ loaderData }) => {
     const slug = loaderData.system.slug;
     const name = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());

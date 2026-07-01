@@ -145,7 +145,7 @@ function Shop() {
         </div>
 
         {/* ── Tags & Results count ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4">
+        <div className="flex flex-col animate-fade-in-up animate-delay-1 sm:flex-row sm:items-center justify-between gap-4 pb-4">
           <div className="flex flex-wrap gap-2">
             {allTags.map((tag) => (
               <button
@@ -164,7 +164,7 @@ function Shop() {
               </button>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground whitespace-nowrap">
+          <p className="max-w-full truncate text-xs text-muted-foreground">
             {products.length} product{products.length !== 1 ? "s" : ""}
             {filter !== "all" &&
               ` in ${categories.find((c) => c.id === filter)?.label.toLowerCase() || filter}`}
@@ -173,7 +173,7 @@ function Shop() {
         </div>
 
         {/* ── Grid ── */}
-        <div ref={gridRef} className="grid min-h-[400px] grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4 lg:gap-5">
+        <div ref={gridRef} className="grid min-h-[400px] grid-cols-2 gap-2 animate-fade-in-up animate-delay-2 sm:gap-3 lg:grid-cols-4 lg:gap-5">
           {paged.map((p) => (
             <ProductCard key={p.slug} product={p} />
           ))}

@@ -9,13 +9,31 @@ import { useCart } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
 import { fetchProduct, fetchProducts } from "@/lib/products";
 
+function ProductSkeleton() {
+  return (
+    <div className="container-page py-8">
+      <div className="mb-6 h-4 w-32 animate-shimmer rounded" />
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div className="aspect-square animate-shimmer rounded-2xl" />
+        <div className="space-y-4">
+          <div className="h-6 w-3/4 animate-shimmer rounded" />
+          <div className="h-4 w-1/2 animate-shimmer rounded" />
+          <div className="h-4 w-1/3 animate-shimmer rounded" />
+          <div className="mt-4 h-24 w-full animate-shimmer rounded" />
+          <div className="h-10 w-40 animate-shimmer rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params }) => {
-    const product = await fetchProduct(params.slug);
+    const [product, all] = await Promise.all([fetchProduct(params.slug), fetchProducts()]);
     if (!product) throw notFound();
-    const related = await fetchProducts();
-    return { product, related: related.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4) };
+    return { product, related: all.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4) };
   },
+  pendingComponent: ProductSkeleton,
   head: ({ loaderData }) => {
     const p = loaderData.product;
     const href = "https://itelenergy.com/products/" + p.slug;

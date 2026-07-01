@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, Link, createRootRouteWithContext, HeadContent } from "@tanstack/react-router";
+import { Outlet, Link, createRootRouteWithContext, HeadContent, useLocation } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 
 import appCss from "../style.css?url";
@@ -119,6 +119,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { pathname } = useLocation();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -127,7 +128,9 @@ function RootComponent() {
         <div className="flex min-h-dvh flex-col">
           <Nav />
           <main className="flex-1">
-            <Outlet />
+            <div key={pathname} className="animate-fade-in">
+              <Outlet />
+            </div>
           </main>
           <Footer />
         </div>
