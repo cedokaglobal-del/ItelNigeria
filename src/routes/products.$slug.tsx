@@ -29,9 +29,9 @@ function ProductSkeleton() {
 
 export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params }) => {
-    const [product, all] = await Promise.all([fetchProduct(params.slug), fetchProducts()]);
+    const [product, all] = await Promise.all([fetchProduct(params.slug), fetchProducts().catch(() => [] as Awaited<ReturnType<typeof fetchProducts>>)]);
     if (!product) throw notFound();
-    return { product, related: all.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4) };
+    return { product, related: (all ?? []).filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4) };
   },
   pendingComponent: ProductSkeleton,
   head: ({ loaderData }) => {

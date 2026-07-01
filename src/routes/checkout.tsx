@@ -82,7 +82,8 @@ function CheckoutPage() {
     const state = (data.get("state") as string) || "";
 
     // Fetch full product details for the order items
-    const products = await fetchProducts();
+    let products: Awaited<ReturnType<typeof fetchProducts>> = [];
+    try { products = await fetchProducts(); } catch { /* use empty array, fall through to cart data */ }
     const items: OrderItem[] = detailed.map((d) => {
       const product = products.find((p) => p.slug === d.product.slug) ?? d.product;
       return {

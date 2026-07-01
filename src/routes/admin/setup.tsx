@@ -132,7 +132,15 @@ function AdminSetup() {
   const router = useRouter();
 
   useEffect(() => {
-    tables.forEach((name) => checkTable(name));
+    let cancelled = false;
+    async function run() {
+      for (const name of tables) {
+        if (cancelled) return;
+        await checkTable(name);
+      }
+    }
+    run();
+    return () => { cancelled = true; };
   }, []);
 
   async function checkTable(name: string) {

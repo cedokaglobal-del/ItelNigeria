@@ -6,7 +6,7 @@ export function isAdminAuthenticated(): boolean {
 }
 
 export function loginAdmin(password: string): boolean {
-  const valid = password === (import.meta.env.VITE_ADMIN_PASSWORD || "AdminPassword1");
+  const valid = password === import.meta.env.VITE_ADMIN_PASSWORD;
   if (valid) {
     sessionStorage.setItem(AUTH_KEY, "true");
     return true;

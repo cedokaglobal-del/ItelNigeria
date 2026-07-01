@@ -66,9 +66,6 @@ function AdminLogin() {
               Sign in
             </button>
           </form>
-          <p className="mt-4 text-center text-[10px] text-muted-foreground/60">
-            Default password: <span className="font-mono text-muted-foreground">AdminPassword1</span>
-          </p>
           <p className="mt-6 text-center text-[10px] text-muted-foreground">
             <a href="/" className="underline transition-colors hover:text-foreground">
               &larr; Back to site

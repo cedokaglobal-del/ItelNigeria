@@ -13,7 +13,8 @@ export function ImageCarousel({
   /** Renders a React node as the first slide — useful for composite product showcases */
   hero?: ReactNode;
 }) {
-  const total = images.length + (hero ? 1 : 0);
+  const safeImages = images ?? [];
+  const total = safeImages.length + (hero ? 1 : 0);
   const [idx, setIdx] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
   const touchX = useRef(0);
@@ -72,7 +73,7 @@ export function ImageCarousel({
       )}
 
       {/* Image slides (index 1..n when hero exists, 0..n when no hero) */}
-      {images.map((src, i) => {
+      {safeImages.map((src, i) => {
         const slideIdx = hero ? i + 1 : i;
         return (
           <img

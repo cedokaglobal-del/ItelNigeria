@@ -5,8 +5,10 @@ import { fetchSolarSystems } from "@/lib/solar-systems";
 export const Route = createFileRoute("/sitemap/xml")({
   component: () => null,
   loader: async () => {
-    const products = await fetchProducts();
-    const systems = await fetchSolarSystems();
+    let products: Awaited<ReturnType<typeof fetchProducts>> = [];
+    let systems: Awaited<ReturnType<typeof fetchSolarSystems>> = [];
+    try { products = await fetchProducts(); } catch { /* degrade gracefully */ }
+    try { systems = await fetchSolarSystems(); } catch { /* degrade gracefully */ }
 
     const PAGES = [
       { loc: "/", priority: "1.0", changefreq: "weekly" },

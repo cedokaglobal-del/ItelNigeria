@@ -260,7 +260,7 @@ function AdminProducts() {
             category: cat,
             price: Math.round(
               form.price /
-                form.solarComponents.filter((c) => c.name).length /
+                Math.max(form.solarComponents.filter((c) => c.name).length, 1) /
                 Math.max(comp.qty, 1),
             ),
             images: [],
@@ -936,7 +936,7 @@ function AdminProducts() {
                 name: comp.name,
                 brand: "ItelNigeria",
                 category: cat,
-                price: Math.round(sys.price / sys.components.length / comp.qty),
+                price: Math.round(sys.price / Math.max(sys.components.length, 1) / Math.max(comp.qty, 1)),
                 images: [],
                 rating: 0,
                 reviews: 0,

@@ -232,7 +232,15 @@ export function useProducts() {
     let mounted = true;
 
     setLoading(true);
-    // Try Supabase first, fall back to localStorage
+
+    // Load from localStorage first for instant render
+    const local = getLocalProducts();
+    if (local.length > 0) {
+      setList(local.map(migrateProduct));
+      setLoading(false);
+    }
+
+    // Then try Supabase to sync
     withRetry(async () => {
       const { data, error } = await supabase.from("products").select("*");
       if (error) throw error;
@@ -240,26 +248,24 @@ export function useProducts() {
     }, 0, 3000)
       .then((products) => {
         if (!mounted) return;
-        const migrated = products.map(migrateProduct);
-        setList(migrated);
-        setLocalProducts(migrated);
+        // Only overwrite localStorage if we actually got data
+        if (products.length > 0) {
+          const migrated = products.map(migrateProduct);
+          setList(migrated);
+          setLocalProducts(migrated);
+        }
         setLoading(false);
       })
       .catch((error) => {
         if (!mounted) return;
         const errMsg = error?.message || error?.toString?.() || "Unknown error";
         console.warn("[useProducts] Supabase error:", errMsg);
-        // Fall back to localStorage
-        const local = getLocalProducts();
-        if (local.length > 0) {
-          setList(local.map(migrateProduct));
+        // If localStorage was already loaded above, this is a no-op
+        if (getLocalProducts().length === 0 && local.length === 0) {
+          setList([]);
         }
         setLoading(false);
       });
-
-    return () => {
-      mounted = false;
-    };
   }, []);
 
   const updateStock = useCallback((slug: string, inStock: boolean) => {
