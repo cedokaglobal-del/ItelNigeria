@@ -247,7 +247,8 @@ export function useProducts() {
       })
       .catch((error) => {
         if (!mounted) return;
-        safeLogError(error, "Products loading failed, using local storage");
+        const errMsg = error?.message || error?.toString?.() || "Unknown error";
+        console.warn("[useProducts] Supabase error:", errMsg);
         // Fall back to localStorage
         const local = getLocalProducts();
         if (local.length > 0) {
@@ -289,7 +290,7 @@ export function useProducts() {
       .then(({ error }) => {
         if (error) {
           console.error("Supabase insert failed:", error.message);
-          toast.error("Saved locally — could not sync to cloud database");
+          toast.error(`Saved locally — ${error.message}`);
         } else {
           toast.success("Product saved to cloud");
         }

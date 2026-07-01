@@ -21,6 +21,7 @@ import { Route as SitemapXmlRouteImport } from './routes/sitemap.xml'
 import { Route as RobotsTxtRouteImport } from './routes/robots.txt'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as AdminSolarSystemsRouteImport } from './routes/admin/solar-systems'
+import { Route as AdminSetupRouteImport } from './routes/admin/setup'
 import { Route as AdminProductsRouteImport } from './routes/admin/products'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
@@ -87,6 +88,11 @@ const AdminSolarSystemsRoute = AdminSolarSystemsRouteImport.update({
   path: '/admin/solar-systems',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSetupRoute = AdminSetupRouteImport.update({
+  id: '/admin/setup',
+  path: '/admin/setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminProductsRoute = AdminProductsRouteImport.update({
   id: '/admin/products',
   path: '/admin/products',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/setup': typeof AdminSetupRoute
   '/admin/solar-systems': typeof AdminSolarSystemsRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/robots/txt': typeof RobotsTxtRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/setup': typeof AdminSetupRoute
   '/admin/solar-systems': typeof AdminSolarSystemsRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/robots/txt': typeof RobotsTxtRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
+  '/admin/setup': typeof AdminSetupRoute
   '/admin/solar-systems': typeof AdminSolarSystemsRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/robots/txt': typeof RobotsTxtRoute
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/setup'
     | '/admin/solar-systems'
     | '/products/$slug'
     | '/robots/txt'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/setup'
     | '/admin/solar-systems'
     | '/products/$slug'
     | '/robots/txt'
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/orders'
     | '/admin/products'
+    | '/admin/setup'
     | '/admin/solar-systems'
     | '/products/$slug'
     | '/robots/txt'
@@ -243,6 +255,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
+  AdminSetupRoute: typeof AdminSetupRoute
   AdminSolarSystemsRoute: typeof AdminSolarSystemsRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
   RobotsTxtRoute: typeof RobotsTxtRoute
@@ -336,6 +349,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSolarSystemsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/setup': {
+      id: '/admin/setup'
+      path: '/admin/setup'
+      fullPath: '/admin/setup'
+      preLoaderRoute: typeof AdminSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/products': {
       id: '/admin/products'
       path: '/admin/products'
@@ -398,6 +418,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
+  AdminSetupRoute: AdminSetupRoute,
   AdminSolarSystemsRoute: AdminSolarSystemsRoute,
   ProductsSlugRoute: ProductsSlugRoute,
   RobotsTxtRoute: RobotsTxtRoute,

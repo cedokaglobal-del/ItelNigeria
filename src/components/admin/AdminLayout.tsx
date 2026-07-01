@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { BarChart3, Box, Layers, LayoutDashboard, LogOut, ShoppingCart, Sun } from "lucide-react";
+import { BarChart3, Box, Database, Layers, LayoutDashboard, LogOut, ShoppingCart, Sun } from "lucide-react";
 import { logoutAdmin } from "@/lib/admin-auth";
 import { useRouter } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
@@ -12,22 +12,25 @@ const nav = [
   { to: "/admin/solar-systems", label: "Systems", icon: Sun },
   { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/admin/setup", label: "DB Setup", icon: Database },
 ];
 
 function SupabaseStatus() {
   const [status, setStatus] = useState<"checking" | "connected" | "disconnected">("checking");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     const check = async () => {
       try {
-        const start = performance.now();
         const { error } = await supabase.from("products").select("slug", { count: "exact", head: true });
         if (cancelled) return;
         if (error) {
           setStatus("disconnected");
+          setErrorMsg(error.message);
         } else {
           setStatus("connected");
+          setErrorMsg(null);
         }
       } catch {
         if (!cancelled) setStatus("disconnected");
@@ -38,12 +41,23 @@ function SupabaseStatus() {
   }, []);
 
   const dot = status === "connected" ? "bg-green-500" : status === "disconnected" ? "bg-red-400" : "bg-amber-400 animate-pulse";
-  const label = status === "connected" ? "Connected" : status === "disconnected" ? "Disconnected" : "Checking…";
+  const label = status === "connected" ? "Connected" : status === "disconnected" ? `Disconnected: ${errorMsg ?? "check console"}` : "Checking…";
+  const link = status === "disconnected"
+    ? { to: "/admin/setup" as const, label: "Fix" }
+    : null;
 
   return (
-    <div className="flex items-center gap-1.5" title={`Supabase: ${label}`}>
+    <div className="flex items-center gap-1.5" title={label}>
       <span className={`h-2 w-2 rounded-full ${dot}`} />
-      <span className="text-[10px] text-muted-foreground hidden sm:inline">{label}</span>
+      <span className="text-[10px] text-muted-foreground hidden sm:inline max-w-32 truncate">{label}</span>
+      {link && (
+        <Link
+          to={link.to}
+          className="text-[10px] font-medium text-primary underline underline-offset-2"
+        >
+          {link.label}
+        </Link>
+      )}
     </div>
   );
 }
