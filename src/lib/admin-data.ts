@@ -223,7 +223,7 @@ export function useProducts() {
       const { data, error } = await supabase.from("products").select("*");
       if (error) throw error;
       return (data as Product[]) ?? [];
-    })
+    }, 0, 4000)
       .then((products) => {
         if (!mounted) return;
         setList(products.map(migrateProduct));

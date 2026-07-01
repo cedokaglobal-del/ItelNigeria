@@ -51,21 +51,29 @@ export function seedProductImages(
 }
 
 export async function fetchProducts(): Promise<Product[]> {
-  const result = await withRetry(async () => {
-    const { data, error } = await supabase.from("products").select("*").order("name", { ascending: true });
-    if (error) throw error;
-    return (data as Product[]) ?? [];
-  });
-  return result;
+  try {
+    return await withRetry(async () => {
+      const { data, error } = await supabase.from("products").select("*").order("name", { ascending: true });
+      if (error) throw error;
+      return (data as Product[]) ?? [];
+    }, 0, 3000);
+  } catch (e) {
+    safeLogError(e, "fetchProducts");
+    return [];
+  }
 }
 
 export async function fetchProduct(slug: string): Promise<Product | undefined> {
-  const result = await withRetry(async () => {
-    const { data, error } = await supabase.from("products").select("*").eq("slug", slug).single();
-    if (error) throw error;
-    return (data as Product) ?? undefined;
-  });
-  return result;
+  try {
+    return await withRetry(async () => {
+      const { data, error } = await supabase.from("products").select("*").eq("slug", slug).single();
+      if (error) throw error;
+      return (data as Product) ?? undefined;
+    }, 0, 3000);
+  } catch (e) {
+    safeLogError(e, "fetchProduct");
+    return undefined;
+  }
 }
 
 /** Async — reads from Supabase */
