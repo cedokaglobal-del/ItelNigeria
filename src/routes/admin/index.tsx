@@ -27,6 +27,7 @@ import {
 } from "@/lib/admin-data";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { formatNGN } from "@/lib/format";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/admin/")({
   beforeLoad: () => {
@@ -38,9 +39,9 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
-  const [orders] = useOrders();
-  const sessions = useCalculatorSessions();
-  const [products] = useProducts();
+  const [orders, , ordersLoading] = useOrders();
+  const [sessions, sessionsLoading] = useCalculatorSessions();
+  const [products, , , , , productsLoading] = useProducts();
   const stats = useMemo(
     () => getDashboardStats(orders, sessions, products.length),
     [orders, sessions, products.length],
@@ -64,6 +65,63 @@ function AdminDashboard() {
     stats.totalCalculatorSessions > 0
       ? Math.round((stats.totalOrders / stats.totalCalculatorSessions) * 100)
       : 0;
+
+  const isLoading = ordersLoading || sessionsLoading || productsLoading;
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="space-y-6">
+          <div style={{ animationDelay: "0.1s" }} className="animate-fade-in-up">
+            <Skeleton className="h-8 w-48 rounded-lg mb-6" />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} style={{ animationDelay: `${0.1 + i * 0.08}s` }} className="animate-fade-in-up">
+                <Skeleton className="h-28 rounded-2xl" />
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 grid gap-6 lg:grid-cols-3">
+            <div style={{ animationDelay: "0.4s" }} className="animate-fade-in-up lg:col-span-2">
+              <Skeleton className="h-8 w-32 rounded-lg mb-4" />
+              <div className="space-y-3">
+                {[1, 2, 3].map((j) => (
+                  <Skeleton key={j} className="h-16 rounded-xl" />
+                ))}
+              </div>
+            </div>
+            <div style={{ animationDelay: "0.5s" }} className="animate-fade-in-up space-y-4">
+              <Skeleton className="h-8 w-24 rounded-lg" />
+              <div className="space-y-3 mt-4">
+                {[1, 2, 3, 4].map((j) => (
+                  <Skeleton key={j} className="h-10 rounded-xl" />
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            <div style={{ animationDelay: "0.55s" }} className="animate-fade-in-up">
+              <Skeleton className="h-8 w-32 rounded-lg mb-4" />
+              <div className="grid grid-cols-2 gap-4">
+                {[1, 2, 3, 4].map((j) => (
+                  <Skeleton key={j} className="h-24 rounded-xl" />
+                ))}
+              </div>
+            </div>
+            <div style={{ animationDelay: "0.7s" }} className="animate-fade-in-up">
+              <Skeleton className="h-8 w-32 rounded-lg mb-4" />
+              <div className="space-y-4">
+                {[1, 2, 3].map((j) => (
+                  <Skeleton key={j} className="h-16 rounded-xl" />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

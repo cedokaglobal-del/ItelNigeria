@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { memo } from "react";
 import { ProductCard } from "@/components/site/ProductCard";
-import { fetchProducts, type ProductCategory } from "@/lib/products";
+import { fetchProducts, type Product, type ProductCategory } from "@/lib/products";
 import { fetchCategories } from "@/lib/categories";
 
 export const Route = createFileRoute("/")({
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/")({
       fetchProducts(),
       fetchCategories()
     ]);
-    return { products, categories };
+    return { products: products as Product[], categories };
   },
   head: () => ({
     meta: [
@@ -75,11 +75,11 @@ function Home() {
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--solar)]" />
               New · N-Type 600W bifacial in stock
             </span>
-            <h1 className="text-2xl font-semibold tracking-tight md:text-5xl md:leading-[1.02]">
+            <h1 className="text-fluid-hero font-semibold tracking-tight">
               Power independence <br className="hidden md:block" />
               <span className="bg-[var(--gradient-gold)] bg-clip-text text-transparent">starts here.</span>
             </h1>
-            <p className="max-w-lg text-sm text-muted-foreground md:text-base">
+            <p className="max-w-lg text-fluid-lg text-muted-foreground">
               Premium solar + intelligent sizing. Helping homes and businesses across Nigeria leave generators behind.
             </p>
             <div className="mt-2 flex flex-wrap gap-2 md:mt-4">

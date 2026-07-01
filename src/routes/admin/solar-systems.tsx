@@ -172,6 +172,7 @@ export function AdminSolarSystemsContent({
       batteryType: form.batteryType as "LiFePO4" | "Tubular",
       price: finalPrice,
       originalPrice: hasDiscount ? basePrice : undefined,
+      totalArrayKW: Number(((form.totalPanels * form.panelWattage) / 1000).toFixed(2)),
       whatItPowers: form.whatItPowers,
       highlights: form.highlights.filter(Boolean),
       installationAccessories: form.installationAccessories.filter(Boolean),

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "./supabase";
 import { toast } from "sonner";
 import { withRetry, safeLogError } from "./utils";
+import { type Product } from "./products";
 
 export type OrderStatus =
   | "pending"
@@ -116,10 +117,12 @@ function seedCalculatorSessions(): CalculatorSession[] {
 
 // ── Supabase-backed Orders hook ──────────────────────────────────────────────
 
-export function useOrders(): [Order[], (id: string, status: OrderStatus) => void] {
+export function useOrders(): [Order[], (id: string, status: OrderStatus) => void, boolean] {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     supabase
       .from("orders")
       .select("*")
@@ -133,6 +136,11 @@ export function useOrders(): [Order[], (id: string, status: OrderStatus) => void
         } else {
           setOrders(data as Order[]);
         }
+        setLoading(false);
+      })
+      .catch(() => {
+        setOrders(seedOrders());
+        setLoading(false);
       });
   }, []);
 
@@ -171,7 +179,7 @@ export function useOrders(): [Order[], (id: string, status: OrderStatus) => void
       });
   }, []);
 
-  return [orders, updateStatus];
+  return [orders, updateStatus, loading] as const;
 }
 
 // ── Insert order from checkout ───────────────────────────────────────────────
@@ -187,9 +195,10 @@ export async function insertOrder(order: Order): Promise<{ error: string | null 
 
 // ── Calculator sessions (localStorage fallback only) ─────────────────────────
 
-export function useCalculatorSessions(): CalculatorSession[] {
-  const [sessions] = useState<CalculatorSession[]>(seedCalculatorSessions);
-  return sessions;
+export function useCalculatorSessions(): [CalculatorSession[], boolean] {
+  const [sessions, setSessions] = useState<CalculatorSession[]>(seedCalculatorSessions);
+  const [loading, setLoading] = useState(false);
+  return [sessions, loading] as const;
 }
 
 // ── Products (Supabase-backed) ───────────────────────────────────────────────
@@ -210,18 +219,14 @@ export function useProducts() {
     let mounted = true;
 
     setLoading(true);
-    withRetry(() => supabase.from("products").select("*"))
-      .then(({ data, error }) => {
+    withRetry(async () => {
+      const { data, error } = await supabase.from("products").select("*");
+      if (error) throw error;
+      return (data as Product[]) ?? [];
+    })
+      .then((products) => {
         if (!mounted) return;
-        if (error) {
-          safeLogError(error, "Failed to load products");
-          toast.error("Could not load products from database");
-          setList([]);
-        } else if (!data || data.length === 0) {
-          setList([]);
-        } else {
-          setList((data as Product[]).map(migrateProduct));
-        }
+        setList(products.map(migrateProduct));
         setLoading(false);
       })
       .catch((error) => {

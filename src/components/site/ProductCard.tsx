@@ -6,6 +6,7 @@ import { formatNGN } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import type { Product } from "@/lib/products";
 import { PanelArt } from "./ProductArt";
+import { ProductImage } from "./ProductImage";
 
 export const ProductCard = memo(function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
@@ -30,10 +31,9 @@ export const ProductCard = memo(function ProductCard({ product }: { product: Pro
     >
       <div className="relative aspect-[4/5] overflow-hidden bg-surface-2 md:aspect-[3/4]">
         {hasImage ? (
-          <img
+          <ProductImage
             src={product.images[0]}
             alt={product.name}
-            loading="lazy"
             className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-105 md:p-4"
           />
         ) : (

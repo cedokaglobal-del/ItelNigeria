@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CreditCard, Minus, Plus, ShoppingBag, Trash2, Truck } from "lucide-react";
 import { PanelArt } from "@/components/site/ProductArt";
+import { ProductImage } from "@/components/site/ProductImage";
 import { useCart } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
 
@@ -68,7 +69,7 @@ function CartPage() {
                 <Link to="/products/$slug" params={{ slug: product.slug }} className="flex gap-3 md:flex-1 md:items-center md:gap-4">
                   <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-surface md:h-24 md:w-24">
                     {hasImage ? (
-                      <img src={product.images[0]} alt={product.name} loading="lazy" className="h-full w-full object-cover" />
+                      <ProductImage src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
                     ) : (
                       <PanelArt category={product.category} spec={product.spec} />
                     )}

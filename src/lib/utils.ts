@@ -1,3 +1,10 @@
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 export function generateSeoTags(name: string, description: string, category: string): string {
   const stopWords = new Set([
     "the", "and", "is", "in", "on", "of", "for", "to", "a", "an", "with", "at", "from", "by", "or", "as", "it", "its",

@@ -411,7 +411,7 @@ function AdminProducts() {
                       </td>
                       <td className="px-4 py-3 text-xs md:px-6">
                         <span className="rounded-full border bg-surface px-2.5 py-0.5 text-[10px] font-medium">
-                          {CATEGORIES.find((c) => c.id === p.category)?.label ?? p.category}
+                          {categories.find((c) => c.id === p.category)?.label ?? p.category}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right font-mono text-xs font-semibold md:px-6">

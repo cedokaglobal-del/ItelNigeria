@@ -2,6 +2,8 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { BarChart3, Box, Layers, LayoutDashboard, LogOut, ShoppingCart, Sun } from "lucide-react";
 import { logoutAdmin } from "@/lib/admin-auth";
 import { useRouter } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 const nav = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -11,6 +13,40 @@ const nav = [
   { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { to: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];
+
+function SupabaseStatus() {
+  const [status, setStatus] = useState<"checking" | "connected" | "disconnected">("checking");
+
+  useEffect(() => {
+    let cancelled = false;
+    const check = async () => {
+      try {
+        const start = performance.now();
+        const { error } = await supabase.from("products").select("slug", { count: "exact", head: true });
+        if (cancelled) return;
+        if (error) {
+          setStatus("disconnected");
+        } else {
+          setStatus("connected");
+        }
+      } catch {
+        if (!cancelled) setStatus("disconnected");
+      }
+    };
+    check();
+    return () => { cancelled = true; };
+  }, []);
+
+  const dot = status === "connected" ? "bg-green-500" : status === "disconnected" ? "bg-red-400" : "bg-amber-400 animate-pulse";
+  const label = status === "connected" ? "Connected" : status === "disconnected" ? "Disconnected" : "Checking…";
+
+  return (
+    <div className="flex items-center gap-1.5" title={`Supabase: ${label}`}>
+      <span className={`h-2 w-2 rounded-full ${dot}`} />
+      <span className="text-[10px] text-muted-foreground hidden sm:inline">{label}</span>
+    </div>
+  );
+}
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
@@ -54,6 +90,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="mt-auto space-y-1 border-t pt-4">
+          <SupabaseStatus />
+          <div className="h-2" />
           <Link
             to="/"
             className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
@@ -84,7 +122,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
                 className="h-9 w-auto object-contain"
               />
             </Link>
-            <button
+            <div className="flex items-center gap-3">
+              <SupabaseStatus />
+              <button
               type="button"
               onClick={handleLogout}
               className="grid h-9 w-9 place-items-center rounded-lg text-muted-foreground hover:bg-accent hover:text-red-500"
@@ -92,6 +132,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             >
               <LogOut className="h-4 w-4" />
             </button>
+            </div>
           </div>
         </header>
 

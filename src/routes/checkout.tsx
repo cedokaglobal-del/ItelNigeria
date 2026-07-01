@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { useCart } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
 import { PanelArt } from "@/components/site/ProductArt";
+import { ProductImage } from "@/components/site/ProductImage";
 import { insertOrder, type Order, type OrderItem } from "@/lib/admin-data";
 import { fetchProducts } from "@/lib/products";
 
@@ -177,7 +178,7 @@ function CheckoutPage() {
                 <li key={d.product.slug} className="flex items-center gap-3 py-3 text-sm">
                   <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-surface">
                     {hasImage ? (
-                      <img src={d.product.images[0]} alt={d.product.name} loading="lazy" className="h-full w-full object-cover" />
+                      <ProductImage src={d.product.images[0]} alt={d.product.name} className="h-full w-full object-cover" />
                     ) : (
                       <PanelArt category={d.product.category} spec={d.product.spec} />
                     )}

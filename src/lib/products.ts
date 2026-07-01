@@ -51,11 +51,21 @@ export function seedProductImages(
 }
 
 export async function fetchProducts(): Promise<Product[]> {
-  return withRetry(() => supabase.from("products").select("*").order("name", { ascending: true }));
+  const result = await withRetry(async () => {
+    const { data, error } = await supabase.from("products").select("*").order("name", { ascending: true });
+    if (error) throw error;
+    return (data as Product[]) ?? [];
+  });
+  return result;
 }
 
 export async function fetchProduct(slug: string): Promise<Product | undefined> {
-  return withRetry(() => supabase.from("products").select("*").eq("slug", slug).single());
+  const result = await withRetry(async () => {
+    const { data, error } = await supabase.from("products").select("*").eq("slug", slug).single();
+    if (error) throw error;
+    return (data as Product) ?? undefined;
+  });
+  return result;
 }
 
 /** Async — reads from Supabase */
