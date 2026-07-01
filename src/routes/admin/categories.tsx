@@ -12,7 +12,7 @@ export const Route = createFileRoute("/admin/categories")({
       throw redirect({ to: "/admin/login" });
   },
   head: () => ({ meta: [{ title: "Categories — Itel Admin" }] }),
-  component: AdminCategories,
+  component: AdminCategoriesPage,
 });
 
 function AdminCategories() {

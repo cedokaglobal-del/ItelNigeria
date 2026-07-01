@@ -543,7 +543,17 @@ function AdminProducts() {
                     value={form.category}
                     options={categories.map((c) => ({ value: c.id, label: c.label }))}
                     onChange={(v) => setForm({ ...form, category: v as ProductCategory })}
+                    placeholder={categories.length === 0 ? "No categories yet — create one below" : "Select category"}
                   />
+                  {categories.length === 0 && (
+                    <div className="sm:col-span-2">
+                      <InlineCategoryCreator
+                        categories={categories}
+                        addCat={addCat}
+                        onClose={() => {}}
+                      />
+                    </div>
+                  )}
                   <PField
                     label="Price (NGN)"
                     type="number"
@@ -1008,11 +1018,13 @@ function PSelect({
   value,
   options,
   onChange,
+  placeholder,
 }: {
   label: string;
   value: string;
   options: { value: string; label: string }[];
   onChange: (v: string) => void;
+  placeholder?: string;
 }) {
   return (
     <div>
@@ -1021,13 +1033,93 @@ function PSelect({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="mt-1 w-full rounded-xl border bg-surface px-4 py-2.5 text-sm"
+        disabled={options.length === 0}
       >
+        {options.length === 0 && placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
         {options.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}
           </option>
         ))}
       </select>
+    </div>
+  );
+}
+
+function InlineCategoryCreator({
+  categories,
+  addCat,
+}: {
+  categories: { id: string; label: string; blurb: string }[];
+  addCat: (cat: { id: string; label: string; blurb: string }) => void;
+}) {
+  const [show, setShow] = useState(true);
+  const [id, setId] = useState("");
+  const [label, setLabel] = useState("");
+  const [blurb, setBlurb] = useState("");
+
+  function handleCreate() {
+    if (!id.trim() || !label.trim()) return;
+    const safeId = id.replace(/\s+/g, "-").toLowerCase();
+    if (categories.find((c) => c.id === safeId)) {
+      alert("Category ID already exists");
+      return;
+    }
+    addCat({ id: safeId, label: label.trim(), blurb: blurb.trim() });
+    setId("");
+    setLabel("");
+    setBlurb("");
+    setShow(false);
+  }
+
+  return (
+    <div className="rounded-xl border bg-surface/50 p-4">
+      <p className="text-xs text-muted-foreground mb-3">
+        No categories exist yet. Create your first category to continue adding products.
+      </p>
+      <div className="grid gap-3 sm:grid-cols-3">
+        <input
+          type="text"
+          placeholder="ID (slug, e.g. panels)"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
+          className="rounded-xl border bg-surface px-3 py-2 text-sm font-mono"
+        />
+        <input
+          type="text"
+          placeholder="Display label (e.g. Solar Panels)"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          className="rounded-xl border bg-surface px-3 py-2 text-sm"
+        />
+        <input
+          type="text"
+          placeholder="Blurb / short description"
+          value={blurb}
+          onChange={(e) => setBlurb(e.target.value)}
+          className="rounded-xl border bg-surface px-3 py-2 text-sm"
+        />
+      </div>
+      <div className="mt-3 flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => setShow(false)}
+          className="rounded-xl border px-3 py-1.5 text-xs font-medium hover:bg-accent"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={handleCreate}
+          className="rounded-xl bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
+        >
+          <Plus className="h-3 w-3 inline mr-1" /> Create category
+        </button>
+      </div>
     </div>
   );
 }
