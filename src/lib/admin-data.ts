@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "./supabase";
 import { toast } from "sonner";
-import { withRetry, safeLogError } from "./utils";
+import { withRetry } from "./utils";
 import { type Product } from "./products";
 
 export type OrderStatus =
@@ -46,75 +46,6 @@ export type CalculatorSession = {
   estimatedCost: number;
 };
 
-// ── Seed data (used as fallback when Supabase is empty) ──────────────────────
-
-function seedOrders(): Order[] {
-  const now = new Date();
-  return [
-    {
-      id: "ITL-A7F3B2",
-      date: new Date(now.getTime() - 3 * 86400000).toISOString(),
-      customer: { name: "Chidi Okonkwo", email: "chidi@example.com", phone: "+234 802 111 2233" },
-      items: [
-        {
-          slug: "itel-starter-3kva",
-          name: "Itel Starter Kit · 3kVA Home Bundle",
-          price: 1850000,
-          qty: 1,
-          spec: "3kVA · 5kWh",
-        },
-      ],
-      subtotal: 1850000,
-      shipping: 0,
-      total: 1850000,
-      status: "shipped",
-      payment: "paystack",
-      address: { line: "15 Adeola Odeku St", city: "Lagos", state: "Lagos" },
-    },
-    {
-      id: "ITL-D9C1E4",
-      date: new Date(now.getTime() - 5 * 86400000).toISOString(),
-      customer: { name: "Amina Bello", email: "amina@example.com", phone: "+234 803 555 7788" },
-      items: [
-        { slug: "itel-mono-550w", name: "Itel Mono PERC 550W", price: 165000, qty: 8, spec: "550W" },
-        { slug: "itel-hybrid-5kva", name: "Itel Hybrid Inverter 5kVA / 48V", price: 685000, qty: 1, spec: "5kVA · 48V" },
-        { slug: "itel-lifepo4-5kwh", name: "Itel LiFePO4 5.12kWh Wall-Mount", price: 1450000, qty: 2, spec: "5.12kWh · 48V" },
-      ],
-      subtotal: 4905000,
-      shipping: 0,
-      total: 4905000,
-      status: "processing",
-      payment: "flutterwave",
-      address: { line: "42 Ahmadu Bello Way", city: "Abuja", state: "FCT" },
-    },
-    {
-      id: "ITL-E2F8G1",
-      date: new Date(now.getTime() - 1 * 86400000).toISOString(),
-      customer: { name: "Emeka Nwosu", email: "emeka@example.com", phone: "+234 805 777 9900" },
-      items: [
-        { slug: "itel-pro-10kva", name: "Itel Pro Kit · 10kVA Business System", price: 6500000, qty: 1, spec: "10kVA · 20kWh" },
-      ],
-      subtotal: 6500000,
-      shipping: 0,
-      total: 6500000,
-      status: "pending",
-      payment: "transfer",
-      address: { line: "7 Port Harcourt Rd", city: "Enugu", state: "Enugu" },
-    },
-  ];
-}
-
-function seedCalculatorSessions(): CalculatorSession[] {
-  const now = new Date();
-  return [
-    { id: "cs-001", date: new Date(now.getTime() - 1 * 86400000).toISOString(), applianceCount: 8, dailyKWh: 14.6, batteryType: "lithium", systemVoltage: 48, panelCount: 6, inverterKVA: 5, batteryKWh: 10.2, estimatedCost: 4250000 },
-    { id: "cs-002", date: new Date(now.getTime() - 2 * 86400000).toISOString(), applianceCount: 5, dailyKWh: 8.2, batteryType: "lithium", systemVoltage: 24, panelCount: 4, inverterKVA: 3, batteryKWh: 5.8, estimatedCost: 2450000 },
-    { id: "cs-003", date: new Date(now.getTime() - 2 * 86400000).toISOString(), applianceCount: 12, dailyKWh: 28.4, batteryType: "tubular", systemVoltage: 48, panelCount: 12, inverterKVA: 10, batteryKWh: 22.0, estimatedCost: 6800000 },
-    { id: "cs-004", date: new Date(now.getTime() - 3 * 86400000).toISOString(), applianceCount: 3, dailyKWh: 3.1, batteryType: "lithium", systemVoltage: 24, panelCount: 2, inverterKVA: 1, batteryKWh: 2.0, estimatedCost: 1200000 },
-    { id: "cs-005", date: new Date(now.getTime() - 4 * 86400000).toISOString(), applianceCount: 7, dailyKWh: 11.8, batteryType: "lithium", systemVoltage: 48, panelCount: 5, inverterKVA: 5, batteryKWh: 8.5, estimatedCost: 3650000 },
-  ];
-}
-
 // ── Supabase-backed Orders hook ──────────────────────────────────────────────
 
 export function useOrders(): [Order[], (id: string, status: OrderStatus) => void, boolean] {
@@ -130,15 +61,15 @@ export function useOrders(): [Order[], (id: string, status: OrderStatus) => void
           .select("*")
           .order("date", { ascending: false });
         if (error) {
-          console.warn("Orders table not found or empty, using seed data:", error.message);
-          setOrders(seedOrders());
+          console.warn("Orders table not found:", error.message);
+          setOrders([]);
         } else if (!data || data.length === 0) {
-          setOrders(seedOrders());
+          setOrders([]);
         } else {
           setOrders(data as Order[]);
         }
       } catch {
-        setOrders(seedOrders());
+        setOrders([]);
       }
       setLoading(false);
     })();
@@ -196,7 +127,7 @@ export async function insertOrder(order: Order): Promise<{ error: string | null 
 // ── Calculator sessions (localStorage fallback only) ─────────────────────────
 
 export function useCalculatorSessions(): [CalculatorSession[], boolean] {
-  const [sessions, setSessions] = useState<CalculatorSession[]>(seedCalculatorSessions);
+  const [sessions, setSessions] = useState<CalculatorSession[]>([]);
   const [loading, setLoading] = useState(false);
   return [sessions, loading] as const;
 }

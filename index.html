@@ -6,9 +6,69 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
     <title>ItelNigeria — Power Independence Starts Here</title>
+    <link rel="preload" href="/Image/logo/itellogonigera.png" as="image" />
+    <style>
+      #preloader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #fcfcfd;
+        transition: opacity 0.45s ease-out, visibility 0.45s ease-out;
+      }
+      #preloader.hide {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+      #preloader img {
+        width: 176px;
+        height: auto;
+        animation: logo-entrance 0.7s ease-out both, logo-pulse 3s ease-in-out 0.7s infinite;
+      }
+      @keyframes logo-entrance {
+        0% { opacity: 0; transform: scale(0.88); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      @keyframes logo-pulse {
+        0%, 100% { opacity: 1; filter: drop-shadow(0 0 0 transparent); }
+        50% { opacity: 0.92; filter: drop-shadow(0 0 18px rgba(180, 50, 40, 0.18)); }
+      }
+      #preloader .loader-dots {
+        margin-top: 28px;
+        display: flex;
+        gap: 8px;
+      }
+      #preloader .loader-dots span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #b43228;
+        animation: dot-bounce 1.2s ease-in-out infinite;
+      }
+      #preloader .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+      #preloader .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes dot-bounce {
+        0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+        30% { transform: translateY(-10px); opacity: 1; }
+      }
+    </style>
   </head>
   <body>
+    <div id="preloader">
+      <img src="/Image/logo/itellogonigera.png" alt="ItelNigeria" width="176" height="44" />
+      <div class="loader-dots" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Fallback: hide preloader after 8s even if React fails to mount
+      setTimeout(function(){ var el = document.getElementById('preloader'); if(el) el.classList.add('hide'); }, 8000);
+    </script>
   </body>
 </html>

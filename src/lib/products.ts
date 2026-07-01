@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { withRetry, safeLogError } from "./utils";
+import { withRetry } from "./utils";
 
 export type ProductCategory = string;
 
@@ -60,38 +60,36 @@ function getLocalProducts(): Product[] {
 }
 
 export async function fetchProducts(): Promise<Product[]> {
-  // Return localStorage data instantly if available
+  // Always return localStorage instantly — never wait for Supabase on public routes
   const local = getLocalProducts();
   if (local.length > 0) return local;
-  // Otherwise try Supabase with fast timeout
+  // Fallback: quick Supabase check (200ms max) for fresh loads
   try {
     return await withRetry(async () => {
       const { data, error } = await supabase.from("products").select("*").order("name", { ascending: true });
       if (error) throw error;
       return (data as Product[]) ?? [];
-    }, 0, 800);
-  } catch (e) {
-    safeLogError(e, "fetchProducts");
+    }, 0, 200);
+  } catch {
     return [];
   }
 }
 
 export async function fetchProduct(slug: string): Promise<Product | undefined> {
-  // Return localStorage data instantly if available
+  // Return localStorage data instantly
   const local = getLocalProducts();
   if (local.length > 0) {
     const found = local.find((p) => p.slug === slug);
     if (found) return found;
   }
-  // Otherwise try Supabase
+  // Otherwise quick Supabase check
   try {
     return await withRetry(async () => {
       const { data, error } = await supabase.from("products").select("*").eq("slug", slug).single();
       if (error) throw error;
       return (data as Product) ?? undefined;
-    }, 0, 800);
-  } catch (e) {
-    safeLogError(e, "fetchProduct");
+    }, 0, 200);
+  } catch {
     return undefined;
   }
 }

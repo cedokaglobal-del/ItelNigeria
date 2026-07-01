@@ -8,35 +8,21 @@ export type Category = {
   blurb: string;
 };
 
-// We still keep an array of fallback categories just in case the DB is totally empty on first load.
-// But we no longer use localStorage.
-const DEFAULTS: Category[] = [
-  { id: "panels", label: "Solar Panels", blurb: "Mono PERC & N-Type panels" },
-  { id: "inverters", label: "Inverters", blurb: "Hybrid, off-grid, on-grid" },
-  { id: "batteries", label: "Batteries", blurb: "LiFePO4 & tubular" },
-  { id: "controllers", label: "Charge Controllers", blurb: "MPPT controllers" },
-  { id: "kits", label: "Complete Kits", blurb: "Plug-and-play systems" },
-  { id: "accessories", label: "Accessories", blurb: "Cables, breakers, mounts" },
-];
-
 let _cachedCategories: Category[] | null = null;
 
 export async function fetchCategories(): Promise<Category[]> {
   try {
     const { data, error } = await supabase.from("categories").select("*");
-    if (error || !data || data.length === 0) {
-      // If table is missing/empty, return defaults but don't persist them
-      return DEFAULTS;
-    }
+    if (error || !data || data.length === 0) return [];
     _cachedCategories = data as Category[];
     return _cachedCategories;
   } catch {
-    return DEFAULTS;
+    return [];
   }
 }
 
 export function useCategories(): [Category[], (cat: Category) => void, (id: string) => void, (id: string, updates: Partial<Category>) => void] {
-  const [list, setList] = useState<Category[]>(DEFAULTS);
+  const [list, setList] = useState<Category[]>([]);
 
   useEffect(() => {
     fetchCategories().then(setList);

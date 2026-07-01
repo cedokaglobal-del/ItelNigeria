@@ -16,7 +16,7 @@ export function Nav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-hairline bg-background/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 animate-fade-in border-b border-hairline bg-background/70 backdrop-blur-xl">
       <div className="container-page flex h-16 items-center justify-between gap-6">
         <Logo />
 

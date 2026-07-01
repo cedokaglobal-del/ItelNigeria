@@ -13,3 +13,9 @@ createRoot(rootElement).render(
     <RouterProvider router={router} />
   </StrictMode>,
 );
+
+// Hide the preloader once React has mounted
+requestAnimationFrame(() => {
+  const preloader = document.getElementById("preloader");
+  if (preloader) preloader.classList.add("hide");
+});
