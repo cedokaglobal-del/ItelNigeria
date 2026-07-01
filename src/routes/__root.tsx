@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, Link, createRootRouteWithContext, HeadContent, useLocation } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 
-import appCss from "../style.css?url";
 import { CartProvider } from "@/lib/cart";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
@@ -82,7 +81,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "googlebot", content: "index, follow" },
     ],
     links: [
-      { rel: "stylesheet", href: appCss },
       { rel: "canonical", href: "https://itelenergy.com" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },

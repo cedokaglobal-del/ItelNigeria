@@ -467,7 +467,9 @@ function AdminProducts() {
                         colSpan={6}
                         className="px-6 py-12 text-center text-sm text-muted-foreground"
                       >
-                        No products match your filter.
+                        {products.length === 0
+                          ? "No products yet. Create a category first, then add products."
+                          : "No products match your filter."}
                       </td>
                     </tr>
                   )}
@@ -503,8 +505,8 @@ function AdminProducts() {
 
           {/* Product form modal */}
           {form && (
-            <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4">
-              <div className="w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl border bg-card shadow-xl overflow-hidden">
+            <div className="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-2 sm:p-4">
+              <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-2xl border bg-card shadow-xl overflow-hidden">
                 <div className="flex items-center justify-between border-b p-4 bg-card/50 backdrop-blur sticky top-0 z-10">
                   <h2 className="font-semibold">{editingSlug ? "Edit product" : "New product"}</h2>
                   <button
@@ -1194,7 +1196,7 @@ function AdminCategoriesContent() {
             {categories.length === 0 && (
               <tr>
                 <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
-                  No categories found.
+                  No categories yet. Click "New Category" to create your first product category.
                 </td>
               </tr>
             )}
