@@ -27,8 +27,25 @@ import {
 import { fetchProducts } from "@/lib/products";
 import { formatNGN, formatNumber } from "@/lib/format";
 
+function CalculatorSkeleton() {
+  return (
+    <div className="container-page py-8">
+      <div className="h-8 w-64 rounded-lg bg-primary/10 animate-shimmer mb-6" />
+      <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-24 rounded-2xl border bg-card p-4 animate-shimmer" />
+          ))}
+        </div>
+        <div className="h-96 rounded-2xl border bg-card p-6 animate-shimmer" />
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/calculator")({
   loader: () => fetchProducts(),
+  pendingComponent: CalculatorSkeleton,
   head: () => ({
     meta: [
       { title: "Solar Calculator — ItelNigeria" },

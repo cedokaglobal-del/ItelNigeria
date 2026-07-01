@@ -16,7 +16,7 @@ export const Route = createFileRoute("/admin/analytics")({
 });
 
 function AdminAnalytics() {
-  const sessions = useCalculatorSessions();
+  const [sessions] = useCalculatorSessions();
   const batterySplit = useMemo(
     () => ({
       lithium: sessions.filter((s) => s.batteryType === "lithium").length,

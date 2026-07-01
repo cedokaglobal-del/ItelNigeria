@@ -16,6 +16,36 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { fetchProducts, type Product, type ProductCategory } from "@/lib/products";
 import { fetchCategories } from "@/lib/categories";
 
+function HomeSkeleton() {
+  return (
+    <div>
+      <section className="bg-gradient-to-b from-primary/[0.04] to-transparent">
+        <div className="container-page pb-6 pt-4 md:py-12">
+          <div className="flex flex-col items-start gap-2">
+            <div className="h-5 w-48 rounded-full bg-primary/10 animate-shimmer" />
+            <div className="mt-2 h-10 w-96 rounded-lg bg-primary/10 animate-shimmer" />
+            <div className="mt-2 h-10 w-80 rounded-lg bg-primary/10 animate-shimmer" />
+            <div className="mt-2 h-4 w-64 rounded bg-primary/5 animate-shimmer" />
+          </div>
+        </div>
+      </section>
+      <section className="container-page py-8">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="rounded-2xl border bg-card overflow-hidden">
+              <div className="aspect-[4/5] bg-primary/5 animate-shimmer" />
+              <div className="p-3 space-y-2">
+                <div className="h-3 w-16 rounded bg-primary/10 animate-shimmer" />
+                <div className="h-4 w-24 rounded bg-primary/10 animate-shimmer" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/")({
   loader: async () => {
     const [products, categories] = await Promise.all([
@@ -45,6 +75,7 @@ export const Route = createFileRoute("/")({
     links: [{ rel: "canonical", href: "https://itelenergy.com" }],
   }),
   component: Home,
+  pendingComponent: HomeSkeleton,
 });
 
 const CATEGORY_META: Record<

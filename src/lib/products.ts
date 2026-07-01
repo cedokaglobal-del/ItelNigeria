@@ -50,13 +50,26 @@ export function seedProductImages(
   return [productImg(slug, name, cat, spec)];
 }
 
+const LOCAL_KEY = "itel.admin.products";
+
+function getLocalProducts(): Product[] {
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
 export async function fetchProducts(): Promise<Product[]> {
+  // Return localStorage data instantly if available
+  const local = getLocalProducts();
+  if (local.length > 0) return local;
+  // Otherwise try Supabase with fast timeout
   try {
     return await withRetry(async () => {
       const { data, error } = await supabase.from("products").select("*").order("name", { ascending: true });
       if (error) throw error;
       return (data as Product[]) ?? [];
-    }, 0, 3000);
+    }, 0, 800);
   } catch (e) {
     safeLogError(e, "fetchProducts");
     return [];
@@ -64,12 +77,19 @@ export async function fetchProducts(): Promise<Product[]> {
 }
 
 export async function fetchProduct(slug: string): Promise<Product | undefined> {
+  // Return localStorage data instantly if available
+  const local = getLocalProducts();
+  if (local.length > 0) {
+    const found = local.find((p) => p.slug === slug);
+    if (found) return found;
+  }
+  // Otherwise try Supabase
   try {
     return await withRetry(async () => {
       const { data, error } = await supabase.from("products").select("*").eq("slug", slug).single();
       if (error) throw error;
       return (data as Product) ?? undefined;
-    }, 0, 3000);
+    }, 0, 800);
   } catch (e) {
     safeLogError(e, "fetchProduct");
     return undefined;

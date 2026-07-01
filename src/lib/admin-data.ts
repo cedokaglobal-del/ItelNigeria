@@ -123,11 +123,12 @@ export function useOrders(): [Order[], (id: string, status: OrderStatus) => void
 
   useEffect(() => {
     setLoading(true);
-    supabase
-      .from("orders")
-      .select("*")
-      .order("date", { ascending: false })
-      .then(({ data, error }) => {
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("orders")
+          .select("*")
+          .order("date", { ascending: false });
         if (error) {
           console.warn("Orders table not found or empty, using seed data:", error.message);
           setOrders(seedOrders());
@@ -136,12 +137,11 @@ export function useOrders(): [Order[], (id: string, status: OrderStatus) => void
         } else {
           setOrders(data as Order[]);
         }
-        setLoading(false);
-      })
-      .catch(() => {
+      } catch {
         setOrders(seedOrders());
-        setLoading(false);
-      });
+      }
+      setLoading(false);
+    })();
   }, []);
 
   // Real-time subscription for new orders from checkout
@@ -201,7 +201,20 @@ export function useCalculatorSessions(): [CalculatorSession[], boolean] {
   return [sessions, loading] as const;
 }
 
-// ── Products (Supabase-backed) ───────────────────────────────────────────────
+// ── Products (Supabase-backed + localStorage fallback) ───────────────
+
+const LOCAL_KEY = "itel.admin.products";
+
+function getLocalProducts(): Product[] {
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function setLocalProducts(list: Product[]) {
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify(list)); } catch { }
+}
 
 function migrateProduct(p: Product): Product {
   return {
@@ -219,21 +232,27 @@ export function useProducts() {
     let mounted = true;
 
     setLoading(true);
+    // Try Supabase first, fall back to localStorage
     withRetry(async () => {
       const { data, error } = await supabase.from("products").select("*");
       if (error) throw error;
       return (data as Product[]) ?? [];
-    }, 0, 4000)
+    }, 0, 3000)
       .then((products) => {
         if (!mounted) return;
-        setList(products.map(migrateProduct));
+        const migrated = products.map(migrateProduct);
+        setList(migrated);
+        setLocalProducts(migrated);
         setLoading(false);
       })
       .catch((error) => {
         if (!mounted) return;
-        safeLogError(error, "Products loading failed");
-        toast.error("Could not load products from database");
-        setList([]);
+        safeLogError(error, "Products loading failed, using local storage");
+        // Fall back to localStorage
+        const local = getLocalProducts();
+        if (local.length > 0) {
+          setList(local.map(migrateProduct));
+        }
         setLoading(false);
       });
 
@@ -243,47 +262,67 @@ export function useProducts() {
   }, []);
 
   const updateStock = useCallback((slug: string, inStock: boolean) => {
-    setList((prev) => prev.map((p) => (p.slug === slug ? { ...p, inStock } : p)));
+    setList((prev) => {
+      const next = prev.map((p) => (p.slug === slug ? { ...p, inStock } : p));
+      setLocalProducts(next);
+      return next;
+    });
     supabase
       .from("products")
       .update({ inStock })
       .eq("slug", slug)
       .then(({ error }) => {
-        if (error) toast.error("Failed to update stock status");
+        if (error) console.error("Supabase stock update failed:", error.message);
       });
   }, []);
 
   const addProduct = useCallback((product: Product) => {
-    setList((prev) => [...prev, migrateProduct(product)]);
+    const migrated = migrateProduct(product);
+    setList((prev) => {
+      const next = [...prev, migrated];
+      setLocalProducts(next);
+      return next;
+    });
     supabase
       .from("products")
       .insert(product)
       .then(({ error }) => {
-        if (error) toast.error("Failed to save product to database");
+        if (error) {
+          console.error("Supabase insert failed:", error.message);
+          toast.error("Saved locally — could not sync to cloud database");
+        } else {
+          toast.success("Product saved to cloud");
+        }
       });
   }, []);
 
   const updateProduct = useCallback((slug: string, updates: Partial<Omit<Product, "slug">>) => {
-    setList((prev) =>
-      prev.map((p) => (p.slug === slug ? migrateProduct({ ...p, ...updates }) : p))
-    );
+    setList((prev) => {
+      const next = prev.map((p) => (p.slug === slug ? migrateProduct({ ...p, ...updates }) : p));
+      setLocalProducts(next);
+      return next;
+    });
     supabase
       .from("products")
       .update(updates)
       .eq("slug", slug)
       .then(({ error }) => {
-        if (error) toast.error("Failed to update product");
+        if (error) console.error("Supabase update failed:", error.message);
       });
   }, []);
 
   const deleteProduct = useCallback((slug: string) => {
-    setList((prev) => prev.filter((p) => p.slug !== slug));
+    setList((prev) => {
+      const next = prev.filter((p) => p.slug !== slug);
+      setLocalProducts(next);
+      return next;
+    });
     supabase
       .from("products")
       .delete()
       .eq("slug", slug)
       .then(({ error }) => {
-        if (error) toast.error("Failed to delete product");
+        if (error) console.error("Supabase delete failed:", error.message);
       });
   }, []);
 
